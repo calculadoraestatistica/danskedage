@@ -134,7 +134,18 @@ def validate_expected_files(start: int, end: int, errors: list[str], warnings: l
     for name in sorted(actual - expected):
         warnings.append(f"unexpected root HTML file: {name}")
 
-    required_assets = ["css/style.css", "js/calendar-tools.js", "favicon.svg", "ads.txt", "robots.txt", "CNAME", "sitemap.xml"]
+    required_assets = [
+        "css/style.css",
+        "js/calendar-tools.js",
+        "favicon-48.png",
+        "favicon-192.png",
+        "apple-touch-icon.png",
+        "site.webmanifest",
+        "ads.txt",
+        "robots.txt",
+        "CNAME",
+        "sitemap.xml",
+    ]
     for asset in required_assets:
         if not (ROOT / asset).exists():
             errors.append(f"missing asset: {asset}")

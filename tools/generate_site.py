@@ -13,6 +13,8 @@ import calendar
 import html
 import json
 import shutil
+import struct
+import zlib
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -226,6 +228,10 @@ def ensure_base_files() -> None:
     (ROOT / "css" / "style.css").write_text(css_text(), encoding="utf-8")
     (ROOT / "js" / "calendar-tools.js").write_text(js_text(), encoding="utf-8")
     (ROOT / "favicon.svg").write_text(favicon_svg(), encoding="utf-8")
+    write_png_icon(ROOT / "favicon-48.png", 48)
+    write_png_icon(ROOT / "favicon-192.png", 192)
+    write_png_icon(ROOT / "apple-touch-icon.png", 180)
+    (ROOT / "site.webmanifest").write_text(site_manifest(), encoding="utf-8")
     qr_sources = [
         ROOT.parent / "site_lonberegning_dk" / "img" / "bmc_qr.png",
         ROOT.parent / "site_calculadora_dk" / "img" / "bmc_qr.png",
@@ -339,6 +345,7 @@ def css_text() -> str:
     return """\
 :root{--bg:#f7f7f2;--paper:#fff;--ink:#19201d;--muted:#667067;--line:#dfe3dc;--brand:#0f766e;--brand2:#1d4ed8;--accent:#b45309;--soft:#ecfdf5;--danger:#b91c1c;--radius:8px;--shadow:0 12px 28px rgba(15,23,42,.08)}
 *{box-sizing:border-box}html{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}body{margin:0}a{color:#0f5f59}a:hover{color:#0b4b45}.skip-link{position:absolute;left:-999px}.skip-link:focus{left:1rem;top:1rem;background:#fff;padding:.6rem 1rem;border:2px solid var(--brand);z-index:99}.container{width:min(1120px,calc(100% - 32px));margin-inline:auto}.container--narrow{width:min(820px,calc(100% - 32px));margin-inline:auto}.site-header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}.site-header__inner{display:flex;align-items:center;gap:1rem;justify-content:space-between;min-height:64px}.brand{display:flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--ink);font-weight:800}.brand__mark{width:36px;height:36px}.main-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:.25rem;flex-wrap:wrap}.main-nav a{display:block;text-decoration:none;color:var(--muted);padding:.55rem .7rem;border-radius:6px;font-weight:650;font-size:.95rem}.main-nav a[aria-current=page],.main-nav a:hover{background:#eef7f4;color:#0f5f59}.hero{padding:2.6rem 0 1.6rem;background:linear-gradient(180deg,#fff 0,#f7f7f2 100%)}.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr);gap:2rem;align-items:start}.eyebrow{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;letter-spacing:0}.lead{font-size:1.12rem;color:#39423d;max-width:68ch}.hero-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.3rem}.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:7px;padding:.72rem 1rem;font-weight:800;border:1px solid transparent}.btn--primary{background:var(--brand);color:#fff}.btn--primary:hover{background:#0b5d55;color:#fff}.btn--ghost{border-color:var(--line);background:#fff;color:var(--ink)}.quick-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:1rem}.mini-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.mini-calendar span{display:flex;align-items:center;justify-content:center;min-height:34px;border-radius:5px;background:#f4f6f2;font-size:.85rem}.mini-calendar .head{background:#e6ece6;color:#475047;font-weight:800}.mini-calendar .holiday{background:#fee2e2;color:#991b1b;font-weight:800}.mini-calendar .today{outline:2px solid var(--brand);background:#ecfdf5}.section{padding:2rem 0}.section-title{display:flex;align-items:end;justify-content:space-between;gap:1rem;margin-bottom:1rem}.section-title h2{margin:0;font-size:1.55rem}.section-title p{margin:.2rem 0 0;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:1rem;box-shadow:0 8px 18px rgba(15,23,42,.04)}.card h3{margin:.1rem 0 .4rem}.stat{font-size:2rem;font-weight:850;color:#0f5f59;margin:.2rem 0}.muted{color:var(--muted)}.prose{font-size:1.03rem}.prose h2{margin-top:1.8rem}.prose p,.prose li{color:#33403a}.prose li{margin:.35rem 0}.table-wrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}table{border-collapse:collapse;width:100%;min-width:640px}th,td{padding:.72rem .8rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#eef2ee;color:#475047;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}.month-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:1rem}.month{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:.8rem}.month h3{margin:0 0 .65rem;text-transform:capitalize}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}.calendar-grid span{min-height:32px;display:flex;align-items:center;justify-content:center;border-radius:5px;background:#f8faf7;font-size:.86rem}.calendar-grid .head{font-weight:800;background:#e7ece7;color:#4b554d}.calendar-grid .empty{background:transparent}.calendar-grid .weekend{background:#f1f5f9;color:#64748b}.calendar-grid .holiday{background:#fee2e2;color:#991b1b;font-weight:800}.calendar-grid .special{background:#fef3c7;color:#92400e}.tool{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}.tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.8rem}.field label{display:block;font-weight:750;margin-bottom:.25rem}.field input,.field select{width:100%;padding:.68rem .75rem;border:1px solid #cbd5cf;border-radius:6px;font:inherit}.result-box{margin-top:1rem;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:7px;padding:1rem}.notice{background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:1rem;color:#713f12}.donate-card{text-align:center}.donate-qr{display:block;max-width:190px;height:auto;margin:1rem auto 0;border:1px solid var(--line);border-radius:8px}.footer{margin-top:2rem;padding:2rem 0;background:#10201c;color:#e7f5ef}.footer a{color:#a7f3d0}.footer-grid{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:1rem}.footer ul{list-style:none;padding:0;margin:.4rem 0}.footer li{margin:.25rem 0}.ad-note{min-height:90px;border:1px dashed #cbd5cf;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--muted);background:#fff}.breadcrumbs{font-size:.9rem;color:var(--muted);margin:.9rem 0}.tag{display:inline-flex;padding:.18rem .45rem;border-radius:999px;background:#eef7f4;color:#0f5f59;font-size:.78rem;font-weight:800}@media(max-width:760px){.hero-grid{grid-template-columns:1fr}.main-nav ul{gap:.1rem}.footer-grid{grid-template-columns:1fr}.section-title{display:block}table{min-width:520px}}
+.calendar-grid .today{outline:2px solid var(--brand)}.calendar-legend{display:flex;flex-wrap:wrap;gap:.55rem .85rem;align-items:center;margin:0 0 1rem;padding:.75rem .85rem;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}.calendar-legend__item{display:inline-flex;align-items:center;gap:.4rem;color:#475047;font-size:.9rem;font-weight:700}.calendar-legend__swatch{width:18px;height:18px;border-radius:5px;border:1px solid var(--line);display:inline-block}.calendar-legend__swatch--holiday{background:#fee2e2;border-color:#fecaca}.calendar-legend__swatch--special{background:#fef3c7;border-color:#fde68a}.calendar-legend__swatch--weekend{background:#f1f5f9;border-color:#e2e8f0}.calendar-legend__swatch--today{background:#ecfdf5;border-color:var(--brand);outline:2px solid var(--brand);outline-offset:0}
 """
 
 
@@ -363,6 +370,65 @@ def js_text() -> str:
 
 def favicon_svg() -> str:
     return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#0f766e"/><rect x="12" y="15" width="40" height="37" rx="5" fill="#fff"/><rect x="12" y="15" width="40" height="10" rx="5" fill="#134e4a"/><path d="M22 34h7v7h-7zm13 0h7v7h-7z" fill="#0f766e"/></svg>"""
+
+
+def write_png_icon(path: Path, size: int) -> None:
+    """Write the site calendar mark as a square PNG without external deps."""
+
+    teal = (15, 118, 110, 255)
+    dark = (19, 78, 74, 255)
+    white = (255, 255, 255, 255)
+
+    def px(value: float) -> int:
+        return round(value * size / 64)
+
+    pixels = [[teal for _ in range(size)] for _ in range(size)]
+
+    def fill_rect(x1: int, y1: int, x2: int, y2: int, color: tuple[int, int, int, int]) -> None:
+        x1, y1 = max(0, x1), max(0, y1)
+        x2, y2 = min(size, x2), min(size, y2)
+        for y in range(y1, y2):
+            row = pixels[y]
+            for x in range(x1, x2):
+                row[x] = color
+
+    fill_rect(px(12), px(15), px(52), px(52), white)
+    fill_rect(px(12), px(15), px(52), px(25), dark)
+    fill_rect(px(22), px(34), px(29), px(41), teal)
+    fill_rect(px(35), px(34), px(42), px(41), teal)
+
+    raw = b"".join(b"\x00" + b"".join(bytes(pixel) for pixel in row) for row in pixels)
+
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        checksum = zlib.crc32(kind + data) & 0xFFFFFFFF
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", checksum)
+
+    png = (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(raw, 9))
+        + chunk(b"IEND", b"")
+    )
+    path.write_bytes(png)
+
+
+def site_manifest() -> str:
+    return json.dumps(
+        {
+            "name": SITE_NAME,
+            "short_name": "DanskeDage",
+            "start_url": "/",
+            "display": "standalone",
+            "background_color": "#f7f7f2",
+            "theme_color": "#0f766e",
+            "icons": [
+                {"src": "/favicon-192.png", "sizes": "192x192", "type": "image/png"},
+                {"src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    ) + "\n"
 
 
 def layout(title: str, description: str, path: str, body: str, current: str = "") -> str:
@@ -397,7 +463,10 @@ def layout(title: str, description: str, path: str, body: str, current: str = ""
 <meta property="og:description" content="{html.escape(description)}">
 <meta property="og:url" content="{canonical}">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADS_CLIENT}" crossorigin="anonymous"></script>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">{json.dumps(json_ld(title, description, canonical), ensure_ascii=False)}</script>
 </head>
@@ -469,6 +538,15 @@ def month_calendar_html(year: int, month: int, mini: bool = False) -> str:
     return "\n".join(parts)
 
 
+def calendar_legend() -> str:
+    return """<div class="calendar-legend" aria-label="Forklaring af kalenderfarver">
+<span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--holiday"></span>Officiel helligdag</span>
+<span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--special"></span>Mærkedag eller lokal fridag</span>
+<span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--weekend"></span>Weekend</span>
+<span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--today"></span>I dag</span>
+</div>"""
+
+
 def year_overview(year: int) -> str:
     stats = year_stats(year)
     cards = [
@@ -520,7 +598,7 @@ def year_calendar_section(year: int) -> str:
     months = []
     for month in range(1, 13):
         months.append(f'<section class="month"><h3>{MONTHS[month-1]} {year}</h3>{month_calendar_html(year, month)}</section>')
-    return '<section class="section"><div class="container"><div class="section-title"><div><h2>Kalender måned for måned</h2><p>Røde dage er officielle helligdage. Gule dage er mærkedage eller almindelige fridage mange steder.</p></div></div><div class="month-grid">' + "".join(months) + "</div></div></section>"
+    return '<section class="section"><div class="container"><div class="section-title"><div><h2>Kalender måned for måned</h2><p>Røde dage er officielle helligdage. Gule dage er mærkedage eller almindelige fridage mange steder.</p></div></div>' + calendar_legend() + '<div class="month-grid">' + "".join(months) + "</div></div></section>"
 
 
 def render_year_pages(year: int) -> None:
