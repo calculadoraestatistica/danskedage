@@ -227,10 +227,15 @@ def ensure_base_files() -> None:
 
     (ROOT / "css" / "style.css").write_text(css_text(), encoding="utf-8")
     (ROOT / "js" / "calendar-tools.js").write_text(js_text(), encoding="utf-8")
+    (ROOT / "js" / "today.js").write_text(today_js_text(), encoding="utf-8")
     (ROOT / "favicon.svg").write_text(favicon_svg(), encoding="utf-8")
+    write_png_icon(ROOT / "favicon-16.png", 16)
+    write_png_icon(ROOT / "favicon-32.png", 32)
     write_png_icon(ROOT / "favicon-48.png", 48)
     write_png_icon(ROOT / "favicon-192.png", 192)
+    write_png_icon(ROOT / "favicon-512.png", 512)
     write_png_icon(ROOT / "apple-touch-icon.png", 180)
+    write_og_image(ROOT / "img" / "og-default.png")
     (ROOT / "site.webmanifest").write_text(site_manifest(), encoding="utf-8")
     qr_sources = [
         ROOT.parent / "site_lonberegning_dk" / "img" / "bmc_qr.png",
@@ -346,6 +351,9 @@ def css_text() -> str:
 :root{--bg:#f7f7f2;--paper:#fff;--ink:#19201d;--muted:#667067;--line:#dfe3dc;--brand:#0f766e;--brand2:#1d4ed8;--accent:#b45309;--soft:#ecfdf5;--danger:#b91c1c;--radius:8px;--shadow:0 12px 28px rgba(15,23,42,.08)}
 *{box-sizing:border-box}html{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}body{margin:0}a{color:#0f5f59}a:hover{color:#0b4b45}.skip-link{position:absolute;left:-999px}.skip-link:focus{left:1rem;top:1rem;background:#fff;padding:.6rem 1rem;border:2px solid var(--brand);z-index:99}.container{width:min(1120px,calc(100% - 32px));margin-inline:auto}.container--narrow{width:min(820px,calc(100% - 32px));margin-inline:auto}.site-header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}.site-header__inner{display:flex;align-items:center;gap:1rem;justify-content:space-between;min-height:64px}.brand{display:flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--ink);font-weight:800}.brand__mark{width:36px;height:36px}.main-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:.25rem;flex-wrap:wrap}.main-nav a{display:block;text-decoration:none;color:var(--muted);padding:.55rem .7rem;border-radius:6px;font-weight:650;font-size:.95rem}.main-nav a[aria-current=page],.main-nav a:hover{background:#eef7f4;color:#0f5f59}.hero{padding:2.6rem 0 1.6rem;background:linear-gradient(180deg,#fff 0,#f7f7f2 100%)}.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr);gap:2rem;align-items:start}.eyebrow{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);font-weight:800}.hero h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:.35rem 0 1rem;letter-spacing:0}.lead{font-size:1.12rem;color:#39423d;max-width:68ch}.hero-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.3rem}.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:7px;padding:.72rem 1rem;font-weight:800;border:1px solid transparent}.btn--primary{background:var(--brand);color:#fff}.btn--primary:hover{background:#0b5d55;color:#fff}.btn--ghost{border-color:var(--line);background:#fff;color:var(--ink)}.quick-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:1rem}.mini-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.mini-calendar span{display:flex;align-items:center;justify-content:center;min-height:34px;border-radius:5px;background:#f4f6f2;font-size:.85rem}.mini-calendar .head{background:#e6ece6;color:#475047;font-weight:800}.mini-calendar .holiday{background:#fee2e2;color:#991b1b;font-weight:800}.mini-calendar .today{outline:2px solid var(--brand);background:#ecfdf5}.section{padding:2rem 0}.section-title{display:flex;align-items:end;justify-content:space-between;gap:1rem;margin-bottom:1rem}.section-title h2{margin:0;font-size:1.55rem}.section-title p{margin:.2rem 0 0;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:1rem;box-shadow:0 8px 18px rgba(15,23,42,.04)}.card h3{margin:.1rem 0 .4rem}.stat{font-size:2rem;font-weight:850;color:#0f5f59;margin:.2rem 0}.muted{color:var(--muted)}.prose{font-size:1.03rem}.prose h2{margin-top:1.8rem}.prose p,.prose li{color:#33403a}.prose li{margin:.35rem 0}.table-wrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}table{border-collapse:collapse;width:100%;min-width:640px}th,td{padding:.72rem .8rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#eef2ee;color:#475047;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}.month-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:1rem}.month{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:.8rem}.month h3{margin:0 0 .65rem;text-transform:capitalize}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}.calendar-grid span{min-height:32px;display:flex;align-items:center;justify-content:center;border-radius:5px;background:#f8faf7;font-size:.86rem}.calendar-grid .head{font-weight:800;background:#e7ece7;color:#4b554d}.calendar-grid .empty{background:transparent}.calendar-grid .weekend{background:#f1f5f9;color:#64748b}.calendar-grid .holiday{background:#fee2e2;color:#991b1b;font-weight:800}.calendar-grid .special{background:#fef3c7;color:#92400e}.tool{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}.tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.8rem}.field label{display:block;font-weight:750;margin-bottom:.25rem}.field input,.field select{width:100%;padding:.68rem .75rem;border:1px solid #cbd5cf;border-radius:6px;font:inherit}.result-box{margin-top:1rem;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:7px;padding:1rem}.notice{background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:1rem;color:#713f12}.donate-card{text-align:center}.donate-qr{display:block;max-width:190px;height:auto;margin:1rem auto 0;border:1px solid var(--line);border-radius:8px}.footer{margin-top:2rem;padding:2rem 0;background:#10201c;color:#e7f5ef}.footer a{color:#a7f3d0}.footer-grid{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:1rem}.footer ul{list-style:none;padding:0;margin:.4rem 0}.footer li{margin:.25rem 0}.ad-note{min-height:90px;border:1px dashed #cbd5cf;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--muted);background:#fff}.breadcrumbs{font-size:.9rem;color:var(--muted);margin:.9rem 0}.tag{display:inline-flex;padding:.18rem .45rem;border-radius:999px;background:#eef7f4;color:#0f5f59;font-size:.78rem;font-weight:800}@media(max-width:760px){.hero-grid{grid-template-columns:1fr}.main-nav ul{gap:.1rem}.footer-grid{grid-template-columns:1fr}.section-title{display:block}table{min-width:520px}}
 .calendar-grid .today{outline:2px solid var(--brand)}.calendar-legend{display:flex;flex-wrap:wrap;gap:.55rem .85rem;align-items:center;margin:0 0 1rem;padding:.75rem .85rem;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}.calendar-legend__item{display:inline-flex;align-items:center;gap:.4rem;color:#475047;font-size:.9rem;font-weight:700}.calendar-legend__swatch{width:18px;height:18px;border-radius:5px;border:1px solid var(--line);display:inline-block}.calendar-legend__swatch--holiday{background:#fee2e2;border-color:#fecaca}.calendar-legend__swatch--special{background:#fef3c7;border-color:#fde68a}.calendar-legend__swatch--weekend{background:#f1f5f9;border-color:#e2e8f0}.calendar-legend__swatch--today{background:#ecfdf5;border-color:var(--brand);outline:2px solid var(--brand);outline-offset:0}
+.breadcrumbs{background:#fff;border-bottom:1px solid var(--line);padding:.7rem 0;font-size:.9rem;color:var(--muted);margin:0}.breadcrumbs a{color:#0f5f59;text-decoration:none;font-weight:650}.breadcrumbs a:hover{text-decoration:underline}.breadcrumbs [aria-current=page]{color:var(--ink);font-weight:700}
+.ad-slot{padding:.9rem 0;background:transparent}.ad-slot ins{min-height:90px;display:block;border:1px dashed #cbd5cf;border-radius:7px;background:#fff;color:var(--muted)}.ad-slot ins:empty::before{content:"Annonceområde";display:flex;align-items:center;justify-content:center;height:90px;color:var(--muted);font-size:.85rem;letter-spacing:.04em}.ad-slot--header ins{min-height:100px}.ad-slot--mid ins{min-height:250px}.ad-slot--footer ins{min-height:100px}
+.faq{display:flex;flex-direction:column;gap:.65rem}.faq__item{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:.75rem 1rem}.faq__item summary{cursor:pointer;font-weight:750;color:#0f5f59;outline:none}.faq__item[open] summary{margin-bottom:.5rem}.faq__item p{margin:.25rem 0 0;color:#33403a}
 """
 
 
@@ -423,6 +431,7 @@ def site_manifest() -> str:
             "theme_color": "#0f766e",
             "icons": [
                 {"src": "/favicon-192.png", "sizes": "192x192", "type": "image/png"},
+                {"src": "/favicon-512.png", "sizes": "512x512", "type": "image/png"},
                 {"src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"},
             ],
         },
@@ -431,8 +440,151 @@ def site_manifest() -> str:
     ) + "\n"
 
 
-def layout(title: str, description: str, path: str, body: str, current: str = "") -> str:
+def today_js_text() -> str:
+    return """\
+(function(){
+  function pad(n){return n<10?'0'+n:''+n;}
+  var now=new Date();
+  var iso=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  var nodes=document.querySelectorAll('[data-date]');
+  for(var i=0;i<nodes.length;i++){
+    var el=nodes[i];
+    if(el.getAttribute('data-date')===iso){
+      el.classList.add('today');
+    }
+  }
+})();
+"""
+
+
+def write_og_image(path: Path) -> None:
+    """Render a 1200x630 OG image: brand teal background + white card + brand text.
+
+    Pure-Python PNG writer reused from write_png_icon. The design mirrors the
+    favicon: solid teal field, white rounded calendar card, brand wordmark and
+    a short Danish tagline in a simple bitmap typeface.
+    """
+
+    width, height = 1200, 630
+    teal = (15, 118, 110, 255)
+    dark = (19, 78, 74, 255)
+    white = (255, 255, 255, 255)
+    cream = (236, 253, 245, 255)
+
+    pixels = [[teal for _ in range(width)] for _ in range(height)]
+
+    def fill_rect(x1: int, y1: int, x2: int, y2: int, color: tuple[int, int, int, int]) -> None:
+        x1, y1 = max(0, x1), max(0, y1)
+        x2, y2 = min(width, x2), min(height, y2)
+        for y in range(y1, y2):
+            row = pixels[y]
+            for x in range(x1, x2):
+                row[x] = color
+
+    # decorative left calendar mark
+    mark_x, mark_y, mark_size = 80, 180, 270
+    fill_rect(mark_x, mark_y, mark_x + mark_size, mark_y + mark_size, white)
+    fill_rect(mark_x, mark_y, mark_x + mark_size, mark_y + 60, dark)
+    cell = (mark_size - 50) // 7
+    for row in range(2):
+        for col in range(2):
+            cx = mark_x + 25 + col * (cell + 18)
+            cy = mark_y + 110 + row * (cell + 18)
+            fill_rect(cx, cy, cx + cell, cy + cell, teal)
+
+    # cream pill background for text region
+    fill_rect(420, 110, 1140, 540, cream)
+    fill_rect(420, 110, 460, 540, dark)
+
+    # 5x7 bitmap font for the brand line and tagline
+    font = _og_bitmap_font()
+
+    def draw_text(text: str, x: int, y: int, scale: int, color: tuple[int, int, int, int]) -> None:
+        cursor = x
+        for ch in text:
+            glyph = font.get(ch.upper()) or font.get(" ")
+            for gy, row in enumerate(glyph):
+                for gx, bit in enumerate(row):
+                    if bit:
+                        fill_rect(
+                            cursor + gx * scale,
+                            y + gy * scale,
+                            cursor + (gx + 1) * scale,
+                            y + (gy + 1) * scale,
+                            color,
+                        )
+            cursor += (len(glyph[0]) + 1) * scale
+
+    draw_text("DANSKEDAGE.DK", 500, 180, 9, dark)
+    draw_text("KALENDER HELLIGDAGE ARBEJDSDAGE", 500, 310, 5, teal)
+    draw_text("FRI DANSK KALENDER UDEN LOGIN", 500, 400, 5, dark)
+
+    raw = b"".join(b"\x00" + b"".join(bytes(pixel) for pixel in row) for row in pixels)
+
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        checksum = zlib.crc32(kind + data) & 0xFFFFFFFF
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", checksum)
+
+    png = (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(raw, 9))
+        + chunk(b"IEND", b"")
+    )
+    path.write_bytes(png)
+
+
+def _og_bitmap_font() -> dict[str, list[list[int]]]:
+    """Tiny 5x7 uppercase bitmap font used for the OG image."""
+
+    raw = {
+        "A": ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
+        "B": ["11110", "10001", "10001", "11110", "10001", "10001", "11110"],
+        "C": ["01111", "10000", "10000", "10000", "10000", "10000", "01111"],
+        "D": ["11110", "10001", "10001", "10001", "10001", "10001", "11110"],
+        "E": ["11111", "10000", "10000", "11110", "10000", "10000", "11111"],
+        "F": ["11111", "10000", "10000", "11110", "10000", "10000", "10000"],
+        "G": ["01111", "10000", "10000", "10011", "10001", "10001", "01111"],
+        "H": ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
+        "I": ["11111", "00100", "00100", "00100", "00100", "00100", "11111"],
+        "J": ["00001", "00001", "00001", "00001", "00001", "10001", "01110"],
+        "K": ["10001", "10010", "10100", "11000", "10100", "10010", "10001"],
+        "L": ["10000", "10000", "10000", "10000", "10000", "10000", "11111"],
+        "M": ["10001", "11011", "10101", "10001", "10001", "10001", "10001"],
+        "N": ["10001", "11001", "10101", "10011", "10001", "10001", "10001"],
+        "O": ["01110", "10001", "10001", "10001", "10001", "10001", "01110"],
+        "P": ["11110", "10001", "10001", "11110", "10000", "10000", "10000"],
+        "Q": ["01110", "10001", "10001", "10001", "10101", "10010", "01101"],
+        "R": ["11110", "10001", "10001", "11110", "10100", "10010", "10001"],
+        "S": ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
+        "T": ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
+        "U": ["10001", "10001", "10001", "10001", "10001", "10001", "01110"],
+        "V": ["10001", "10001", "10001", "10001", "10001", "01010", "00100"],
+        "W": ["10001", "10001", "10001", "10001", "10101", "11011", "10001"],
+        "X": ["10001", "10001", "01010", "00100", "01010", "10001", "10001"],
+        "Y": ["10001", "10001", "01010", "00100", "00100", "00100", "00100"],
+        "Z": ["11111", "00001", "00010", "00100", "01000", "10000", "11111"],
+        ".": ["00000", "00000", "00000", "00000", "00000", "00000", "00100"],
+        "-": ["00000", "00000", "00000", "11111", "00000", "00000", "00000"],
+        " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"],
+    }
+    out: dict[str, list[list[int]]] = {}
+    for ch, rows in raw.items():
+        out[ch] = [[1 if c == "1" else 0 for c in row] for row in rows]
+    return out
+
+
+def layout(
+    title: str,
+    description: str,
+    path: str,
+    body: str,
+    current: str = "",
+    breadcrumbs: list[tuple[str, str]] | None = None,
+    faq: list[tuple[str, str]] | None = None,
+) -> str:
     canonical = DOMAIN + ("/" if path == "index.html" else f"/{path}")
+    og_image = DOMAIN + "/img/og-default.png"
     nav_year = ACTIVE_YEAR
     nav = [
         ("Kalender", f"kalender-{nav_year}.html", "kalender"),
@@ -447,6 +599,34 @@ def layout(title: str, description: str, path: str, body: str, current: str = ""
         current_attr = ' aria-current="page"' if key == current else ""
         nav_html_parts.append(f'<li><a href="{href}"{current_attr}>{label}</a></li>')
     nav_html = "".join(nav_html_parts)
+
+    schema_blocks: list[str] = [
+        '<script type="application/ld+json">'
+        + json.dumps(json_ld(title, description, canonical), ensure_ascii=False)
+        + "</script>"
+    ]
+    breadcrumb_html = ""
+    if breadcrumbs:
+        schema_blocks.append(
+            '<script type="application/ld+json">'
+            + json.dumps(breadcrumb_jsonld(breadcrumbs), ensure_ascii=False)
+            + "</script>"
+        )
+        breadcrumb_html = render_breadcrumb_nav(breadcrumbs)
+    if faq:
+        schema_blocks.append(
+            '<script type="application/ld+json">'
+            + json.dumps(faq_jsonld(faq), ensure_ascii=False)
+            + "</script>"
+        )
+
+    if breadcrumb_html:
+        body = breadcrumb_html + body
+    if faq:
+        body = body + render_faq_section(faq)
+
+    schema_html = "\n".join(schema_blocks)
+
     return f"""<!DOCTYPE html>
 <html lang="da">
 <head>
@@ -462,13 +642,24 @@ def layout(title: str, description: str, path: str, body: str, current: str = ""
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(description)}">
 <meta property="og:url" content="{canonical}">
+<meta property="og:image" content="{og_image}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{html.escape(title)}">
+<meta name="twitter:description" content="{html.escape(description)}">
+<meta name="twitter:image" content="{og_image}">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADS_CLIENT}" crossorigin="anonymous"></script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="css/style.css">
-<script type="application/ld+json">{json.dumps(json_ld(title, description, canonical), ensure_ascii=False)}</script>
+{schema_html}
 </head>
 <body>
 <a class="skip-link" href="#indhold">Spring til indhold</a>
@@ -484,6 +675,7 @@ def layout(title: str, description: str, path: str, body: str, current: str = ""
 <div><h3>Site</h3><ul><li><a href="om.html">Om og kilder</a></li><li><a href="kontakt.html">Kontakt</a></li><li><a href="privatlivspolitik.html">Privatlivspolitik</a></li><li><a href="vilkar.html">Vilkår</a></li><li><a href="stot.html">Støt projektet</a></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>
 </div></footer>
 <script src="js/calendar-tools.js"></script>
+<script src="js/today.js"></script>
 </body>
 </html>
 """
@@ -501,8 +693,112 @@ def json_ld(title: str, description: str, url: str) -> dict:
     }
 
 
-def hero(title: str, lead: str, year: int | None = None) -> str:
-    side = mini_month(date.today().year if year is None else year, date.today().month if year is None else 1)
+def breadcrumb_jsonld(items: list[tuple[str, str]]) -> dict:
+    """Build BreadcrumbList JSON-LD. items: [(name, path)]. Empty path = final."""
+
+    elements = []
+    for index, (name, path) in enumerate(items, start=1):
+        entry: dict = {
+            "@type": "ListItem",
+            "position": index,
+            "name": name,
+        }
+        if path:
+            entry["item"] = DOMAIN + ("/" if path == "index.html" else f"/{path}")
+        elements.append(entry)
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": elements,
+    }
+
+
+def render_breadcrumb_nav(items: list[tuple[str, str]]) -> str:
+    parts = []
+    for index, (name, path) in enumerate(items):
+        if index > 0:
+            parts.append('<span aria-hidden="true"> &rsaquo; </span>')
+        if path:
+            href = "index.html" if path == "index.html" else path
+            parts.append(f'<a href="{html.escape(href)}">{html.escape(name)}</a>')
+        else:
+            parts.append(f'<span aria-current="page">{html.escape(name)}</span>')
+    return (
+        '<nav class="breadcrumbs" aria-label="Brødkrummesti"><div class="container">'
+        + "".join(parts)
+        + "</div></nav>"
+    )
+
+
+def faq_jsonld(items: list[tuple[str, str]]) -> dict:
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": q,
+                "acceptedAnswer": {"@type": "Answer", "text": a},
+            }
+            for q, a in items
+        ],
+    }
+
+
+def render_faq_section(items: list[tuple[str, str]]) -> str:
+    rows = "".join(
+        f'<details class="faq__item"><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>'
+        for q, a in items
+    )
+    return (
+        '<section class="section" id="faq"><div class="container container--narrow">'
+        '<div class="section-title"><div><h2>Ofte stillede spørgsmål</h2>'
+        '<p>Korte svar på de mest almindelige spørgsmål til denne dato.</p></div></div>'
+        f'<div class="faq">{rows}</div></div></section>'
+    )
+
+
+def ad_slot(position: str) -> str:
+    """Render an AdSense placeholder for one of header, mid, footer positions.
+
+    The unit publishes the real `client` id but the `data-ad-slot` is a
+    placeholder string. Replace `AD_SLOT_HEADER`, `AD_SLOT_MID` and
+    `AD_SLOT_FOOTER` with real ad-unit ids from AdSense before going live.
+    """
+
+    slot_id = {
+        "header": "AD_SLOT_HEADER",
+        "mid": "AD_SLOT_MID",
+        "footer": "AD_SLOT_FOOTER",
+    }.get(position, "AD_SLOT_HEADER")
+    return (
+        f'<aside class="ad-slot ad-slot--{position}" aria-label="Reklame" data-ad-position="{position}">'
+        f'<div class="container">'
+        f'<ins class="adsbygoogle" style="display:block" '
+        f'data-ad-client="{ADS_CLIENT}" data-ad-slot="{slot_id}" '
+        f'data-ad-format="auto" data-full-width-responsive="true"></ins>'
+        f'<script>(adsbygoogle = window.adsbygoogle || []).push({{}});</script>'
+        f'</div></aside>'
+    )
+
+
+def hero(
+    title: str,
+    lead: str,
+    year: int | None = None,
+    panel: tuple[int, int] | None = None,
+) -> str:
+    """Render the hero section.
+
+    `panel` is an explicit (year, month) for the quick-panel mini calendar.
+    When omitted we fall back to (year or today.year, today.month).
+    """
+
+    if panel is None:
+        y = date.today().year if year is None else year
+        m = date.today().month
+        panel = (y, m)
+    side = mini_month(panel[0], panel[1])
     return f"""<section class="hero"><div class="container hero-grid"><div><span class="eyebrow">Dansk kalender · opdateret {ACTIVE_YEAR}</span><h1>{title}</h1><p class="lead">{lead}</p><div class="hero-actions"><a class="btn btn--primary" href="beregn-arbejdsdage.html">Beregn arbejdsdage</a><a class="btn btn--ghost" href="ugenummer.html">Find ugenummer</a></div></div><aside class="quick-panel">{side}</aside></div></section>"""
 
 
@@ -533,7 +829,9 @@ def month_calendar_html(year: int, month: int, mini: bool = False) -> str:
         if d == today:
             classes.append("today")
         title = f' title="{html.escape(mark.name)}"' if mark else ""
-        parts.append(f'<span class="{" ".join(classes)}"{title}>{d.day}</span>')
+        parts.append(
+            f'<span class="{" ".join(classes)}" data-date="{iso(d)}"{title}>{d.day}</span>'
+        )
     parts.append("</div>")
     return "\n".join(parts)
 
@@ -561,8 +859,19 @@ def year_overview(year: int) -> str:
     ) + "</div>"
 
 
-def write_page(path: str, title: str, description: str, body: str, current: str = "") -> None:
-    (ROOT / path).write_text(layout(title, description, path, body, current), encoding="utf-8")
+def write_page(
+    path: str,
+    title: str,
+    description: str,
+    body: str,
+    current: str = "",
+    breadcrumbs: list[tuple[str, str]] | None = None,
+    faq: list[tuple[str, str]] | None = None,
+) -> None:
+    (ROOT / path).write_text(
+        layout(title, description, path, body, current, breadcrumbs, faq),
+        encoding="utf-8",
+    )
 
 
 def render_index(year: int) -> None:
@@ -571,12 +880,21 @@ def render_index(year: int) -> None:
         f"Se dansk kalender for {year} med helligdage, arbejdsdage, ugenumre, påske, pinse og forslag til gode feriedage.",
         year,
     )
+    body += ad_slot("header")
     body += '<section class="section"><div class="container"><div class="section-title"><div><h2>Overblik for året</h2><p>Nøgletal for kalenderåret, beregnet lokalt.</p></div></div>'
     body += year_overview(year)
     body += '</div></section>'
     body += link_grid(year)
+    body += ad_slot("mid")
     body += year_calendar_section(year)
-    write_page("index.html", f"Kalender {year} - helligdage, arbejdsdage og ugenumre", f"Dansk kalender {year} med helligdage, arbejdsdage, ugenumre og ferieforslag.", body, "kalender")
+    body += ad_slot("footer")
+    write_page(
+        "index.html",
+        f"Kalender {year} - helligdage, arbejdsdage og ugenumre",
+        f"Dansk kalender {year} med helligdage, arbejdsdage, ugenumre og ferieforslag.",
+        body,
+        "kalender",
+    )
 
 
 def link_grid(year: int) -> str:
@@ -603,11 +921,27 @@ def year_calendar_section(year: int) -> str:
 
 def render_year_pages(year: int) -> None:
     stats = year_stats(year)
-    body = hero(f"Kalender {year}", f"Komplet dansk kalender for {year} med helligdage, arbejdsdage, ugenumre og planlægning af ferie.", year)
+    body = hero(
+        f"Kalender {year}",
+        f"Komplet dansk kalender for {year} med helligdage, arbejdsdage, ugenumre og planlægning af ferie.",
+        year,
+        panel=(year, 1),
+    )
+    body += ad_slot("header")
     body += '<section class="section"><div class="container">'
     body += year_overview(year)
-    body += '</div></section>' + link_grid(year) + year_calendar_section(year)
-    write_page(f"kalender-{year}.html", f"Kalender {year} - dansk kalender med helligdage", f"Dansk kalender {year}: {stats['workdays']} arbejdsdage, {stats['official_holidays']} officielle helligdage og {stats['weeks']} ISO-uger.", body, "kalender")
+    body += '</div></section>' + link_grid(year)
+    body += ad_slot("mid")
+    body += year_calendar_section(year)
+    body += ad_slot("footer")
+    write_page(
+        f"kalender-{year}.html",
+        f"Kalender {year} - dansk kalender med helligdage",
+        f"Dansk kalender {year}: {stats['workdays']} arbejdsdage, {stats['official_holidays']} officielle helligdage og {stats['weeks']} ISO-uger.",
+        body,
+        "kalender",
+        breadcrumbs=[("Forside", "index.html"), ("Kalender", f"kalender-{ACTIVE_YEAR}.html"), (str(year), "")],
+    )
 
     render_holidays(year)
     render_workdays(year)
@@ -622,9 +956,55 @@ def render_holidays(year: int) -> None:
         f"<tr><td>{fmt_date(m.date)}</td><td>{WEEKDAYS_LONG[m.date.weekday()]}</td><td>{m.name}</td><td>{'Ja' if m.official else 'Nej'}</td><td>{m.note}</td></tr>"
         for m in all_marks(year)
     )
-    body = hero(f"Helligdage {year}", f"Alle danske helligdage og vigtige mærkedage i {year}, inklusive påske, pinse, jul og nytår.", year)
+    body = hero(
+        f"Helligdage {year}",
+        f"Alle danske helligdage og vigtige mærkedage i {year}, inklusive påske, pinse, jul og nytår.",
+        year,
+        panel=(year, 1),
+    )
+    body += ad_slot("header")
     body += f'<section class="section"><div class="container"><div class="table-wrap"><table><thead><tr><th>Dato</th><th>Ugedag</th><th>Dag</th><th>Officiel helligdag</th><th>Note</th></tr></thead><tbody>{rows}</tbody></table></div><p class="notice">Store bededag er markeret historisk, men er ikke officiel helligdag i Danmark fra 2024.</p></div></section>'
-    write_page(f"helligdage-{year}.html", f"Helligdage {year} i Danmark", f"Se danske helligdage {year}: påske, pinse, Kristi himmelfartsdag, jul, nytår og særlige mærkedage.", body, "helligdage")
+    body += ad_slot("mid")
+    stats = year_stats(year)
+    easter_date = easter_sunday(year)
+    pentecost_date = easter_date + timedelta(days=49)
+    ascension_date = easter_date + timedelta(days=39)
+    faq = [
+        (
+            f"Hvor mange helligdage er der i {year}?",
+            f"I {year} er der {stats['official_holidays']} officielle helligdage i Danmark. "
+            f"Heraf falder {stats['official_holidays_on_weekdays']} på en hverdag.",
+        ),
+        (
+            f"Hvornår falder påskedag i {year}?",
+            f"Påskedag falder {fmt_date(easter_date)} ({WEEKDAYS_LONG[easter_date.weekday()]}). "
+            "Skærtorsdag, langfredag og 2. påskedag er ligeledes officielle helligdage.",
+        ),
+        (
+            f"Hvornår er Kristi himmelfartsdag i {year}?",
+            f"Kristi himmelfartsdag falder altid på en torsdag, 39 dage efter påskedag. "
+            f"I {year} er det {fmt_date(ascension_date)}.",
+        ),
+        (
+            f"Hvornår er pinse i {year}?",
+            f"Pinsedag er {fmt_date(pentecost_date)} og 2. pinsedag dagen efter. "
+            "Begge dage er officielle helligdage.",
+        ),
+        (
+            "Er store bededag stadig en helligdag?",
+            "Nej, store bededag er afskaffet som officiel helligdag fra 2024. "
+            "På siden er den markeret historisk, men den tæller ikke som helligdag.",
+        ),
+    ]
+    write_page(
+        f"helligdage-{year}.html",
+        f"Helligdage {year} i Danmark",
+        f"Se danske helligdage {year}: påske, pinse, Kristi himmelfartsdag, jul, nytår og særlige mærkedage.",
+        body,
+        "helligdage",
+        breadcrumbs=[("Forside", "index.html"), ("Helligdage", f"helligdage-{ACTIVE_YEAR}.html"), (str(year), "")],
+        faq=faq,
+    )
 
 
 def render_workdays(year: int) -> None:
@@ -637,10 +1017,25 @@ def render_workdays(year: int) -> None:
             f"<tr><td>{MONTHS[month-1].capitalize()}</td><td>{len(days)}</td><td>{sum(1 for d in days if d.weekday()<5)}</td><td>{sum(1 for d in days if d in official and d.weekday()<5)}</td><td>{sum(1 for d in days if is_workday(d))}</td><td>{sum(1 for d in days if is_workday(d, True))}</td></tr>"
         )
     stats = year_stats(year)
-    body = hero(f"Arbejdsdage {year}", f"Beregnede arbejdsdage pr. måned i {year}. Standardtallet tæller mandag-fredag minus officielle helligdage.", year)
+    body = hero(
+        f"Arbejdsdage {year}",
+        f"Beregnede arbejdsdage pr. måned i {year}. Standardtallet tæller mandag-fredag minus officielle helligdage.",
+        year,
+        panel=(year, 1),
+    )
+    body += ad_slot("header")
     body += f'<section class="section"><div class="container"><div class="grid"><article class="card"><h3>Standard</h3><p class="stat">{stats["workdays"]}</p><p class="muted">Arbejdsdage uden officielle helligdage.</p></article><article class="card"><h3>Kontor-variant</h3><p class="stat">{stats["office_workdays"]}</p><p class="muted">Trækker også 1. maj, Grundlovsdag, juleaftensdag og nytårsaftensdag fra.</p></article></div></div></section>'
+    body += ad_slot("mid")
     body += '<section class="section"><div class="container"><div class="table-wrap"><table><thead><tr><th>Måned</th><th>Kalenderdage</th><th>Hverdage</th><th>Helligdage på hverdage</th><th>Arbejdsdage</th><th>Kontor-variant</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div></div></section>"
-    write_page(f"arbejdsdage-{year}.html", f"Arbejdsdage {year} - antal arbejdsdage pr. måned", f"Se hvor mange arbejdsdage der er i {year}, måned for måned.", body, "arbejdsdage")
+    body += ad_slot("footer")
+    write_page(
+        f"arbejdsdage-{year}.html",
+        f"Arbejdsdage {year} - antal arbejdsdage pr. måned",
+        f"Se hvor mange arbejdsdage der er i {year}, måned for måned.",
+        body,
+        "arbejdsdage",
+        breadcrumbs=[("Forside", "index.html"), ("Arbejdsdage", f"arbejdsdage-{ACTIVE_YEAR}.html"), (str(year), "")],
+    )
 
 
 def render_easter(year: int) -> None:
@@ -652,26 +1047,144 @@ def render_easter(year: int) -> None:
         ("Påskedag", e),
         ("2. påskedag", e + timedelta(days=1)),
     ]
-    render_event_page(year, "Påske", "paaske", rows, "Påsken styrer også datoerne for Kristi himmelfartsdag og pinse.")
+    faq = [
+        (
+            f"Hvornår er påske {year}?",
+            f"Påskedag er {fmt_date(e)} ({WEEKDAYS_LONG[e.weekday()]}). "
+            f"Skærtorsdag er {fmt_date(e - timedelta(days=3))} og langfredag {fmt_date(e - timedelta(days=2))}. "
+            f"2. påskedag er {fmt_date(e + timedelta(days=1))}.",
+        ),
+        (
+            "Er påske en helligdag i Danmark?",
+            "Ja. Skærtorsdag, langfredag, påskedag og 2. påskedag er alle officielle helligdage i Danmark.",
+        ),
+        (
+            "Hvordan beregnes påsken?",
+            "Påskedag er den første søndag efter den første fuldmåne på eller efter forårsjævndøgn. "
+            "Vi bruger Meeus/Jones/Butcher-algoritmen til at finde datoen.",
+        ),
+        (
+            "Hvor mange feriedage giver påsken?",
+            "Påsken kan give op til 5 sammenhængende fridage (skærtorsdag til 2. påskedag) uden at bruge feriedage, "
+            "afhængigt af hvilken weekendsammenhæng man har.",
+        ),
+    ]
+    render_event_page(
+        year,
+        "Påske",
+        "paaske",
+        rows,
+        "Påsken styrer også datoerne for Kristi himmelfartsdag og pinse.",
+        panel_month=e.month,
+        faq=faq,
+    )
 
 
 def render_pentecost(year: int) -> None:
     e = easter_sunday(year)
-    rows = [("Pinsedag", e + timedelta(days=49)), ("2. pinsedag", e + timedelta(days=50))]
-    render_event_page(year, "Pinse", "pinse", rows, "Pinse falder 49 og 50 dage efter påskedag.")
+    pinse = e + timedelta(days=49)
+    rows = [("Pinsedag", pinse), ("2. pinsedag", e + timedelta(days=50))]
+    faq = [
+        (
+            f"Hvornår er pinse {year}?",
+            f"Pinsedag er {fmt_date(pinse)} ({WEEKDAYS_LONG[pinse.weekday()]}) "
+            f"og 2. pinsedag er {fmt_date(e + timedelta(days=50))}.",
+        ),
+        (
+            "Er pinse en helligdag?",
+            "Ja. Både pinsedag og 2. pinsedag er officielle helligdage i Danmark.",
+        ),
+        (
+            "Hvor mange dage efter påske falder pinse?",
+            "Pinsedag er 49 dage efter påskedag, og 2. pinsedag dagen efter.",
+        ),
+        (
+            "Hvad er forskellen på pinsedag og 2. pinsedag?",
+            "Pinsedag falder altid på en søndag, og 2. pinsedag er den efterfølgende mandag. "
+            "Begge er officielle helligdage med løn for mange ansatte.",
+        ),
+    ]
+    render_event_page(
+        year,
+        "Pinse",
+        "pinse",
+        rows,
+        "Pinse falder 49 og 50 dage efter påskedag.",
+        panel_month=pinse.month,
+        faq=faq,
+    )
 
 
 def render_ascension(year: int) -> None:
     e = easter_sunday(year)
-    rows = [("Kristi himmelfartsdag", e + timedelta(days=39)), ("Fredag efter Kr. Himmelfart", e + timedelta(days=40))]
-    render_event_page(year, "Kristi himmelfartsdag", "kristi-himmelfartsdag", rows, "Kristi himmelfartsdag falder altid på en torsdag, 39 dage efter påskedag.")
+    kristi = e + timedelta(days=39)
+    rows = [("Kristi himmelfartsdag", kristi), ("Fredag efter Kr. Himmelfart", e + timedelta(days=40))]
+    faq = [
+        (
+            f"Hvornår er Kristi himmelfartsdag {year}?",
+            f"Kristi himmelfartsdag er {fmt_date(kristi)} ({WEEKDAYS_LONG[kristi.weekday()]}).",
+        ),
+        (
+            "Er Kristi himmelfartsdag en helligdag?",
+            "Ja. Kristi himmelfartsdag er en officiel helligdag i Danmark og falder altid på en torsdag.",
+        ),
+        (
+            "Er fredagen efter Kristi himmelfart en fridag?",
+            "Fredagen er ikke en officiel helligdag, men mange arbejdspladser og skoler holder klemmedag eller "
+            "indlægger fridag efter overenskomst.",
+        ),
+        (
+            "Hvor mange dage efter påske falder Kristi himmelfartsdag?",
+            "Kristi himmelfartsdag er 39 dage efter påskedag og dermed 10 dage før pinsedag.",
+        ),
+    ]
+    render_event_page(
+        year,
+        "Kristi himmelfartsdag",
+        "kristi-himmelfartsdag",
+        rows,
+        "Kristi himmelfartsdag falder altid på en torsdag, 39 dage efter påskedag.",
+        panel_month=kristi.month,
+        faq=faq,
+    )
 
 
-def render_event_page(year: int, name: str, slug: str, rows: list[tuple[str, date]], note: str) -> None:
-    table = "".join(f"<tr><td>{label}</td><td>{fmt_date(d)}</td><td>{WEEKDAYS_LONG[d.weekday()]}</td></tr>" for label, d in rows)
-    body = hero(f"{name} {year}", f"Datoer for {name.lower()} i {year}. {note}", year)
+def render_event_page(
+    year: int,
+    name: str,
+    slug: str,
+    rows: list[tuple[str, date]],
+    note: str,
+    panel_month: int = 1,
+    faq: list[tuple[str, str]] | None = None,
+) -> None:
+    table = "".join(
+        f"<tr><td>{label}</td><td>{fmt_date(d)}</td><td>{WEEKDAYS_LONG[d.weekday()]}</td></tr>"
+        for label, d in rows
+    )
+    body = hero(
+        f"{name} {year}",
+        f"Datoer for {name.lower()} i {year}. {note}",
+        year,
+        panel=(year, panel_month),
+    )
+    body += ad_slot("header")
     body += f'<section class="section"><div class="container"><div class="table-wrap"><table><thead><tr><th>Dag</th><th>Dato</th><th>Ugedag</th></tr></thead><tbody>{table}</tbody></table></div></div></section>'
-    write_page(f"{slug}-{year}.html", f"{name} {year} - datoer i Danmark", f"Se dato for {name.lower()} {year} og de tilknyttede fridage.", body, "helligdage")
+    body += ad_slot("mid")
+    write_page(
+        f"{slug}-{year}.html",
+        f"{name} {year} - datoer i Danmark",
+        f"Se dato for {name.lower()} {year} og de tilknyttede fridage.",
+        body,
+        "helligdage",
+        breadcrumbs=[
+            ("Forside", "index.html"),
+            ("Helligdage", f"helligdage-{ACTIVE_YEAR}.html"),
+            (name, ""),
+            (str(year), ""),
+        ],
+        faq=faq,
+    )
 
 
 def render_best_vacation(year: int) -> None:
@@ -679,24 +1192,69 @@ def render_best_vacation(year: int) -> None:
         f"<tr><td>{fmt_date(item['start'])} - {fmt_date(item['end'])}</td><td>{item['days_off']}</td><td>{item['vacation_days']}</td><td>{item['holidays']}</td><td>{item['ratio']:.1f}x</td></tr>"
         for item in build_best_vacation_windows(year)
     )
-    body = hero(f"Bedste feriedage {year}", f"Forslag til hvordan du kan få flere sammenhængende fridage i {year} ved at placere feriedage omkring weekender og helligdage.", year)
+    body = hero(
+        f"Bedste feriedage {year}",
+        f"Forslag til hvordan du kan få flere sammenhængende fridage i {year} ved at placere feriedage omkring weekender og helligdage.",
+        year,
+        panel=(year, 1),
+    )
+    body += ad_slot("header")
     body += f'<section class="section"><div class="container"><div class="table-wrap"><table><thead><tr><th>Periode</th><th>Dage fri i alt</th><th>Feriedage brugt</th><th>Helligdage i perioden</th><th>Effekt</th></tr></thead><tbody>{rows}</tbody></table></div><p class="notice">Forslagene bruger kun officielle helligdage og weekender. Tjek altid din overenskomst, lokale fridage og arbejdsgiverens regler.</p></div></section>'
-    write_page(f"bedste-feriedage-{year}.html", f"Bedste feriedage {year} - få mere fri", f"Se gode perioder at holde ferie i {year}, baseret på helligdage og weekender.", body, "ferieplan")
+    body += ad_slot("mid")
+    write_page(
+        f"bedste-feriedage-{year}.html",
+        f"Bedste feriedage {year} - få mere fri",
+        f"Se gode perioder at holde ferie i {year}, baseret på helligdage og weekender.",
+        body,
+        "ferieplan",
+        breadcrumbs=[
+            ("Forside", "index.html"),
+            ("Ferieplan", f"bedste-feriedage-{ACTIVE_YEAR}.html"),
+            (str(year), ""),
+        ],
+    )
 
 
 def render_tools() -> None:
     today = date.today().isoformat()
     body = hero("Beregn arbejdsdage mellem to datoer", "Vælg start- og slutdato og se antal arbejdsdage i perioden. Du kan vælge standard eller en kontor-variant med almindelige fridage.", date.today().year)
+    body += ad_slot("header")
     body += f"""<section class="section"><div class="container"><div class="tool"><div class="tool-grid"><div class="field"><label for="bd-start">Startdato</label><input id="bd-start" type="date" value="{today}"></div><div class="field"><label for="bd-end">Slutdato</label><input id="bd-end" type="date" value="{today}"></div><div class="field"><label for="bd-mode">Regel</label><select id="bd-mode"><option value="official">Kun officielle helligdage</option><option value="office">Kontor-variant</option></select></div></div><div id="bd-result" class="result-box"></div></div></div></section>"""
-    write_page("beregn-arbejdsdage.html", "Beregn arbejdsdage mellem to datoer", "Gratis beregner for arbejdsdage mellem to datoer i Danmark.", body, "arbejdsdage")
+    body += ad_slot("mid")
+    write_page(
+        "beregn-arbejdsdage.html",
+        "Beregn arbejdsdage mellem to datoer",
+        "Gratis beregner for arbejdsdage mellem to datoer i Danmark.",
+        body,
+        "arbejdsdage",
+        breadcrumbs=[("Forside", "index.html"), ("Beregn arbejdsdage", "")],
+    )
 
     body = hero("Læg arbejdsdage til en dato", "Find datoen efter et bestemt antal arbejdsdage. Beregneren springer weekender og danske helligdage over.", date.today().year)
+    body += ad_slot("header")
     body += f"""<section class="section"><div class="container"><div class="tool"><div class="tool-grid"><div class="field"><label for="add-start">Startdato</label><input id="add-start" type="date" value="{today}"></div><div class="field"><label for="add-amount">Antal arbejdsdage</label><input id="add-amount" type="number" min="0" value="10"></div><div class="field"><label for="add-mode">Regel</label><select id="add-mode"><option value="official">Kun officielle helligdage</option><option value="office">Kontor-variant</option></select></div></div><div id="add-result" class="result-box"></div></div></div></section>"""
-    write_page("laeg-arbejdsdage-til.html", "Læg arbejdsdage til en dato", "Beregn datoen efter X arbejdsdage i Danmark.", body, "arbejdsdage")
+    body += ad_slot("mid")
+    write_page(
+        "laeg-arbejdsdage-til.html",
+        "Læg arbejdsdage til en dato",
+        "Beregn datoen efter X arbejdsdage i Danmark.",
+        body,
+        "arbejdsdage",
+        breadcrumbs=[("Forside", "index.html"), ("Læg arbejdsdage til", "")],
+    )
 
     body = hero("Ugenummer", "Find ISO-ugenummer for en dato i Danmark. Danske kalendere bruger normalt ISO-uger, hvor ugen starter mandag.", date.today().year)
+    body += ad_slot("header")
     body += f"""<section class="section"><div class="container"><div class="tool"><div class="tool-grid"><div class="field"><label for="week-date">Dato</label><input id="week-date" type="date" value="{today}"></div></div><div id="week-result" class="result-box"></div></div></div></section>"""
-    write_page("ugenummer.html", "Ugenummer - find uge for en dato", "Find ugenummer for en dato i Danmark.", body, "ugenummer")
+    body += ad_slot("mid")
+    write_page(
+        "ugenummer.html",
+        "Ugenummer - find uge for en dato",
+        "Find ugenummer for en dato i Danmark.",
+        body,
+        "ugenummer",
+        breadcrumbs=[("Forside", "index.html"), ("Ugenummer", "")],
+    )
 
 
 def render_school_holidays() -> None:
@@ -712,8 +1270,17 @@ def render_school_holidays() -> None:
                 f'<tr><td><a href="skoleferier-{m["slug"]}.html">{m["name"]}</a></td><td>{h["school_year"]}</td><td>{h["name"]}</td><td>{h["start"]}</td><td>{h["end"]}</td><td><a href="{m["source"]}" rel="nofollow noopener" target="_blank">Kilde</a></td></tr>'
             )
     body = hero("Skoleferier i store kommuner", "Se udvalgte skoleferier i større danske kommuner. Skoleferier fastsættes lokalt og skal derfor revideres årligt.", date.today().year)
+    body += ad_slot("header")
     body += '<section class="section"><div class="container"><p class="notice">Skoleferier er ikke en matematisk kalenderregel. Kommunerne kan have forskellige datoer, og skoler kan have lokale afvigelser. Brug tabellen som hurtigt overblik og tjek altid kommunens egen side.</p><div class="grid">' + "".join(cards) + '</div><div class="table-wrap"><table><thead><tr><th>Kommune</th><th>Skoleår</th><th>Ferie/fridag</th><th>Fra</th><th>Til</th><th>Kilde</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div></div></section>"
-    write_page("skoleferier.html", "Skoleferier - ferieplaner i store danske kommuner", "Skoleferier for udvalgte store kommuner i Danmark med officielle kilder.", body, "skoleferier")
+    body += ad_slot("mid")
+    write_page(
+        "skoleferier.html",
+        "Skoleferier - ferieplaner i store danske kommuner",
+        "Skoleferier for udvalgte store kommuner i Danmark med officielle kilder.",
+        body,
+        "skoleferier",
+        breadcrumbs=[("Forside", "index.html"), ("Skoleferier", "")],
+    )
     for municipality_data in data["municipalities"]:
         render_school_municipality(municipality_data, data.get("updated", ""))
 
@@ -724,41 +1291,90 @@ def render_school_municipality(m: dict, updated: str) -> None:
         for h in m["holidays"]
     )
     body = hero(f"Skoleferier i {m['name']}", f"Ferieplan og fridage for skoler i {m['name']}. Datoerne er samlet som et hurtigt overblik med kilde til kommunens egen side.", date.today().year)
+    body += ad_slot("header")
     body += f'<section class="section"><div class="container"><div class="grid"><article class="card"><h3>Senest gennemgået</h3><p class="stat">{updated}</p><p class="muted">Tjek altid kommunens egen kalender ved planlægning.</p></article><article class="card"><h3>Officiel kilde</h3><p><a class="text-link" href="{m["source"]}" rel="nofollow noopener" target="_blank">Åbn kommunens side</a></p></article></div><div class="table-wrap"><table><thead><tr><th>Skoleår</th><th>Ferie/fridag</th><th>Fra</th><th>Til</th></tr></thead><tbody>{rows}</tbody></table></div><p class="notice">Nogle skoler kan have lokale afvigelser, særlige lukkedage eller behovsåbent i SFO. Brug derfor siden som hurtigt overblik og verificer altid hos kommunen eller skolen.</p></div></section>'
-    write_page(f"skoleferier-{m['slug']}.html", f"Skoleferier {m['name']} - ferieplan og fridage", f"Se skoleferier og fridage for {m['name']} kommune med kilde til den officielle ferieplan.", body, "skoleferier")
+    body += ad_slot("mid")
+    write_page(
+        f"skoleferier-{m['slug']}.html",
+        f"Skoleferier {m['name']} - ferieplan og fridage",
+        f"Se skoleferier og fridage for {m['name']} kommune med kilde til den officielle ferieplan.",
+        body,
+        "skoleferier",
+        breadcrumbs=[("Forside", "index.html"), ("Skoleferier", "skoleferier.html"), (m["name"], "")],
+    )
 
 
 def render_about(start: int, end: int) -> None:
     body = hero("Om kalenderen og kilder", "Nationale helligdage beregnes med kendte kalenderregler, mens skoleferier opdateres efter kommunale kilder.", date.today().year)
+    body += ad_slot("header")
     body += f"""<section class="section"><div class="container"><div class="grid"><article class="card"><h3>Periode</h3><p class="stat">{start}-{end}</p><p class="muted">Kalender-, helligdag- og arbejdsdagssider for hele perioden.</p></article><article class="card"><h3>Store bededag</h3><p class="stat">Ikke helligdag</p><p class="muted">Markeret historisk, men ikke talt som officiel helligdag efter 2024.</p></article></div><div class="card"><h2>Metode</h2><p>Påske beregnes med den gregorianske algoritme. Skærtorsdag, langfredag, Kristi himmelfartsdag og pinse beregnes relativt til påskedag. Arbejdsdage tæller mandag-fredag minus officielle helligdage.</p><p>Skoleferier ligger i <code>data/school-holidays.json</code> og skal revideres årligt mod de kommunale kilder.</p></div><div class="card"><h2>Kilder</h2><ul><li><a href="https://regeringen.dk/nyheder/2023/lovforslag-om-afskaffelse-store-bededag-er-vedtaget-i-folketinget/" rel="nofollow noopener" target="_blank">Regeringen: afskaffelse af store bededag</a></li><li><a href="https://natmus.dk/historisk-viden/temaer/fester-og-traditioner/store-bededag/" rel="nofollow noopener" target="_blank">Nationalmuseet: store bededag fra 2024</a></li><li><a href="https://www.oresunddirekt.dk/dk/jeg-arbejder-i-sverige/helligdag-og-ferie/helligdage-2026-i-danmark-og-sverige/" rel="nofollow noopener" target="_blank">Øresunddirekt: helligdage i Danmark</a></li><li><a href="skoleferier.html">Kommunale kilder til skoleferier</a></li></ul></div></div></section>"""
-    write_page("om.html", "Om DanskeDage kalender - metode og kilder", f"Metode, kilder og vedligeholdelse for {SITE_NAME} kalender.", body)
+    body += ad_slot("mid")
+    write_page(
+        "om.html",
+        "Om DanskeDage kalender - metode og kilder",
+        f"Metode, kilder og vedligeholdelse for {SITE_NAME} kalender.",
+        body,
+        breadcrumbs=[("Forside", "index.html"), ("Om", "")],
+    )
 
 
 def render_contact() -> None:
     subject_error = "Fejl%20paa%20DanskeDage.dk"
     subject_suggestion = "Forslag%20til%20DanskeDage.dk"
     body = hero("Kontakt DanskeDage.dk", "Har du fundet en fejl i en dato, en beregner eller en kilde? Skriv til os, så retter vi det hurtigst muligt.", date.today().year)
+    body += ad_slot("header")
     body += f"""<section class="section"><div class="container--narrow"><article class="card prose"><h2>Skriv til os</h2><p>Send en e-mail til <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>. Vi bruger e-mailen til fejlrapporter, forslag til nye kalenderfunktioner og spørgsmål om kilderne på siden.</p><p><a class="btn btn--primary" href="mailto:{CONTACT_EMAIL}?subject={subject_error}">Rapportér en fejl</a> <a class="btn btn--ghost" href="mailto:{CONTACT_EMAIL}?subject={subject_suggestion}">Foreslå en forbedring</a></p><h2>Når du rapporterer en fejl</h2><p>Skriv gerne hvilken side det drejer sig om, hvilken dato eller beregning der ser forkert ud, og hvilken officiel kilde du sammenligner med. For skoleferier er det særligt nyttigt med link til kommunens egen ferieplan.</p><h2>Privatliv</h2><p>Hvis du kontakter os via e-mail, modtager vi den e-mailadresse og det indhold, du selv sender. Vi bruger det kun til at svare på henvendelsen.</p></article></div></section>"""
-    write_page("kontakt.html", f"Kontakt - {SITE_NAME}", f"Kontakt {SITE_NAME}: rapportér fejl i kalender, helligdage, arbejdsdage eller skoleferier.", body)
+    body += ad_slot("mid")
+    write_page(
+        "kontakt.html",
+        f"Kontakt - {SITE_NAME}",
+        f"Kontakt {SITE_NAME}: rapportér fejl i kalender, helligdage, arbejdsdage eller skoleferier.",
+        body,
+        breadcrumbs=[("Forside", "index.html"), ("Kontakt", "")],
+    )
 
 
 def render_privacy_policy() -> None:
     body = hero("Privatlivspolitik", "Sådan håndterer DanskeDage.dk data, cookies, annoncer og eksterne links.", date.today().year)
+    body += ad_slot("header")
     body += f"""<section class="section"><div class="container--narrow"><article class="card prose"><p class="muted">Sidst opdateret: {date.today().strftime('%Y-%m-%d')}.</p><h2>Kort fortalt</h2><p>{SITE_NAME} respekterer dit privatliv. De interaktive beregnere for arbejdsdage og ugenumre kører direkte i din browser. De datoer, du indtaster, bliver ikke sendt til vores server og bliver ikke gemt af os.</p><h2>Data i beregnerne</h2><p>Startdatoer, slutdatoer og antal arbejdsdage behandles lokalt med JavaScript på din enhed. Når du lukker eller genindlæser siden, forsvinder disse oplysninger fra beregneren.</p><h2>Serverlogfiler</h2><p>Som på andre hjemmesider kan hostingudbyderen registrere tekniske oplysninger såsom IP-adresse, browsertype, tidspunkt for besøg og forespurgte sider. Disse oplysninger bruges til drift, sikkerhed og fejlfinding.</p><h2>Cookies og annoncer</h2><p>Siden kan vise annoncer via Google AdSense for at finansiere drift og vedligeholdelse. Google og dets partnere kan bruge cookies til at vise og måle annoncer. Du kan læse mere om Googles brug af data på <a href="https://policies.google.com/technologies/partner-sites" rel="nofollow noopener" target="_blank">Googles side om partnerwebsteder</a> og ændre annonceindstillinger på <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Googles annonceindstillinger</a>.</p><p>Vi bruger ikke login, betalingsmur eller egne analytics-cookies i kalenderberegnerne.</p><h2>Eksterne links</h2><p>Siden linker til officielle kilder og kommunale ferieplaner. Vi kontrollerer ikke disse eksterne sider og er ikke ansvarlige for deres indhold eller privatlivspraksis.</p><h2>Dine rettigheder</h2><p>Hvis du har spørgsmål om privatliv eller ønsker indsigt, rettelse eller sletning af oplysninger, du selv har sendt til os via e-mail, kan du kontakte os på <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>. Du kan også kontakte <a href="https://www.datatilsynet.dk/" rel="nofollow noopener" target="_blank">Datatilsynet</a>.</p><h2>Kontakt</h2><p>Spørgsmål om denne privatlivspolitik kan sendes til <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>.</p></article></div></section>"""
-    write_page("privatlivspolitik.html", f"Privatlivspolitik - {SITE_NAME}", f"Privatlivspolitik for {SITE_NAME}: data, cookies, annoncer og kontakt.", body)
+    body += ad_slot("mid")
+    write_page(
+        "privatlivspolitik.html",
+        f"Privatlivspolitik - {SITE_NAME}",
+        f"Privatlivspolitik for {SITE_NAME}: data, cookies, annoncer og kontakt.",
+        body,
+        breadcrumbs=[("Forside", "index.html"), ("Privatlivspolitik", "")],
+    )
 
 
 def render_terms() -> None:
     body = hero("Vilkår", "Betingelser for brug af DanskeDage.dk og kalenderberegnerne.", date.today().year)
+    body += ad_slot("header")
     body += f"""<section class="section"><div class="container--narrow"><article class="card prose"><p class="muted">Sidst opdateret: {date.today().strftime('%Y-%m-%d')}.</p><h2>1. Accept af vilkårene</h2><p>Når du bruger {SITE_NAME}, accepterer du disse vilkår. Hvis du ikke er enig, bør du lade være med at bruge siden.</p><h2>2. Informativt formål</h2><p>Siden tilbyder kalenderoplysninger, helligdage, arbejdsdage, ugenumre, skoleferier og relaterede beregnere med et udelukkende informativt formål. Oplysningerne erstatter ikke officiel rådgivning, kommunale afgørelser eller juridisk vurdering.</p><h2>3. Kilder og nøjagtighed</h2><p>Vi gør os umage for at beregne nationale helligdage korrekt og linke til relevante officielle og kommunale kilder. Skoleferier fastsættes lokalt og kan ændres, og enkelte skoler kan have afvigelser. Tjek derfor altid den officielle kilde, før du planlægger rejser, fravær eller arbejde.</p><h2>4. Ansvarsbegrænsning</h2><p>{SITE_NAME} stilles til rådighed som den er. Vi er ikke ansvarlige for tab, forsinkelser, fejlagtig planlægning eller andre konsekvenser, der måtte opstå ved brug af siden.</p><h2>5. Eksterne links og annoncer</h2><p>Siden kan indeholde links til tredjepartssider og vise annoncer via Google AdSense. Tredjepartssider har deres egne vilkår og privatlivspolitikker.</p><h2>6. Ændringer</h2><p>Vilkårene kan opdateres, når siden ændres, eller når regler og datakilder ændrer sig. Datoen øverst viser den aktuelle version.</p><h2>7. Kontakt</h2><p>Spørgsmål om vilkårene kan sendes til <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>.</p></article></div></section>"""
-    write_page("vilkar.html", f"Vilkår - {SITE_NAME}", f"Vilkår for brug af {SITE_NAME}, kalenderdata og beregnere.", body)
+    body += ad_slot("mid")
+    write_page(
+        "vilkar.html",
+        f"Vilkår - {SITE_NAME}",
+        f"Vilkår for brug af {SITE_NAME}, kalenderdata og beregnere.",
+        body,
+        breadcrumbs=[("Forside", "index.html"), ("Vilkår", "")],
+    )
 
 
 def render_support() -> None:
     qr = '<img class="donate-qr" src="img/bmc_qr.png" alt="QR-kode til Buy Me a Coffee" width="190" height="190" loading="lazy">' if (ROOT / "img" / "bmc_qr.png").exists() else ""
     body = hero("Støt projektet", "Hvis DanskeDage.dk hjælper dig, kan du støtte projektet via Buy Me a Coffee.", date.today().year)
+    body += ad_slot("header")
     body += f"""<section class="section"><div class="container--narrow"><article class="card donate-card prose"><h2>Buy Me a Coffee</h2><p>Siden er gratis og uden login. Bidrag hjælper med domæne, hosting, årlige opdateringer og nye kalenderfunktioner.</p><p><a class="btn btn--primary" href="{BUY_ME_A_COFFEE}" target="_blank" rel="noopener">Støt på Buy Me a Coffee</a></p>{qr}</article><p class="muted" id="del">Du kan også hjælpe gratis ved at dele siden med andre, der søger danske datoer, helligdage eller arbejdsdage.</p></div></section>"""
-    write_page("stot.html", f"Støt projektet - {SITE_NAME}", f"Støt {SITE_NAME} via Buy Me a Coffee og hjælp med at holde siden gratis.", body)
+    body += ad_slot("mid")
+    write_page(
+        "stot.html",
+        f"Støt projektet - {SITE_NAME}",
+        f"Støt {SITE_NAME} via Buy Me a Coffee og hjælp med at holde siden gratis.",
+        body,
+        breadcrumbs=[("Forside", "index.html"), ("Støt projektet", "")],
+    )
 
 
 def generate(start: int, end: int) -> None:
