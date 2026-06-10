@@ -1,0 +1,208 @@
+{
+  "year": 2046,
+  "stats": {
+    "days": 365,
+    "weekend_days": 104,
+    "official_holidays": 10,
+    "official_holidays_on_weekdays": 8,
+    "workdays": 253,
+    "office_workdays": 249,
+    "weeks": 52
+  },
+  "holidays": [
+    {
+      "date": "2046-01-01",
+      "name": "Nytårsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-03-18",
+      "name": "Palmesøndag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": ""
+    },
+    {
+      "date": "2046-03-22",
+      "name": "Skærtorsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-03-23",
+      "name": "Langfredag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-03-25",
+      "name": "Påskedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-03-26",
+      "name": "2. påskedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-04-20",
+      "name": "Store bededag (historisk)",
+      "kind": "historisk",
+      "official": false,
+      "note": "Afskaffet som helligdag fra 2024."
+    },
+    {
+      "date": "2046-05-01",
+      "name": "Arbejdernes kampdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": ""
+    },
+    {
+      "date": "2046-05-03",
+      "name": "Kristi himmelfartsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-05-13",
+      "name": "Pinsedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-05-14",
+      "name": "2. pinsedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-06-05",
+      "name": "Grundlovsdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Fridag mange steder, men ikke almindelig officiel helligdag."
+    },
+    {
+      "date": "2046-12-24",
+      "name": "Juleaftensdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Normal arbejdsdag i loven, men fri mange steder."
+    },
+    {
+      "date": "2046-12-25",
+      "name": "Juledag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-12-26",
+      "name": "2. juledag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2046-12-31",
+      "name": "Nytårsaftensdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Normal arbejdsdag i loven, men fri mange steder."
+    }
+  ],
+  "best_vacation_windows": [
+    {
+      "start": "2046-01-04",
+      "end": "2046-01-07",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2046-01-11",
+      "end": "2046-01-14",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2046-01-18",
+      "end": "2046-01-21",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2046-01-25",
+      "end": "2046-01-28",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2046-02-01",
+      "end": "2046-02-04",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2046-02-08",
+      "end": "2046-02-11",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2046-03-21",
+      "end": "2046-03-26",
+      "days_off": 6,
+      "vacation_days": 1,
+      "ratio": 6.0,
+      "holidays": "Skærtorsdag, Langfredag, Påskedag, 2. påskedag"
+    },
+    {
+      "start": "2046-05-03",
+      "end": "2046-05-06",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Kristi himmelfartsdag"
+    },
+    {
+      "start": "2046-05-11",
+      "end": "2046-05-14",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Pinsedag, 2. pinsedag"
+    },
+    {
+      "start": "2046-12-22",
+      "end": "2046-12-26",
+      "days_off": 5,
+      "vacation_days": 1,
+      "ratio": 5.0,
+      "holidays": "Juledag, 2. juledag"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://danskedage.dk/sitemap.xml

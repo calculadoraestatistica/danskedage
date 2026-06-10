@@ -1,0 +1,208 @@
+{
+  "year": 2043,
+  "stats": {
+    "days": 365,
+    "weekend_days": 104,
+    "official_holidays": 10,
+    "official_holidays_on_weekdays": 7,
+    "workdays": 254,
+    "office_workdays": 250,
+    "weeks": 53
+  },
+  "holidays": [
+    {
+      "date": "2043-01-01",
+      "name": "Nytårsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-03-22",
+      "name": "Palmesøndag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": ""
+    },
+    {
+      "date": "2043-03-26",
+      "name": "Skærtorsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-03-27",
+      "name": "Langfredag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-03-29",
+      "name": "Påskedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-03-30",
+      "name": "2. påskedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-04-24",
+      "name": "Store bededag (historisk)",
+      "kind": "historisk",
+      "official": false,
+      "note": "Afskaffet som helligdag fra 2024."
+    },
+    {
+      "date": "2043-05-01",
+      "name": "Arbejdernes kampdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": ""
+    },
+    {
+      "date": "2043-05-07",
+      "name": "Kristi himmelfartsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-05-17",
+      "name": "Pinsedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-05-18",
+      "name": "2. pinsedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-06-05",
+      "name": "Grundlovsdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Fridag mange steder, men ikke almindelig officiel helligdag."
+    },
+    {
+      "date": "2043-12-24",
+      "name": "Juleaftensdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Normal arbejdsdag i loven, men fri mange steder."
+    },
+    {
+      "date": "2043-12-25",
+      "name": "Juledag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-12-26",
+      "name": "2. juledag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2043-12-31",
+      "name": "Nytårsaftensdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Normal arbejdsdag i loven, men fri mange steder."
+    }
+  ],
+  "best_vacation_windows": [
+    {
+      "start": "2043-01-01",
+      "end": "2043-01-04",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Nytårsdag"
+    },
+    {
+      "start": "2043-01-08",
+      "end": "2043-01-11",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2043-01-15",
+      "end": "2043-01-18",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2043-01-22",
+      "end": "2043-01-25",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2043-01-29",
+      "end": "2043-02-01",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2043-02-05",
+      "end": "2043-02-08",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2043-03-25",
+      "end": "2043-03-30",
+      "days_off": 6,
+      "vacation_days": 1,
+      "ratio": 6.0,
+      "holidays": "Skærtorsdag, Langfredag, Påskedag, 2. påskedag"
+    },
+    {
+      "start": "2043-05-07",
+      "end": "2043-05-10",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Kristi himmelfartsdag"
+    },
+    {
+      "start": "2043-05-15",
+      "end": "2043-05-18",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Pinsedag, 2. pinsedag"
+    },
+    {
+      "start": "2043-12-24",
+      "end": "2043-12-27",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Juledag, 2. juledag"
+    }
+  ]
+}

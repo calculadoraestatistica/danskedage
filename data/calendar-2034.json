@@ -1,0 +1,208 @@
+{
+  "year": 2034,
+  "stats": {
+    "days": 365,
+    "weekend_days": 105,
+    "official_holidays": 10,
+    "official_holidays_on_weekdays": 7,
+    "workdays": 253,
+    "office_workdays": 251,
+    "weeks": 52
+  },
+  "holidays": [
+    {
+      "date": "2034-01-01",
+      "name": "Nytårsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-04-02",
+      "name": "Palmesøndag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": ""
+    },
+    {
+      "date": "2034-04-06",
+      "name": "Skærtorsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-04-07",
+      "name": "Langfredag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-04-09",
+      "name": "Påskedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-04-10",
+      "name": "2. påskedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-05-01",
+      "name": "Arbejdernes kampdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": ""
+    },
+    {
+      "date": "2034-05-05",
+      "name": "Store bededag (historisk)",
+      "kind": "historisk",
+      "official": false,
+      "note": "Afskaffet som helligdag fra 2024."
+    },
+    {
+      "date": "2034-05-18",
+      "name": "Kristi himmelfartsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-05-28",
+      "name": "Pinsedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-05-29",
+      "name": "2. pinsedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-06-05",
+      "name": "Grundlovsdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Fridag mange steder, men ikke almindelig officiel helligdag."
+    },
+    {
+      "date": "2034-12-24",
+      "name": "Juleaftensdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Normal arbejdsdag i loven, men fri mange steder."
+    },
+    {
+      "date": "2034-12-25",
+      "name": "Juledag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-12-26",
+      "name": "2. juledag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2034-12-31",
+      "name": "Nytårsaftensdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Normal arbejdsdag i loven, men fri mange steder."
+    }
+  ],
+  "best_vacation_windows": [
+    {
+      "start": "2034-01-05",
+      "end": "2034-01-08",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2034-01-12",
+      "end": "2034-01-15",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2034-01-19",
+      "end": "2034-01-22",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2034-01-26",
+      "end": "2034-01-29",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2034-02-02",
+      "end": "2034-02-05",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2034-02-09",
+      "end": "2034-02-12",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2034-04-05",
+      "end": "2034-04-10",
+      "days_off": 6,
+      "vacation_days": 1,
+      "ratio": 6.0,
+      "holidays": "Skærtorsdag, Langfredag, Påskedag, 2. påskedag"
+    },
+    {
+      "start": "2034-05-18",
+      "end": "2034-05-21",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Kristi himmelfartsdag"
+    },
+    {
+      "start": "2034-05-26",
+      "end": "2034-05-29",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Pinsedag, 2. pinsedag"
+    },
+    {
+      "start": "2034-12-22",
+      "end": "2034-12-26",
+      "days_off": 5,
+      "vacation_days": 1,
+      "ratio": 5.0,
+      "holidays": "Juledag, 2. juledag"
+    }
+  ]
+}

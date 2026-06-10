@@ -1,0 +1,208 @@
+{
+  "year": 2032,
+  "stats": {
+    "days": 366,
+    "weekend_days": 104,
+    "official_holidays": 10,
+    "official_holidays_on_weekdays": 6,
+    "workdays": 256,
+    "office_workdays": 254,
+    "weeks": 53
+  },
+  "holidays": [
+    {
+      "date": "2032-01-01",
+      "name": "Nytårsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-03-21",
+      "name": "Palmesøndag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": ""
+    },
+    {
+      "date": "2032-03-25",
+      "name": "Skærtorsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-03-26",
+      "name": "Langfredag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-03-28",
+      "name": "Påskedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-03-29",
+      "name": "2. påskedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-04-23",
+      "name": "Store bededag (historisk)",
+      "kind": "historisk",
+      "official": false,
+      "note": "Afskaffet som helligdag fra 2024."
+    },
+    {
+      "date": "2032-05-01",
+      "name": "Arbejdernes kampdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": ""
+    },
+    {
+      "date": "2032-05-06",
+      "name": "Kristi himmelfartsdag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-05-16",
+      "name": "Pinsedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-05-17",
+      "name": "2. pinsedag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-06-05",
+      "name": "Grundlovsdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Fridag mange steder, men ikke almindelig officiel helligdag."
+    },
+    {
+      "date": "2032-12-24",
+      "name": "Juleaftensdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Normal arbejdsdag i loven, men fri mange steder."
+    },
+    {
+      "date": "2032-12-25",
+      "name": "Juledag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-12-26",
+      "name": "2. juledag",
+      "kind": "helligdag",
+      "official": true,
+      "note": ""
+    },
+    {
+      "date": "2032-12-31",
+      "name": "Nytårsaftensdag",
+      "kind": "mærkedag",
+      "official": false,
+      "note": "Normal arbejdsdag i loven, men fri mange steder."
+    }
+  ],
+  "best_vacation_windows": [
+    {
+      "start": "2032-01-01",
+      "end": "2032-01-04",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Nytårsdag"
+    },
+    {
+      "start": "2032-01-08",
+      "end": "2032-01-11",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2032-01-15",
+      "end": "2032-01-18",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2032-01-22",
+      "end": "2032-01-25",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2032-01-29",
+      "end": "2032-02-01",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2032-02-05",
+      "end": "2032-02-08",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2032-02-12",
+      "end": "2032-02-15",
+      "days_off": 4,
+      "vacation_days": 2,
+      "ratio": 2.0,
+      "holidays": "weekender"
+    },
+    {
+      "start": "2032-03-24",
+      "end": "2032-03-29",
+      "days_off": 6,
+      "vacation_days": 1,
+      "ratio": 6.0,
+      "holidays": "Skærtorsdag, Langfredag, Påskedag, 2. påskedag"
+    },
+    {
+      "start": "2032-05-06",
+      "end": "2032-05-09",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Kristi himmelfartsdag"
+    },
+    {
+      "start": "2032-05-14",
+      "end": "2032-05-17",
+      "days_off": 4,
+      "vacation_days": 1,
+      "ratio": 4.0,
+      "holidays": "Pinsedag, 2. pinsedag"
+    }
+  ]
+}

@@ -1,0 +1,428 @@
+{
+  "updated": "2026-06-10",
+  "review_note": "Municipal school holidays are not purely formula-based. Review this file once per year before running tools/annual_review.py.",
+  "school_years": [
+    "2026-2027",
+    "2027-2028"
+  ],
+  "municipalities": [
+    {
+      "slug": "kobenhavn",
+      "name": "København",
+      "source": "https://www.kk.dk/borger/dagtilbud-og-skole/skole-og-fritid/vejledende-ferieplan-for-skoleaaret-i-koebenhavns-kommune",
+      "holidays": [
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2026",
+          "start": "2026-06-29",
+          "end": "2026-08-10"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Efterårsferie",
+          "start": "2026-10-12",
+          "end": "2026-10-16"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Juleferie",
+          "start": "2026-12-21",
+          "end": "2027-01-01"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Vinterferie",
+          "start": "2027-02-15",
+          "end": "2027-02-19"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Påskeferie",
+          "start": "2027-03-22",
+          "end": "2027-03-29"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Kr. Himmelfartsferie",
+          "start": "2027-05-06",
+          "end": "2027-05-07"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Pinse",
+          "start": "2027-05-16",
+          "end": "2027-05-17"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2027",
+          "start": "2027-06-28",
+          "end": "2027-08-06"
+        }
+      ]
+    },
+    {
+      "slug": "aarhus",
+      "name": "Aarhus",
+      "source": "https://aarhus.dk/borger/pasning-skole-og-uddannelse/skole-sfo-og-klub/naar-dit-barn-gaar-i-skole/ferier-og-fridage",
+      "holidays": [
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2026",
+          "start": "2026-06-27",
+          "end": "2026-08-10"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Efterårsferie",
+          "start": "2026-10-10",
+          "end": "2026-10-18"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Juleferie",
+          "start": "2026-12-19",
+          "end": "2027-01-03"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Vinterferie",
+          "start": "2027-02-13",
+          "end": "2027-02-21"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Påskeferie",
+          "start": "2027-03-20",
+          "end": "2027-03-29"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Kr. Himmelfartsdag",
+          "start": "2027-05-06",
+          "end": "2027-05-06"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Fridag efter Kr. Himmelfart",
+          "start": "2027-05-07",
+          "end": "2027-05-07"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Pinseferie",
+          "start": "2027-05-15",
+          "end": "2027-05-17"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2027",
+          "start": "2027-06-26",
+          "end": "2027-08-08"
+        }
+      ]
+    },
+    {
+      "slug": "odense",
+      "name": "Odense",
+      "source": "https://www.odense.dk/borger/familie-boern-og-unge/skole-og-sfo/0-9-klasse/praktiske-oplysninger/feriekalender",
+      "holidays": [
+        {
+          "school_year": "2026-2027",
+          "name": "Juleferie",
+          "start": "2026-12-21",
+          "end": "2027-01-04"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Vinterferie",
+          "start": "2027-02-13",
+          "end": "2027-02-21"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Påskeferie",
+          "start": "2027-03-20",
+          "end": "2027-03-29"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Kr. Himmelfartsdag",
+          "start": "2027-05-06",
+          "end": "2027-05-07"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Pinseferie",
+          "start": "2027-05-15",
+          "end": "2027-05-17"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferien begynder",
+          "start": "2027-06-26",
+          "end": "2027-06-26"
+        }
+      ]
+    },
+    {
+      "slug": "aalborg",
+      "name": "Aalborg",
+      "source": "https://www.aalborg.dk/mit-liv/mit-barn/skole/skoleliv/skoleferie-og-fravaer/",
+      "holidays": [
+        {
+          "school_year": "2026-2027",
+          "name": "Efterårsferie",
+          "start": "2026-10-10",
+          "end": "2026-10-18"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Juleferie",
+          "start": "2026-12-23",
+          "end": "2027-01-03"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Vinterferie",
+          "start": "2027-02-20",
+          "end": "2027-02-28"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Påskeferie",
+          "start": "2027-03-20",
+          "end": "2027-03-29"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Kristi Himmelfartsferie",
+          "start": "2027-05-06",
+          "end": "2027-05-09"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Pinseferie",
+          "start": "2027-05-15",
+          "end": "2027-05-17"
+        }
+      ]
+    },
+    {
+      "slug": "esbjerg",
+      "name": "Esbjerg",
+      "source": "https://skoler.esbjerg.dk/praktisk-information/feriekalender",
+      "holidays": [
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2026",
+          "start": "2026-06-27",
+          "end": "2026-08-12"
+        }
+      ]
+    },
+    {
+      "slug": "kolding",
+      "name": "Kolding",
+      "source": "https://www.kolding.dk/borger/skole-og-uddannelse/ferier-lukning-og-behovsaabent",
+      "holidays": [
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2026",
+          "start": "2026-06-27",
+          "end": "2026-08-09"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Efterårsferie",
+          "start": "2026-10-10",
+          "end": "2026-10-18"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Juleferie",
+          "start": "2026-12-19",
+          "end": "2027-01-04"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Vinterferie",
+          "start": "2027-02-13",
+          "end": "2027-02-21"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Påskeferie",
+          "start": "2027-03-20",
+          "end": "2027-03-29"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Kr. himmelfartsdag + 1 dag",
+          "start": "2027-05-06",
+          "end": "2027-05-07"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Pinseferie",
+          "start": "2027-05-15",
+          "end": "2027-05-17"
+        }
+      ]
+    },
+    {
+      "slug": "horsens",
+      "name": "Horsens",
+      "source": "https://horsens.dk/familie/boernogunge/ferieplaner",
+      "holidays": [
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2026",
+          "start": "2026-06-27",
+          "end": "2026-08-09"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Efterårsferie",
+          "start": "2026-10-10",
+          "end": "2026-10-18"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Juleferie",
+          "start": "2026-12-19",
+          "end": "2027-01-04"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Vinterferie",
+          "start": "2027-02-13",
+          "end": "2027-02-21"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Påskeferie",
+          "start": "2027-03-20",
+          "end": "2027-03-29"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Kristi Himmelfart",
+          "start": "2027-05-06",
+          "end": "2027-05-09"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Pinseferie",
+          "start": "2027-05-15",
+          "end": "2027-05-17"
+        }
+      ]
+    },
+    {
+      "slug": "vejle",
+      "name": "Vejle",
+      "source": "https://www.vejle.dk/da/service-og-selvbetjening/borger/boern-skole-og-familie/skole-og-uddannelse/skoleliv/ferier-og-andre-fridage-i-skoleaaret/",
+      "holidays": [
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2026",
+          "start": "2026-06-27",
+          "end": "2026-08-10"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Efterårsferie",
+          "start": "2026-10-10",
+          "end": "2026-10-18"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Juleferie",
+          "start": "2026-12-19",
+          "end": "2027-01-03"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Vinterferie",
+          "start": "2027-02-13",
+          "end": "2027-02-21"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Påskeferie",
+          "start": "2027-03-20",
+          "end": "2027-03-29"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Kr. Himmelfartsdag + dagen efter",
+          "start": "2027-05-06",
+          "end": "2027-05-09"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Pinseferie",
+          "start": "2027-05-15",
+          "end": "2027-05-17"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2027",
+          "start": "2027-06-26",
+          "end": "2027-08-09"
+        }
+      ]
+    },
+    {
+      "slug": "roskilde",
+      "name": "Roskilde",
+      "source": "https://www.roskilde.dk/da-dk/service-og-selvbetjening/borger/skole-og-uddannelse/folkeskole/skoleferier-og-lukkedage/",
+      "holidays": [
+        {
+          "school_year": "2026-2027",
+          "name": "Efterårsferie",
+          "start": "2026-10-10",
+          "end": "2026-10-18"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Juleferie",
+          "start": "2026-12-19",
+          "end": "2027-01-03"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Vinterferie",
+          "start": "2027-02-20",
+          "end": "2027-02-28"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Påskeferie",
+          "start": "2027-03-20",
+          "end": "2027-03-29"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Kristi Himmelfartsferie",
+          "start": "2027-05-06",
+          "end": "2027-05-09"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Pinseferie",
+          "start": "2027-05-15",
+          "end": "2027-05-17"
+        },
+        {
+          "school_year": "2026-2027",
+          "name": "Sommerferie 2027",
+          "start": "2027-06-26",
+          "end": "2027-08-08"
+        }
+      ]
+    }
+  ]
+}
+
