@@ -655,6 +655,7 @@ def layout(
 <meta name="twitter:description" content="{html.escape(description)}">
 <meta name="twitter:image" content="{og_image}">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADS_CLIENT}" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="{ADS_CLIENT}">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
