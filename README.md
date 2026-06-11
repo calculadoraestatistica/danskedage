@@ -2,18 +2,18 @@
 
 Static Danish calendar site generated from `tools/generate_site.py`.
 
-Generated range: 2026-2050
+Generated range: 2026-2030
 
 ## Generate
 
 ```powershell
-python .\tools\generate_site.py --start 2026 --end 2050
+python .\tools\generate_site.py --start 2026 --end 2030
 ```
 
 ## Validate
 
 ```powershell
-python .\tools\validate_site.py --start 2026 --end 2050
+python .\tools\validate_site.py --start 2026 --end 2030
 ```
 
 ## Annual cron/review
@@ -22,7 +22,7 @@ python .\tools\validate_site.py --start 2026 --end 2050
 python .\tools\annual_review.py
 ```
 
-The annual review regenerates pages, validates internal links, checks expected files/data, and prints the human-review checklist. By default it keeps at least 15 future years generated, while never generating less than 2050.
+The annual review regenerates pages, validates internal links, checks expected files/data, and prints the human-review checklist. By default it keeps at least 15 future years generated, while never generating less than 2030.
 
 - confirm no public-holiday law changed;
 - review `data/school-holidays.json` against municipal sources;
