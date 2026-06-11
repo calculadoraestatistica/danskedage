@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dato fra ugenummer – find kalenderdato af ISO-uge</title>
+<meta name="description" content="Givet år + ISO-ugenummer + ugedag, returner den konkrete kalenderdato. Nyttigt til virksomhedsplanlægning og logistik.">
+<link rel="canonical" href="https://danskedage.dk/dato-fra-uge.html">
+<meta name="theme-color" content="#0f766e">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="da_DK">
+<meta property="og:site_name" content="DanskeDage.dk">
+<meta property="og:title" content="Dato fra ugenummer – find kalenderdato af ISO-uge">
+<meta property="og:description" content="Givet år + ISO-ugenummer + ugedag, returner den konkrete kalenderdato. Nyttigt til virksomhedsplanlægning og logistik.">
+<meta property="og:url" content="https://danskedage.dk/dato-fra-uge.html">
+<meta property="og:image" content="https://danskedage.dk/img/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dato fra ugenummer – find kalenderdato af ISO-uge">
+<meta name="twitter:description" content="Givet år + ISO-ugenummer + ugedag, returner den konkrete kalenderdato. Nyttigt til virksomhedsplanlægning og logistik.">
+<meta name="twitter:image" content="https://danskedage.dk/img/og-default.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7516029395999799" crossorigin="anonymous"></script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Dato fra ugenummer – find kalenderdato af ISO-uge", "description": "Givet år + ISO-ugenummer + ugedag, returner den konkrete kalenderdato. Nyttigt til virksomhedsplanlægning og logistik.", "url": "https://danskedage.dk/dato-fra-uge.html", "inLanguage": "da-DK", "isPartOf": {"@type": "WebSite", "name": "DanskeDage.dk", "url": "https://danskedage.dk/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Forside", "item": "https://danskedage.dk/"}, {"@type": "ListItem", "position": 2, "name": "Dato fra ugenummer"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Kan et år have 53 ISO-uger?", "acceptedAnswer": {"@type": "Answer", "text": "Ja. Hvis 1. januar falder på en torsdag, eller hvis året er et skudår, der starter på en onsdag, har året 53 ISO-uger."}}, {"@type": "Question", "name": "Hvad sker der, hvis jeg vælger uge 1, mandag i januar?", "acceptedAnswer": {"@type": "Answer", "text": "Resultatet kan ligge i december det foregående år, fordi ISO-uge 1 nogle gange begynder i december. Værktøjet markerer det tydeligt."}}, {"@type": "Question", "name": "Hvilken dag er \"dag 1\" i ugen?", "acceptedAnswer": {"@type": "Answer", "text": "Mandag. ISO-standarden definerer mandag som ugens første dag, og det er den danske kalenderstandard."}}, {"@type": "Question", "name": "Hvordan beregnes resultatet?", "acceptedAnswer": {"@type": "Answer", "text": "Vi finder mandagen i uge 1 (mandagen før eller på 4. januar) og lægger derefter (uge-1)·7 + (dag-1) dage til."}}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#indhold">Spring til indhold</a>
+<header class="site-header"><div class="container site-header__inner">
+<a class="brand" href="index.html"><svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="12" fill="#0f766e"/><rect x="12" y="15" width="40" height="37" rx="5" fill="#fff"/><rect x="12" y="15" width="40" height="10" rx="5" fill="#134e4a"/><path d="M22 34h7v7h-7zm13 0h7v7h-7z" fill="#0f766e"/></svg><span>DanskeDage.dk</span></a>
+<nav class="main-nav" aria-label="Hovedmenu"><ul><li><a href="kalender-2026.html">Kalender</a></li><li><a href="helligdage-2026.html">Helligdage</a></li><li><a href="arbejdsdage-2026.html">Arbejdsdage</a></li><li><a href="ugenummer.html">Ugenummer</a></li><li><a href="skoleferier.html">Skoleferier</a></li><li><a href="bedste-feriedage-2026.html">Ferieplan</a></li></ul></nav>
+</div></header>
+<main id="indhold"><nav class="breadcrumbs" aria-label="Brødkrummesti"><div class="container"><a href="index.html">Forside</a><span aria-hidden="true"> &rsaquo; </span><span aria-current="page">Dato fra ugenummer</span></div></nav><section class="hero"><div class="container hero-grid"><div><span class="eyebrow">Dansk kalender · opdateret 2026</span><h1>Dato fra ugenummer</h1><p class="lead">Find kalenderdatoen for en bestemt ISO-uge og ugedag. Nyttigt til virksomhedsplanlægning – f.eks. "uge 27 i 2027, torsdag".</p><div class="hero-actions"><a class="btn btn--primary" href="beregn-arbejdsdage.html">Beregn arbejdsdage</a><a class="btn btn--ghost" href="ugenummer.html">Find ugenummer</a></div></div><aside class="quick-panel"><h2>Juni 2026</h2><div class="mini-calendar">
+<span class="head">man</span>
+<span class="head">tir</span>
+<span class="head">ons</span>
+<span class="head">tor</span>
+<span class="head">fre</span>
+<span class="head">lør</span>
+<span class="head">søn</span>
+<span class="" data-date="2026-06-01">1</span>
+<span class="" data-date="2026-06-02">2</span>
+<span class="" data-date="2026-06-03">3</span>
+<span class="" data-date="2026-06-04">4</span>
+<span class="special" data-date="2026-06-05" title="Grundlovsdag">5</span>
+<span class="weekend" data-date="2026-06-06">6</span>
+<span class="weekend" data-date="2026-06-07">7</span>
+<span class="" data-date="2026-06-08">8</span>
+<span class="" data-date="2026-06-09">9</span>
+<span class="" data-date="2026-06-10">10</span>
+<span class="" data-date="2026-06-11">11</span>
+<span class="" data-date="2026-06-12">12</span>
+<span class="weekend" data-date="2026-06-13">13</span>
+<span class="weekend" data-date="2026-06-14">14</span>
+<span class="" data-date="2026-06-15">15</span>
+<span class="" data-date="2026-06-16">16</span>
+<span class="" data-date="2026-06-17">17</span>
+<span class="" data-date="2026-06-18">18</span>
+<span class="" data-date="2026-06-19">19</span>
+<span class="weekend" data-date="2026-06-20">20</span>
+<span class="weekend" data-date="2026-06-21">21</span>
+<span class="" data-date="2026-06-22">22</span>
+<span class="" data-date="2026-06-23">23</span>
+<span class="" data-date="2026-06-24">24</span>
+<span class="" data-date="2026-06-25">25</span>
+<span class="" data-date="2026-06-26">26</span>
+<span class="weekend" data-date="2026-06-27">27</span>
+<span class="weekend" data-date="2026-06-28">28</span>
+<span class="" data-date="2026-06-29">29</span>
+<span class="" data-date="2026-06-30">30</span>
+<span class="empty"></span>
+<span class="empty"></span>
+<span class="empty"></span>
+<span class="empty"></span>
+<span class="empty"></span>
+</div><div class="calendar-legend" aria-label="Forklaring af kalenderfarver">
+<span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--holiday"></span>Officiel helligdag</span>
+<span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--special"></span>Mærkedag eller lokal fridag</span>
+<span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--weekend"></span>Weekend</span>
+<span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--today"></span>I dag</span>
+</div><p class="quick-panel__nohol muted">Ingen helligdage i denne måned.</p></aside></div></section><aside class="ad-slot ad-slot--header" aria-label="Reklame" data-ad-position="header"><div class="container"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7516029395999799" data-ad-slot="AD_SLOT_HEADER" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div></aside>
+<section class="section"><div class="container"><div class="tool">
+<div class="tool-grid">
+  <div class="field"><label for="dw-year">År</label>
+    <input id="dw-year" type="number" min="2000" max="2060" value="2026"></div>
+  <div class="field"><label for="dw-week">ISO-uge</label>
+    <input id="dw-week" type="number" min="1" max="53" value="1"></div>
+  <div class="field"><label for="dw-day">Ugedag</label>
+    <select id="dw-day">
+      <option value="1">Mandag</option><option value="2">Tirsdag</option>
+      <option value="3">Onsdag</option><option value="4">Torsdag</option>
+      <option value="5">Fredag</option><option value="6">Lørdag</option>
+      <option value="7">Søndag</option>
+    </select></div>
+</div>
+<div id="dw-result" class="result-box" aria-live="polite" aria-atomic="true"></div>
+</div></div></section>
+<script>
+(function(){
+  var WD=['mandag','tirsdag','onsdag','torsdag','fredag','lørdag','søndag'];
+  var MONTHS=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
+  function isoWeekDate(year, week, day){
+    // Day: 1=Monday .. 7=Sunday (ISO)
+    var jan4=new Date(Date.UTC(year,0,4));
+    var jan4Day=jan4.getUTCDay()||7;
+    var mondayWeek1=new Date(jan4.getTime() - (jan4Day-1)*86400000);
+    return new Date(mondayWeek1.getTime() + ((week-1)*7 + (day-1))*86400000);
+  }
+  function doy(d){
+    var s=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.floor((d-s)/86400000)+1;
+  }
+  function fmtISO(d){return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');}
+  function update(){
+    var y=document.getElementById('dw-year'), w=document.getElementById('dw-week'),
+        dy=document.getElementById('dw-day'), out=document.getElementById('dw-result');
+    if(!y||!w||!dy||!out) return;
+    var year=parseInt(y.value,10), week=parseInt(w.value,10), day=parseInt(dy.value,10);
+    if(isNaN(year)||isNaN(week)||isNaN(day)){out.innerHTML='Vælg gyldigt år, uge og ugedag.';return;}
+    if(week<1||week>53){out.innerHTML='ISO-uger går fra 1 til 53.';return;}
+    var d=isoWeekDate(year, week, day);
+    var pretty=d.getUTCDate()+'. '+MONTHS[d.getUTCMonth()]+' '+d.getUTCFullYear();
+    out.innerHTML='<strong>'+fmtISO(d)+' ('+WD[day-1]+')</strong>'+
+      '<br><span>'+pretty+'</span>'+
+      '<br><span>Dag '+doy(d)+' i året '+d.getUTCFullYear()+'.</span>';
+    if(d.getUTCFullYear()!==year){
+      out.innerHTML += '<br><span class="muted">OBS: datoen ligger i kalenderåret '+d.getUTCFullYear()+' pga. ISO-ugeoverlappet.</span>';
+    }
+  }
+  document.addEventListener('input', update);
+  document.addEventListener('change', update);
+  document.addEventListener('DOMContentLoaded', update);
+  update();
+})();
+</script>
+<aside class="ad-slot ad-slot--mid" aria-label="Reklame" data-ad-position="mid"><div class="container"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7516029395999799" data-ad-slot="AD_SLOT_MID" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div></aside><section class="section"><div class="container container--narrow"><article class="card prose">
+<h2>Hvad er en ISO-uge?</h2>
+<p>ISO-uge er en standardiseret nummerering af ugerne, hvor uge 1 altid
+indeholder årets første torsdag. Det betyder, at uge 1 kan starte i det
+foregående år og uge 53 kan strække sig ind i det næste.</p>
+<h2>Brug i virksomhedsplanlægning</h2>
+<p>Mange virksomheder, projekter og produktionsplaner refererer til
+ugenumre i stedet for datoer – fx "levering uge 27, torsdag". Dette
+værktøj omsætter den slags planer til en konkret kalenderdato.</p>
+<h2>Modstykket</h2>
+<p>Hvis du i stedet har en dato og vil finde dens ISO-uge, så brug
+<a href="ugenummer.html">Ugenummer</a>.</p>
+</article></div></section><section class="section"><div class="container"><div class="section-title"><div><h2>Andre værktøjer</h2><p>Flere danske kalender- og dato-beregnere.</p></div></div><div class="grid"><a class="card" href="aldersberegner.html"><h3>Aldersberegner</h3><p class="muted">Åbn værktøjet</p></a><a class="card" href="dato-difference.html"><h3>Datoforskel</h3><p class="muted">Åbn værktøjet</p></a><a class="card" href="nedtaelling.html"><h3>Nedtælling</h3><p class="muted">Åbn værktøjet</p></a><a class="card" href="naeste-helligdag.html"><h3>Næste helligdag</h3><p class="muted">Åbn værktøjet</p></a><a class="card" href="ugedag.html"><h3>Ugedag</h3><p class="muted">Åbn værktøjet</p></a><a class="card" href="dato-plus-dage.html"><h3>Dato plus eller minus dage</h3><p class="muted">Åbn værktøjet</p></a><a class="card" href="traek-arbejdsdage-fra.html"><h3>Træk arbejdsdage fra</h3><p class="muted">Åbn værktøjet</p></a></div></div></section><aside class="ad-slot ad-slot--footer" aria-label="Reklame" data-ad-position="footer"><div class="container"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7516029395999799" data-ad-slot="AD_SLOT_FOOTER" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div></aside><section class="section" id="faq"><div class="container container--narrow"><div class="section-title"><div><h2>Ofte stillede spørgsmål</h2><p>Korte svar på de mest almindelige spørgsmål til denne dato.</p></div></div><div class="faq"><details class="faq__item"><summary>Kan et år have 53 ISO-uger?</summary><p>Ja. Hvis 1. januar falder på en torsdag, eller hvis året er et skudår, der starter på en onsdag, har året 53 ISO-uger.</p></details><details class="faq__item"><summary>Hvad sker der, hvis jeg vælger uge 1, mandag i januar?</summary><p>Resultatet kan ligge i december det foregående år, fordi ISO-uge 1 nogle gange begynder i december. Værktøjet markerer det tydeligt.</p></details><details class="faq__item"><summary>Hvilken dag er &quot;dag 1&quot; i ugen?</summary><p>Mandag. ISO-standarden definerer mandag som ugens første dag, og det er den danske kalenderstandard.</p></details><details class="faq__item"><summary>Hvordan beregnes resultatet?</summary><p>Vi finder mandagen i uge 1 (mandagen før eller på 4. januar) og lægger derefter (uge-1)·7 + (dag-1) dage til.</p></details></div></div></section></main>
+<footer class="footer"><div class="container footer-grid">
+<div><h2>DanskeDage.dk</h2><p>Danske kalender- og hverdagsberegnere. Gratis, opdateret og uden login.</p></div>
+<div><h3>Kalender</h3><ul><li><a href="kalender-2026.html">Kalender 2026</a></li><li><a href="helligdage-2026.html">Helligdage 2026</a></li><li><a href="arbejdsdage-2026.html">Arbejdsdage 2026</a></li></ul></div>
+<div><h3>Værktøjer</h3><ul><li><a href="vaerktoejer.html">Alle værktøjer</a></li><li><a href="beregn-arbejdsdage.html">Beregn arbejdsdage</a></li><li><a href="laeg-arbejdsdage-til.html">Læg arbejdsdage til</a></li><li><a href="traek-arbejdsdage-fra.html">Træk arbejdsdage fra</a></li><li><a href="ugenummer.html">Ugenummer</a></li><li><a href="dato-fra-uge.html">Dato fra ugenummer</a></li><li><a href="aldersberegner.html">Aldersberegner</a></li><li><a href="dato-difference.html">Datoforskel</a></li><li><a href="nedtaelling.html">Nedtælling</a></li><li><a href="naeste-helligdag.html">Næste helligdag</a></li><li><a href="ugedag.html">Ugedag</a></li><li><a href="dato-plus-dage.html">Dato ± N dage</a></li></ul></div>
+<div><h3>Site</h3><ul><li><a href="om.html">Om og kilder</a></li><li><a href="kontakt.html">Kontakt</a></li><li><a href="privatlivspolitik.html">Privatlivspolitik</a></li><li><a href="vilkar.html">Vilkår</a></li><li><a href="stot.html">Støt projektet</a></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>
+</div></footer>
+<script src="js/calendar-tools.js"></script>
+<script src="js/today.js"></script>
+</body>
+</html>

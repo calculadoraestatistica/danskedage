@@ -672,7 +672,7 @@ def layout(
 <footer class="footer"><div class="container footer-grid">
 <div><h2>{SITE_NAME}</h2><p>Danske kalender- og hverdagsberegnere. Gratis, opdateret og uden login.</p></div>
 <div><h3>Kalender</h3><ul><li><a href="kalender-{nav_year}.html">Kalender {nav_year}</a></li><li><a href="helligdage-{nav_year}.html">Helligdage {nav_year}</a></li><li><a href="arbejdsdage-{nav_year}.html">Arbejdsdage {nav_year}</a></li></ul></div>
-<div><h3>Værktøjer</h3><ul><li><a href="beregn-arbejdsdage.html">Beregn arbejdsdage</a></li><li><a href="laeg-arbejdsdage-til.html">Læg arbejdsdage til</a></li><li><a href="ugenummer.html">Ugenummer</a></li></ul></div>
+<div><h3>Værktøjer</h3><ul><li><a href="vaerktoejer.html">Alle værktøjer</a></li><li><a href="beregn-arbejdsdage.html">Beregn arbejdsdage</a></li><li><a href="laeg-arbejdsdage-til.html">Læg arbejdsdage til</a></li><li><a href="traek-arbejdsdage-fra.html">Træk arbejdsdage fra</a></li><li><a href="ugenummer.html">Ugenummer</a></li><li><a href="dato-fra-uge.html">Dato fra ugenummer</a></li><li><a href="aldersberegner.html">Aldersberegner</a></li><li><a href="dato-difference.html">Datoforskel</a></li><li><a href="nedtaelling.html">Nedtælling</a></li><li><a href="naeste-helligdag.html">Næste helligdag</a></li><li><a href="ugedag.html">Ugedag</a></li><li><a href="dato-plus-dage.html">Dato ± N dage</a></li></ul></div>
 <div><h3>Site</h3><ul><li><a href="om.html">Om og kilder</a></li><li><a href="kontakt.html">Kontakt</a></li><li><a href="privatlivspolitik.html">Privatlivspolitik</a></li><li><a href="vilkar.html">Vilkår</a></li><li><a href="stot.html">Støt projektet</a></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>
 </div></footer>
 <script src="js/calendar-tools.js"></script>
@@ -1418,6 +1418,11 @@ def generate(start: int, end: int) -> None:
     render_privacy_policy()
     render_terms()
     render_support()
+    # Extra interactive tools (aldersberegner, datoforskel, nedtælling, ...).
+    import sys
+    sys.modules[__name__] = sys.modules[__name__]
+    from extra_tool_pages import render_all as _render_extra_tools
+    _render_extra_tools(sys.modules[__name__])
     for year in range(start, end + 1):
         render_year_pages(year)
         write_calendar_json(year)
@@ -1455,7 +1460,28 @@ def write_calendar_json(year: int) -> None:
 
 
 def write_sitemap(start: int, end: int) -> None:
-    urls = ["", "beregn-arbejdsdage.html", "laeg-arbejdsdage-til.html", "ugenummer.html", "skoleferier.html", "om.html", "kontakt.html", "privatlivspolitik.html", "vilkar.html", "stot.html"]
+    urls = [
+        "",
+        "beregn-arbejdsdage.html",
+        "laeg-arbejdsdage-til.html",
+        "ugenummer.html",
+        "skoleferier.html",
+        "om.html",
+        "kontakt.html",
+        "privatlivspolitik.html",
+        "vilkar.html",
+        "stot.html",
+        # Extra interactive tools.
+        "vaerktoejer.html",
+        "aldersberegner.html",
+        "dato-difference.html",
+        "nedtaelling.html",
+        "naeste-helligdag.html",
+        "ugedag.html",
+        "dato-plus-dage.html",
+        "traek-arbejdsdage-fra.html",
+        "dato-fra-uge.html",
+    ]
     school_file = DATA_DIR / "school-holidays.json"
     if school_file.exists():
         school_data = json.loads(school_file.read_text(encoding="utf-8-sig"))

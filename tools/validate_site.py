@@ -40,6 +40,16 @@ STATIC_HTML = {
     "privatlivspolitik.html",
     "vilkar.html",
     "stot.html",
+    # Extra interactive tools.
+    "vaerktoejer.html",
+    "aldersberegner.html",
+    "dato-difference.html",
+    "nedtaelling.html",
+    "naeste-helligdag.html",
+    "ugedag.html",
+    "dato-plus-dage.html",
+    "traek-arbejdsdage-fra.html",
+    "dato-fra-uge.html",
 }
 KNOWN_DATES = {
     2026: {
