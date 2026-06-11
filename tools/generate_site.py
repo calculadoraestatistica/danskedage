@@ -355,6 +355,10 @@ def css_text() -> str:
 .breadcrumbs{background:#fff;border-bottom:1px solid var(--line);padding:.7rem 0;font-size:.9rem;color:var(--muted);margin:0}.breadcrumbs a{color:#0f5f59;text-decoration:none;font-weight:650}.breadcrumbs a:hover{text-decoration:underline}.breadcrumbs [aria-current=page]{color:var(--ink);font-weight:700}
 .ad-slot{padding:.9rem 0;background:transparent}.ad-slot ins{min-height:90px;display:block;border:1px dashed #cbd5cf;border-radius:7px;background:#fff;color:var(--muted)}.ad-slot ins:empty::before{content:"Annonceområde";display:flex;align-items:center;justify-content:center;height:90px;color:var(--muted);font-size:.85rem;letter-spacing:.04em}.ad-slot--header ins{min-height:100px}.ad-slot--mid ins{min-height:250px}.ad-slot--footer ins{min-height:100px}
 .faq{display:flex;flex-direction:column;gap:.65rem}.faq__item{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:.75rem 1rem}.faq__item summary{cursor:pointer;font-weight:750;color:#0f5f59;outline:none}.faq__item[open] summary{margin-bottom:.5rem}.faq__item p{margin:.25rem 0 0;color:#33403a}
+.add-cell{font-size:.84rem;white-space:nowrap}.add-cell a{color:#0f766e;text-decoration:none;font-weight:700}.add-cell a:hover{text-decoration:underline}.export-bar{margin:0 0 1rem;display:flex;align-items:center;gap:.65rem;flex-wrap:wrap}.export-bar .btn{padding:.45rem .9rem;font-size:.92rem}
+.field input:focus-visible,.field select:focus-visible,.btn:focus-visible,.main-nav a:focus-visible,a.card:focus-visible,.breadcrumbs a:focus-visible,.faq__item summary:focus-visible{outline:3px solid #fbbf24;outline-offset:2px;border-radius:6px}
+.field input,.field select{border-color:#94a3a0}
+@media print{.site-header,.main-nav,.footer,.ad-slot,.no-print,.hero-actions,.faq,.export-bar,.add-cell,.skip-link,.breadcrumbs{display:none!important}body{background:#fff;color:#000;font-size:11pt}.section{padding:.4rem 0}.container{width:100%}.hero{padding:0;background:#fff}.hero h1{font-size:1.4rem}.lead{font-size:1rem;color:#222}.table-wrap{border:0;overflow:visible}table{min-width:0;font-size:10pt}th{background:#eee;color:#000}th:last-child,td:last-child{display:none}.card{break-inside:avoid;box-shadow:none;border-color:#aaa}.notice{background:#fff;border-color:#bbb;color:#000}a{color:#000;text-decoration:none}a[href]:after{content:""}.month-grid{grid-template-columns:repeat(3,1fr);gap:.5rem;page-break-inside:auto}.month{break-inside:avoid;padding:.4rem}}
 """
 
 
@@ -974,9 +978,59 @@ def render_year_pages(year: int) -> None:
 
 
 def render_holidays(year: int) -> None:
-    rows = "".join(
-        f"<tr><td>{fmt_date(m.date)}</td><td>{WEEKDAYS_LONG[m.date.weekday()]}</td><td>{m.name}</td><td>{'Ja' if m.official else 'Nej'}</td><td>{m.note}</td></tr>"
-        for m in all_marks(year)
+    from datetime import datetime as _dt, timezone as _tz
+    from urllib.parse import quote as _q
+    marks_list = list(all_marks(year))
+    rows = []
+    for m in marks_list:
+        start = m.date.strftime("%Y%m%d")
+        end = (m.date + timedelta(days=1)).strftime("%Y%m%d")
+        gcal_text = _q(m.name)
+        gcal_details = _q(m.note or "")
+        gcal = (f"https://calendar.google.com/calendar/u/0/r/eventedit"
+                f"?text={gcal_text}&dates={start}/{end}&details={gcal_details}")
+        ol_subject = _q(m.name)
+        ol_body = _q(m.note or "")
+        ol = (f"https://outlook.live.com/calendar/0/deeplink/compose"
+              f"?path=/calendar/action/compose&rru=addevent"
+              f"&subject={ol_subject}&startdt={m.date.isoformat()}"
+              f"&enddt={(m.date + timedelta(days=1)).isoformat()}"
+              f"&allday=true&body={ol_body}")
+        rows.append(
+            f"<tr><td>{fmt_date(m.date)}</td><td>{WEEKDAYS_LONG[m.date.weekday()]}</td><td>{m.name}</td>"
+            f"<td>{'Ja' if m.official else 'Nej'}</td><td>{m.note}</td>"
+            f'<td class="add-cell no-print"><a href="{gcal}" target="_blank" rel="nofollow noopener">GCal</a> · '
+            f'<a href="{ol}" target="_blank" rel="nofollow noopener">Outlook</a></td></tr>'
+        )
+    rows_html = "".join(rows)
+    ics_name = f"helligdage-{year}.ics"
+    now_stamp = _dt.now(_tz.utc).strftime("%Y%m%dT%H%M%SZ")
+    ics_lines = [
+        "BEGIN:VCALENDAR", "VERSION:2.0",
+        f"PRODID:-//DanskeDage.dk//Helligdage {year}//DA",
+        "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+        f"X-WR-CALNAME:Helligdage {year}",
+        f"X-WR-CALDESC:Danske helligdage og mærkedage — kilde {DOMAIN}",
+        "X-WR-TIMEZONE:Europe/Copenhagen",
+    ]
+    for m in marks_list:
+        start = m.date.strftime("%Y%m%d")
+        end = (m.date + timedelta(days=1)).strftime("%Y%m%d")
+        uid = f"{m.date.isoformat()}-{abs(hash(m.name)) % 10**8}@danskedage.dk"
+        summary = m.name.replace(",", "\\,").replace(";", "\\;")
+        desc = (m.note or "").replace(",", "\\,").replace(";", "\\;").replace("\n", "\\n")
+        ics_lines.extend([
+            "BEGIN:VEVENT", f"UID:{uid}", f"DTSTAMP:{now_stamp}",
+            f"DTSTART;VALUE=DATE:{start}", f"DTEND;VALUE=DATE:{end}",
+            f"SUMMARY:{summary}", f"DESCRIPTION:{desc}",
+            "TRANSP:TRANSPARENT", "STATUS:CONFIRMED", "END:VEVENT",
+        ])
+    ics_lines.append("END:VCALENDAR")
+    (ROOT / ics_name).write_text("\r\n".join(ics_lines) + "\r\n", encoding="utf-8")
+    download_box = (
+        f'<p class="export-bar no-print">'
+        f'<a class="btn btn--ghost" href="{ics_name}" download>↓ Download .ics ({year})</a> '
+        f'<span class="muted">Importer i Google Calendar, Apple Calendar, Outlook m.m.</span></p>'
     )
     body = hero(
         f"Helligdage {year}",
@@ -985,7 +1039,7 @@ def render_holidays(year: int) -> None:
         panel=(year, 1),
     )
     body += ad_slot("header")
-    body += f'<section class="section"><div class="container"><div class="table-wrap"><table><thead><tr><th>Dato</th><th>Ugedag</th><th>Dag</th><th>Officiel helligdag</th><th>Note</th></tr></thead><tbody>{rows}</tbody></table></div><p class="notice">Store bededag er markeret historisk, men er ikke officiel helligdag i Danmark fra 2024.</p></div></section>'
+    body += f'<section class="section"><div class="container">{download_box}<div class="table-wrap"><table><thead><tr><th>Dato</th><th>Ugedag</th><th>Dag</th><th>Officiel helligdag</th><th>Note</th><th class="no-print">Tilføj</th></tr></thead><tbody>{rows_html}</tbody></table></div><p class="notice">Store bededag er markeret historisk, men er ikke officiel helligdag i Danmark fra 2024.</p></div></section>'
     body += ad_slot("mid")
     stats = year_stats(year)
     easter_date = easter_sunday(year)
