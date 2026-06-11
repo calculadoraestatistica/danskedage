@@ -688,6 +688,17 @@ def layout(
 
 
 def json_ld(title: str, description: str, url: str) -> dict:
+    publisher = {
+        "@type": "Organization",
+        "name": SITE_NAME,
+        "url": DOMAIN + "/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": DOMAIN + "/favicon-512.png",
+            "width": 512,
+            "height": 512,
+        },
+    }
     return {
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -695,7 +706,8 @@ def json_ld(title: str, description: str, url: str) -> dict:
         "description": description,
         "url": url,
         "inLanguage": "da-DK",
-        "isPartOf": {"@type": "WebSite", "name": SITE_NAME, "url": DOMAIN + "/"},
+        "isPartOf": {"@type": "WebSite", "name": SITE_NAME, "url": DOMAIN + "/", "publisher": publisher},
+        "publisher": publisher,
     }
 
 
