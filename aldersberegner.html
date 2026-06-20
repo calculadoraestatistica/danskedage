@@ -39,7 +39,8 @@
 <a class="skip-link" href="#indhold">Spring til indhold</a>
 <header class="site-header"><div class="container site-header__inner">
 <a class="brand" href="index.html"><svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="12" fill="#0f766e"/><rect x="12" y="15" width="40" height="37" rx="5" fill="#fff"/><rect x="12" y="15" width="40" height="10" rx="5" fill="#134e4a"/><path d="M22 34h7v7h-7zm13 0h7v7h-7z" fill="#0f766e"/></svg><span>DanskeDage.dk</span></a>
-<nav class="main-nav" aria-label="Hovedmenu"><ul><li><a href="kalender-2026.html">Kalender</a></li><li><a href="helligdage-2026.html">Helligdage</a></li><li><a href="arbejdsdage-2026.html">Arbejdsdage</a></li><li><a href="ugenummer.html">Ugenummer</a></li><li><a href="skoleferier.html">Skoleferier</a></li><li><a href="bedste-feriedage-2026.html">Ferieplan</a></li></ul></nav>
+<button class="nav-toggle" type="button" aria-controls="main-nav" aria-expanded="false" aria-label="Åbn menu"><span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span><span>Menu</span></button>
+<nav class="main-nav" id="main-nav" aria-label="Hovedmenu"><ul><li><a href="kalender-2026.html">Kalender</a></li><li><a href="helligdage-2026.html">Helligdage</a></li><li><a href="arbejdsdage-2026.html">Arbejdsdage</a></li><li><a href="ugenummer.html">Ugenummer</a></li><li><a href="skoleferier.html">Skoleferier</a></li><li><a href="bedste-feriedage-2026.html">Ferieplan</a></li><li><a href="artikler/">Artikler</a></li></ul></nav>
 </div></header>
 <main id="indhold"><nav class="breadcrumbs" aria-label="Brødkrummesti"><div class="container"><a href="index.html">Forside</a><span aria-hidden="true"> &rsaquo; </span><span aria-current="page">Aldersberegner</span></div></nav><section class="hero"><div class="container hero-grid"><div><span class="eyebrow">Dansk kalender · opdateret 2026</span><h1>Aldersberegner</h1><p class="lead">Beregn nøjagtig alder i år, måneder og dage. Se samlet antal levede dage, uger, timer og hvor mange dage der er til næste fødselsdag.</p><div class="hero-actions"><a class="btn btn--primary" href="beregn-arbejdsdage.html">Beregn arbejdsdage</a><a class="btn btn--ghost" href="ugenummer.html">Find ugenummer</a></div></div><aside class="quick-panel"><h2>Juni 2026</h2><div class="mini-calendar">
 <span class="head">man</span>
@@ -95,15 +96,17 @@
   <div class="field"><label for="ab-birth">Fødselsdato</label>
     <input id="ab-birth" type="date" value="2000-01-01"></div>
   <div class="field"><label for="ab-ref">Referencedato</label>
-    <input id="ab-ref" type="date" value="2026-06-11"></div>
+    <input id="ab-ref" type="date" value="2026-06-20"></div>
 </div>
 <div id="ab-result" class="result-box" aria-live="polite" aria-atomic="true"></div>
 </div></div></section>
 <script>
 (function(){
   var WD=['søndag','mandag','tirsdag','onsdag','torsdag','fredag','lørdag'];
+  var MONTHS=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
   function parse(s){var p=s.split('-').map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2]));}
   function fmt(n){return new Intl.NumberFormat('da-DK').format(n);}
+  function fmtDK(d){return d.getUTCDate()+'. '+MONTHS[d.getUTCMonth()]+' '+d.getUTCFullYear();}
   function relDelta(birth, ref){
     var y=ref.getUTCFullYear()-birth.getUTCFullYear();
     var m=ref.getUTCMonth()-birth.getUTCMonth();
@@ -134,11 +137,12 @@
     var nb=nextBirthday(birth, ref);
     var daysToNext=Math.round((nb-ref)/86400000);
     var bwd=WD[birth.getUTCDay()];
+    var nbTxt = daysToNext===0 ? fmtDK(nb)+' (i dag)' : fmtDK(nb)+' (om '+daysToNext+' dage)';
     out.innerHTML=
       '<strong>'+rd.years+' år, '+rd.months+' måneder og '+rd.days+' dage</strong>'+
       '<br><span>'+fmt(totalDays)+' levede dage · '+fmt(weeks)+' uger · '+fmt(hours)+' timer</span>'+
       '<br><span>Født på en <strong>'+bwd+'</strong>.</span>'+
-      '<br><span>Næste fødselsdag: '+nb.toISOString().slice(0,10)+' (om '+daysToNext+' dage).</span>';
+      '<br><span>Næste fødselsdag: '+nbTxt+'.</span>';
   }
   document.addEventListener('input', update);
   document.addEventListener('change', update);

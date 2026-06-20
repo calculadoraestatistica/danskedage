@@ -103,8 +103,10 @@ def render_aldersberegner(g) -> None:
 <script>
 (function(){{
   var WD=['søndag','mandag','tirsdag','onsdag','torsdag','fredag','lørdag'];
+  var MONTHS=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
   function parse(s){{var p=s.split('-').map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2]));}}
   function fmt(n){{return new Intl.NumberFormat('da-DK').format(n);}}
+  function fmtDK(d){{return d.getUTCDate()+'. '+MONTHS[d.getUTCMonth()]+' '+d.getUTCFullYear();}}
   function relDelta(birth, ref){{
     var y=ref.getUTCFullYear()-birth.getUTCFullYear();
     var m=ref.getUTCMonth()-birth.getUTCMonth();
@@ -135,11 +137,12 @@ def render_aldersberegner(g) -> None:
     var nb=nextBirthday(birth, ref);
     var daysToNext=Math.round((nb-ref)/86400000);
     var bwd=WD[birth.getUTCDay()];
+    var nbTxt = daysToNext===0 ? fmtDK(nb)+' (i dag)' : fmtDK(nb)+' (om '+daysToNext+' dage)';
     out.innerHTML=
       '<strong>'+rd.years+' år, '+rd.months+' måneder og '+rd.days+' dage</strong>'+
       '<br><span>'+fmt(totalDays)+' levede dage · '+fmt(weeks)+' uger · '+fmt(hours)+' timer</span>'+
       '<br><span>Født på en <strong>'+bwd+'</strong>.</span>'+
-      '<br><span>Næste fødselsdag: '+nb.toISOString().slice(0,10)+' (om '+daysToNext+' dage).</span>';
+      '<br><span>Næste fødselsdag: '+nbTxt+'.</span>';
   }}
   document.addEventListener('input', update);
   document.addEventListener('change', update);
@@ -628,7 +631,7 @@ efterfølgende. Du behøver ikke indtaste noget – datoerne opdateres når
     body += (
         '<section class="section"><div class="container">'
         '<div class="section-title"><div><h2>Næste officielle helligdag</h2>'
-        '<p>Beregnet ud fra i dags dato.</p></div></div>'
+        '<p>Beregnet ud fra dags dato.</p></div></div>'
         f'{next_card}</div></section>'
     )
     body += table
@@ -800,8 +803,9 @@ def render_dato_plus_dage(g) -> None:
 <script>
 (function(){{
   var WD=['mandag','tirsdag','onsdag','torsdag','fredag','lørdag','søndag'];
+  var MONTHS=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
   function parse(s){{var p=s.split('-').map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2]));}}
-  function fmt(d){{return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');}}
+  function fmtDK(d){{return d.getUTCDate()+'. '+MONTHS[d.getUTCMonth()]+' '+d.getUTCFullYear();}}
   function update(){{
     var s=document.getElementById('pd-start'), op=document.getElementById('pd-op'),
         n=document.getElementById('pd-n'), out=document.getElementById('pd-result');
@@ -812,8 +816,8 @@ def render_dato_plus_dage(g) -> None:
     var sign = (op && op.value==='minus')? -1 : 1;
     var res=new Date(d.getTime()+sign*days*86400000);
     var name=WD[(res.getUTCDay()+6)%7];
-    out.innerHTML='<strong>'+fmt(res)+'</strong>'+
-      '<br><span>'+days+' kalenderdage '+(sign>0?'efter':'før')+' '+s.value+' = '+name+'</span>';
+    out.innerHTML='<strong>'+fmtDK(res)+'</strong>'+
+      '<br><span>'+days+' kalenderdage '+(sign>0?'efter':'før')+' '+fmtDK(d)+' = '+name+'</span>';
   }}
   document.addEventListener('input', update);
   document.addEventListener('change', update);
@@ -918,10 +922,12 @@ def render_traek_arbejdsdage_fra(g) -> None:
 <script>
 (function(){{
   var WD=['mandag','tirsdag','onsdag','torsdag','fredag','lørdag','søndag'];
+  var MONTHS=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
   var HOL={holidays};
   var OFFICE_NAMES={{'Arbejdernes kampdag':1,'Grundlovsdag':1,'Juleaftensdag':1,'Nytårsaftensdag':1}};
   function parse(s){{var p=s.split('-').map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2]));}}
   function fmt(d){{return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');}}
+  function fmtDK(d){{return d.getUTCDate()+'. '+MONTHS[d.getUTCMonth()]+' '+d.getUTCFullYear();}}
   function holidaysFor(y){{return HOL[String(y)]||[];}}
   function isHoliday(d, includeOffice){{
     var iso=fmt(d);
@@ -955,8 +961,8 @@ def render_traek_arbejdsdage_fra(g) -> None:
     }}
     var name=WD[(d.getUTCDay()+6)%7];
     var calendarDays=Math.round((origin-d)/86400000);
-    out.innerHTML='<strong>'+fmt(d)+'</strong>'+
-      '<br><span>'+days+' arbejdsdage før '+s.value+' = '+name+'</span>'+
+    out.innerHTML='<strong>'+fmtDK(d)+'</strong>'+
+      '<br><span>'+days+' arbejdsdage før '+fmtDK(origin)+' = '+name+'</span>'+
       '<br><span>Det svarer til '+calendarDays+' kalenderdage tilbage.</span>';
   }}
   document.addEventListener('input', update);
