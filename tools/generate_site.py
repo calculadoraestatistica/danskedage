@@ -790,27 +790,16 @@ def render_faq_section(items: list[tuple[str, str]]) -> str:
 
 
 def ad_slot(position: str) -> str:
-    """Render an AdSense placeholder for one of header, mid, footer positions.
+    """Return empty string — no manual AdSense unit placeholders.
 
-    The unit publishes the real `client` id but the `data-ad-slot` is a
-    placeholder string. Replace `AD_SLOT_HEADER`, `AD_SLOT_MID` and
-    `AD_SLOT_FOOTER` with real ad-unit ids from AdSense before going live.
+    The site loads the AdSense loader script and the `google-adsense-account`
+    meta tag in <head>; Google's Auto Ads handle placement. Manual <ins> blocks
+    with fictitious slot IDs (AD_SLOT_HEADER/MID/FOOTER) were removed because
+    they trigger AdSense policy warnings until real ad-unit IDs exist.
     """
 
-    slot_id = {
-        "header": "AD_SLOT_HEADER",
-        "mid": "AD_SLOT_MID",
-        "footer": "AD_SLOT_FOOTER",
-    }.get(position, "AD_SLOT_HEADER")
-    return (
-        f'<aside class="ad-slot ad-slot--{position}" aria-label="Reklame" data-ad-position="{position}">'
-        f'<div class="container">'
-        f'<ins class="adsbygoogle" style="display:block" '
-        f'data-ad-client="{ADS_CLIENT}" data-ad-slot="{slot_id}" '
-        f'data-ad-format="auto" data-full-width-responsive="true"></ins>'
-        f'<script>(adsbygoogle = window.adsbygoogle || []).push({{}});</script>'
-        f'</div></aside>'
-    )
+    del position  # kept for backwards-compatible call sites
+    return ""
 
 
 def hero(
@@ -1464,6 +1453,94 @@ def render_terms() -> None:
     )
 
 
+def render_404() -> None:
+    """Write 404.html — same shell as layout() but with noindex,follow + DA copy."""
+
+    title = "Siden blev ikke fundet - 404"
+    description = "Den side, du leder efter, findes ikke længere på DanskeDage.dk."
+    nav_year = ACTIVE_YEAR
+    nav = [
+        ("Kalender", f"/kalender-{nav_year}.html", "kalender"),
+        ("Helligdage", f"/helligdage-{nav_year}.html", "helligdage"),
+        ("Arbejdsdage", f"/arbejdsdage-{nav_year}.html", "arbejdsdage"),
+        ("Ugenummer", "/ugenummer.html", "ugenummer"),
+        ("Skoleferier", "/skoleferier.html", "skoleferier"),
+        ("Ferieplan", f"/bedste-feriedage-{nav_year}.html", "ferieplan"),
+    ]
+    nav_html = "".join(f'<li><a href="{href}">{label}</a></li>' for label, href, _ in nav)
+    body = (
+        '<section class="hero"><div class="container">'
+        '<span class="eyebrow">Fejl 404</span>'
+        '<h1>Siden blev ikke fundet</h1>'
+        '<p class="lead">Linket er forældet, eller siden er flyttet. '
+        'Brug menuen herover eller hop direkte til en af de mest brugte sider.</p>'
+        '<div class="hero-actions">'
+        '<a class="btn btn--primary" href="/">Tilbage til forsiden</a> '
+        f'<a class="btn btn--ghost" href="/kalender-{nav_year}.html">Kalender {nav_year}</a>'
+        '</div></div></section>'
+        '<section class="section"><div class="container"><div class="grid">'
+        f'<a class="card" href="/kalender-{nav_year}.html"><h3>Kalender {nav_year}</h3>'
+        '<p class="muted">Måned-for-måned kalender med helligdage og uger.</p></a>'
+        f'<a class="card" href="/helligdage-{nav_year}.html"><h3>Helligdage {nav_year}</h3>'
+        '<p class="muted">Alle danske helligdage i året.</p></a>'
+        f'<a class="card" href="/arbejdsdage-{nav_year}.html"><h3>Arbejdsdage {nav_year}</h3>'
+        '<p class="muted">Antal arbejdsdage pr. måned.</p></a>'
+        '<a class="card" href="/vaerktoejer.html"><h3>Værktøjer</h3>'
+        '<p class="muted">Alle kalender- og dato-beregnere.</p></a>'
+        '<a class="card" href="/artikler/"><h3>Artikler</h3>'
+        '<p class="muted">Baggrund om dansk kalender og helligdage.</p></a>'
+        '<a class="card" href="/kontakt.html"><h3>Kontakt</h3>'
+        '<p class="muted">Skriv hvis du fandt et brudt link.</p></a>'
+        '</div></div></section>'
+    )
+    html_doc = f"""<!DOCTYPE html>
+<html lang="da-DK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{html.escape(title)} - {SITE_NAME}</title>
+<meta name="description" content="{html.escape(description)}">
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#0f766e">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="da_DK">
+<meta property="og:site_name" content="{SITE_NAME}">
+<meta property="og:title" content="{html.escape(title)}">
+<meta property="og:description" content="{html.escape(description)}">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADS_CLIENT}" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="{ADS_CLIENT}">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#indhold">Spring til indhold</a>
+<header class="site-header"><div class="container site-header__inner">
+<a class="brand" href="/"><svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="12" fill="#0f766e"/><rect x="12" y="15" width="40" height="37" rx="5" fill="#fff"/><rect x="12" y="15" width="40" height="10" rx="5" fill="#134e4a"/><path d="M22 34h7v7h-7zm13 0h7v7h-7z" fill="#0f766e"/></svg><span>{SITE_NAME}</span></a>
+<button class="nav-toggle" type="button" aria-controls="main-nav" aria-expanded="false" aria-label="Åbn menu"><span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span><span>Menu</span></button>
+<nav class="main-nav" id="main-nav" aria-label="Hovedmenu"><ul>{nav_html}</ul></nav>
+</div></header>
+<main id="indhold">{body}</main>
+<footer class="footer"><div class="container footer-grid">
+<div><h2>{SITE_NAME}</h2><p>Danske kalender- og hverdagsberegnere. Gratis, opdateret og uden login.</p></div>
+<div><h3>Kalender</h3><ul><li><a href="/kalender-{nav_year}.html">Kalender {nav_year}</a></li><li><a href="/helligdage-{nav_year}.html">Helligdage {nav_year}</a></li><li><a href="/arbejdsdage-{nav_year}.html">Arbejdsdage {nav_year}</a></li></ul></div>
+<div><h3>Værktøjer</h3><ul><li><a href="/vaerktoejer.html">Alle værktøjer</a></li><li><a href="/beregn-arbejdsdage.html">Beregn arbejdsdage</a></li><li><a href="/ugenummer.html">Ugenummer</a></li><li><a href="/aldersberegner.html">Aldersberegner</a></li></ul></div>
+<div><h3>Site</h3><ul><li><a href="/om.html">Om og kilder</a></li><li><a href="/kontakt.html">Kontakt</a></li><li><a href="/privatlivspolitik.html">Privatlivspolitik</a></li><li><a href="/vilkar.html">Vilkår</a></li><li><a href="/sitemap.xml">Sitemap</a></li></ul></div>
+</div></footer>
+<script src="/js/calendar-tools.js"></script>
+<script src="/js/today.js"></script>
+</body>
+</html>
+"""
+    (ROOT / "404.html").write_text(html_doc, encoding="utf-8")
+
+
 def render_support() -> None:
     qr = '<img class="donate-qr" src="img/bmc_qr.png" alt="QR-kode til Buy Me a Coffee" width="190" height="190" loading="lazy">' if (ROOT / "img" / "bmc_qr.png").exists() else ""
     body = hero("Støt projektet", "Hvis DanskeDage.dk hjælper dig, kan du støtte projektet via Buy Me a Coffee.", date.today().year)
@@ -1498,6 +1575,7 @@ def generate(start: int, end: int) -> None:
     render_privacy_policy()
     render_terms()
     render_support()
+    render_404()
     # Extra interactive tools (aldersberegner, datoforskel, nedtælling, ...).
     import sys
     sys.modules[__name__] = sys.modules[__name__]
@@ -1578,6 +1656,17 @@ def write_sitemap(start: int, end: int) -> None:
                 f"bedste-feriedage-{year}.html",
             ]
         )
+    # Static editorial articles in /artikler/ — file system is the source of truth.
+    artikler_dir = ROOT / "artikler"
+    artikler_urls: list[str] = []
+    if artikler_dir.exists():
+        for page in sorted(artikler_dir.glob("*.html")):
+            if page.name == "index.html":
+                artikler_urls.append("artikler/")
+            else:
+                artikler_urls.append(f"artikler/{page.name}")
+    urls.extend(artikler_urls)
+
     today = date.today().isoformat()
     body = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for u in urls:

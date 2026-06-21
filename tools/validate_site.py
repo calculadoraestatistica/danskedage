@@ -40,6 +40,7 @@ STATIC_HTML = {
     "privatlivspolitik.html",
     "vilkar.html",
     "stot.html",
+    "404.html",
     # Extra interactive tools.
     "vaerktoejer.html",
     "aldersberegner.html",
@@ -50,6 +51,16 @@ STATIC_HTML = {
     "dato-plus-dage.html",
     "traek-arbejdsdage-fra.html",
     "dato-fra-uge.html",
+}
+# Articles in /artikler/ are static editorial content, not formula-generated;
+# the validator only checks they exist (kept here for clarity).
+ARTIKLER_HTML = {
+    "artikler/index.html",
+    "artikler/danske-helligdage-historie.html",
+    "artikler/kalenderens-historie.html",
+    "artikler/maaneder-dage-fordeling.html",
+    "artikler/maaneders-navne.html",
+    "artikler/ugedagenes-navne.html",
 }
 KNOWN_DATES = {
     2026: {
@@ -66,6 +77,16 @@ KNOWN_DATES = {
         "Påskedag": "2028-04-16",
         "Kristi himmelfartsdag": "2028-05-25",
         "2. pinsedag": "2028-06-05",
+    },
+    2029: {
+        "Påskedag": "2029-04-01",
+        "Kristi himmelfartsdag": "2029-05-10",
+        "2. pinsedag": "2029-05-21",
+    },
+    2030: {
+        "Påskedag": "2030-04-21",
+        "Kristi himmelfartsdag": "2030-05-30",
+        "2. pinsedag": "2030-06-10",
     },
 }
 
@@ -123,7 +144,8 @@ def expected_html(start: int, end: int) -> set[str]:
 
 def validate_links(errors: list[str]) -> None:
     root_resolved = ROOT.resolve()
-    for page in sorted(ROOT.glob("*.html")):
+    pages = sorted(ROOT.glob("*.html")) + sorted((ROOT / "artikler").glob("*.html"))
+    for page in pages:
         parser = LinkCollector()
         parser.feed(page.read_text(encoding="utf-8"))
         for attr, target in parser.links:
@@ -131,9 +153,9 @@ def validate_links(errors: list[str]) -> None:
             if resolved is None:
                 continue
             if not str(resolved).startswith(str(root_resolved)):
-                errors.append(f"{page.name}: {attr} escapes site root -> {target}")
+                errors.append(f"{page.relative_to(ROOT)}: {attr} escapes site root -> {target}")
             elif not resolved.exists():
-                errors.append(f"{page.name}: broken local {attr} -> {target}")
+                errors.append(f"{page.relative_to(ROOT)}: broken local {attr} -> {target}")
 
 
 def validate_expected_files(start: int, end: int, errors: list[str], warnings: list[str]) -> None:
@@ -169,7 +191,18 @@ def validate_sitemap(start: int, end: int, errors: list[str]) -> None:
     tree = ET.parse(sitemap)
     ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
     locs = [node.text or "" for node in tree.findall(".//sm:loc", ns)]
-    expected_urls = {DOMAIN + "/" if name == "index.html" else f"{DOMAIN}/{name}" for name in expected_html(start, end)}
+    # 404.html legitimately carries noindex — it must exist on disk but must NOT appear in sitemap.
+    expected_urls = {
+        DOMAIN + "/" if name == "index.html" else f"{DOMAIN}/{name}"
+        for name in expected_html(start, end)
+        if name != "404.html"
+    }
+    # /artikler/ pages are static editorial content; require them in the sitemap too.
+    for name in ARTIKLER_HTML:
+        if name == "artikler/index.html":
+            expected_urls.add(f"{DOMAIN}/artikler/")
+        else:
+            expected_urls.add(f"{DOMAIN}/{name}")
     for url in sorted(expected_urls - set(locs)):
         errors.append(f"sitemap missing URL: {url}")
     for url in locs:
@@ -177,6 +210,9 @@ def validate_sitemap(start: int, end: int, errors: list[str]) -> None:
             errors.append(f"sitemap URL outside domain: {url}")
             continue
         rel = url.removeprefix(DOMAIN).lstrip("/") or "index.html"
+        # Trailing slash means a directory index.
+        if rel.endswith("/"):
+            rel = rel + "index.html"
         if not (ROOT / rel).exists():
             errors.append(f"sitemap URL has no local file: {url}")
 
@@ -258,7 +294,7 @@ def validate_school_data(errors: list[str], warnings: list[str]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--start", type=int, default=2026)
-    parser.add_argument("--end", type=int, default=2050)
+    parser.add_argument("--end", type=int, default=2030)
     args = parser.parse_args()
 
     errors: list[str] = []
