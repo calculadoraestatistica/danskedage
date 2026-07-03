@@ -154,21 +154,63 @@ def render_aldersberegner(g) -> None:
 
     prose = _prose_block("""
 <h2>Hvordan beregnes alderen?</h2>
-<p>Aldersberegneren tager din fødselsdato og en referencedato (som standard
-i dag) og finder forskellen i hele år, måneder og dage. Den bruger samme
-princip som CPR-registret og folkeregistret: et helt år tæller først, når
-fødselsdagen er passeret.</p>
+<p>Aldersberegneren tager din fødselsdato og en referencedato (som standard i
+dag) og finder forskellen i hele år, måneder og dage. Den bruger samme princip
+som CPR-registret og folkeregistret: et helt år tæller først, når fødselsdagen
+er passeret.</p>
+
+<h3>Formlen bag "år, måneder og dage"</h3>
+<p>Konkret gør algoritmen tre ting i rækkefølge:</p>
+<ol>
+<li>Træk fødselsårets antal fra referencens år.</li>
+<li>Justér for måneder: hvis referencens måned er før fødselsmåneden, tælles
+    ét år fra (du har endnu ikke haft årets fødselsdag).</li>
+<li>Justér for dage: hvis referencens dag i måneden er før fødselsdagen,
+    tælles én måned fra og lægges antallet af dage i den foregående måned til.</li>
+</ol>
+<p>Det matcher den intuitive læsning: "35 år, 4 måneder og 12 dage" betyder,
+at der er gået 35 hele fødselsdage, derefter 4 hele månedscyklusser og til
+sidst 12 dage.</p>
+
 <h2>Hvad viser den ekstra information?</h2>
 <ul>
-<li><strong>Samlet antal dage</strong> – antallet af kalenderdage siden fødslen.</li>
-<li><strong>Uger og timer</strong> – nyttigt til runde tal og statistik.</li>
-<li><strong>Fødselsdag på ugedag</strong> – hvilken ugedag du blev født på.</li>
+<li><strong>Samlet antal dage</strong> – antallet af kalenderdage siden fødslen,
+    beregnet i UTC for at undgå fejl fra sommertidsskiftet.</li>
+<li><strong>Uger og timer</strong> – nyttigt til runde tal, statistik og
+    fejring af "10 000 dage"-milepæle.</li>
+<li><strong>Fødselsdag på ugedag</strong> – hvilken ugedag du blev født på.
+    Danske ugedage har rødder i den nordiske mytologi: torsdag efter Thor,
+    fredag efter Frigg, onsdag efter Odin.</li>
 <li><strong>Dage til næste fødselsdag</strong> – tæller ned til næste runde år.</li>
 </ul>
+
+<h3>Skudår og de sidste dage i februar</h3>
+<p>Hvis du er født den 29. februar, opstår spørgsmålet, hvornår du "har fødselsdag"
+i almindelige år. I dansk praksis fejres det oftest den 28. februar eller den
+1. marts. Denne beregner følger en robust regel: den flytter fødselsdagen til den
+<strong>1. marts</strong> i ikke-skudår, hvilket giver konsistente resultater for
+antal år og næste fødselsdag uden at springe et helt år over.</p>
+
 <h2>Bruges referencedatoen til noget særligt?</h2>
-<p>Ja. Hvis du fx skal opgive alderen pr. en kontraktdato, en eksamen eller
-en flyrejse, kan du sætte referencedatoen i fremtiden eller fortiden og se
-nøjagtigt hvor gammel personen var (eller bliver) den dag.</p>
+<p>Ja. Hvis du fx skal opgive alderen pr. en kontraktdato, en eksamen eller en
+flyrejse, kan du sætte referencedatoen i fremtiden eller fortiden og se, hvor
+gammel personen var (eller bliver) den dag. Almindelige brug ud over fødselsdag:
+alder på ansættelses­tidspunkt, hvor længe et forhold har varet, hvor mange
+dage siden en operation, tid til et jubilæum, planlægning af skoleår eller
+fremrykning af pensionsberegninger.</p>
+
+<h3>Hvorfor ikke bare "alder i decimaltal"?</h3>
+<p>En "alder på 35,5 år" er faktisk tvetydigt: den kan betyde 35 år og 6 måneder,
+eller 35 år og 182 dage, afhængigt af, om man dividerer med gennemsnitlig
+månedslængde eller kalenderdage. Ved at vise år, måneder og dage separat undgår
+vi tvetydigheden. Hvis du skal bruge alderen i en beregning (fx forsikring
+eller pension), er <em>hele år på referencedatoen</em> normalt det korrekte tal.</p>
+
+<h3>Privatliv</h3>
+<p>Alle beregninger sker i din browser med UTC-baserede Date-objekter, så
+resultatet ikke påvirkes af tidszone. Vi sender ingen af de indtastede datoer
+nogen steder — data forlader ikke enheden. Se
+<a href="privatlivspolitik.html">privatlivspolitikken</a> for detaljer.</p>
 """)
 
     faq = [
@@ -182,18 +224,40 @@ nøjagtigt hvor gammel personen var (eller bliver) den dag.</p>
             "Hvad sker der, hvis fødselsdatoen er en 29. februar?",
             "Næste fødselsdag rykker til 1. marts i ikke-skudår, men selve "
             "alderen i år, måneder og dage beregnes præcist ud fra antallet "
-            "af forløbne måneder.",
+            "af forløbne måneder. Det giver konsistente resultater uden at "
+            "springe et helt år over.",
         ),
         (
             "Bliver fødselsdatoen gemt?",
             "Nej. Hele beregningen sker i din browser, og DanskeDage.dk gemmer "
-            "ikke datoer eller andre indtastninger.",
+            "ikke datoer eller andre indtastninger. Se privatlivspolitikken "
+            "for detaljer.",
         ),
         (
             "Kan jeg bruge værktøjet til kæledyr eller historiske personer?",
             "Ja. Beregneren kender ikke til personer – den arbejder kun med "
             "datoer. Du kan derfor finde alderen på en hund, en bil, et "
             "kontraktforhold eller en historisk skikkelse.",
+        ),
+        (
+            "Hvorfor viser beregneren ikke bare 'alder i år' som et decimaltal?",
+            "Fordi det ville være misvisende. En 'alder på 35,5 år' kan enten "
+            "være 35 år og 6 måneder eller 35 år og 182 dage, afhængigt af, om "
+            "man dividerer med gennemsnitlig månedslængde eller antal dage. "
+            "Ved at vise år, måneder og dage separat undgår vi tvetydigheden.",
+        ),
+        (
+            "Hvad hvis fødselsdatoen er i fremtiden?",
+            "Så viser beregneren en negativ alder – det svarer til, hvor mange "
+            "år, måneder og dage der er til den kommende dato. Har du brug for "
+            "en decideret nedtælling, findes også nedtællings­beregneren.",
+        ),
+        (
+            "Hvordan beregnes antal levede dage præcist?",
+            "Antal levede dage er millisekunder mellem fødsel og reference "
+            "divideret med antal millisekunder i en dag (86 400 000). Begge "
+            "datoer sættes til midnat UTC, så sommertidsskiftet ikke giver "
+            "23- eller 25-timers døgn.",
         ),
     ]
 

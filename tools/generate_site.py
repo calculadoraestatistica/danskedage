@@ -107,6 +107,62 @@ def easter_sunday(year: int) -> date:
     return date(year, month, day)
 
 
+DANSK_MDR_LANG = ["januar", "februar", "marts", "april", "maj", "juni",
+                  "juli", "august", "september", "oktober", "november", "december"]
+
+
+def _classify_easter_position(e: date) -> str:
+    """Klassificer påskens placering: 'tidligt', 'gennemsnitligt' eller 'sent'.
+
+    Meeus-spændet er 22. marts (dag 81/82) til 25. april (dag 115/116). Vi
+    deler i tre lige store bånd."""
+    doy = e.timetuple().tm_yday
+    if doy <= 92:
+        return "tidligt"
+    if doy >= 107:
+        return "sent"
+    return "gennemsnitligt"
+
+
+def _fmt_dansk_dato(d: date) -> str:
+    """1. januar / 25. maj-format."""
+    return f"{d.day}. {DANSK_MDR_LANG[d.month - 1]}"
+
+
+def _fmt_dansk_dato_aar(d: date) -> str:
+    return f"{_fmt_dansk_dato(d)} {d.year}"
+
+
+def easter_year_context(year: int) -> dict:
+    """Beregner påskedato-metrikker og sammenligninger med naboår."""
+    e = easter_sunday(year)
+    e_prev = easter_sunday(year - 1)
+    e_next = easter_sunday(year + 1)
+    doy = e.timetuple().tm_yday
+    doy_prev = e_prev.timetuple().tm_yday
+    doy_next = e_next.timetuple().tm_yday
+    return {
+        "date": e,
+        "day_of_year": doy,
+        "position": _classify_easter_position(e),
+        "prev_year": year - 1,
+        "next_year": year + 1,
+        "prev_date": e_prev,
+        "next_date": e_next,
+        "delta_prev_days": doy - doy_prev,
+        "delta_next_days": doy_next - doy,
+    }
+
+
+def _weekend_holidays_in_year(year: int) -> int:
+    """Antal officielle helligdage der falder på lørdag/søndag i året."""
+    return sum(
+        1
+        for m in all_marks(year)
+        if m.official and m.date.weekday() >= 5
+    )
+
+
 def all_marks(year: int) -> list[DayMark]:
     e = easter_sunday(year)
     marks = [
@@ -1118,6 +1174,45 @@ def render_workdays(year: int) -> None:
     body += f'<section class="section"><div class="container"><div class="grid"><article class="card"><h3>Standard</h3><p class="stat">{stats["workdays"]}</p><p class="muted">Arbejdsdage uden officielle helligdage.</p></article><article class="card"><h3>Kontor-variant</h3><p class="stat">{stats["office_workdays"]}</p><p class="muted">Trækker også 1. maj, Grundlovsdag, juleaftensdag og nytårsaftensdag fra.</p></article></div></div></section>'
     body += ad_slot("mid")
     body += '<section class="section"><div class="container"><div class="table-wrap"><table><thead><tr><th>Måned</th><th>Kalenderdage</th><th>Hverdage</th><th>Helligdage på hverdage</th><th>Arbejdsdage</th><th>Kontor-variant</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div></div></section>"
+
+    # ---- Year-specific prose block (differentiates arbejdsdage-<year> pages) ----
+    stats_prev = year_stats(year - 1)
+    stats_next = year_stats(year + 1)
+    diff_prev = stats["workdays"] - stats_prev["workdays"]
+    diff_next = stats_next["workdays"] - stats["workdays"]
+    weekend_hol = _weekend_holidays_in_year(year)
+    e_ctx = easter_year_context(year)
+    diff_prev_txt = ("præcis lige så mange" if diff_prev == 0 else
+                     f"{abs(diff_prev)} dag{'e' if abs(diff_prev) != 1 else ''} {'flere' if diff_prev > 0 else 'færre'}")
+    diff_next_txt = ("præcis lige så mange" if diff_next == 0 else
+                     f"{abs(diff_next)} dag{'e' if abs(diff_next) != 1 else ''} {'flere' if diff_next > 0 else 'færre'}")
+    # Comparison table for ±2 years
+    comp_rows = "".join(
+        f"<tr><td>{y}</td><td>{year_stats(y)['workdays']}</td><td>{year_stats(y)['office_workdays']}</td></tr>"
+        for y in range(year - 2, year + 3)
+    )
+    body += (
+        f'<section class="section"><div class="container narrow prose">'
+        f'<h2>Arbejdsdage {year} — samlet oversigt og variation</h2>'
+        f'<p>I {year} er der <strong>{stats["workdays"]} arbejdsdage</strong> efter standardtællingen '
+        f'(mandag til fredag minus officielle helligdage) og '
+        f'<strong>{stats["office_workdays"]} arbejdsdage</strong> i kontor-varianten, som også trækker 1. maj, '
+        f'grundlovsdag, juleaftensdag og nytårsaftensdag fra. '
+        f'Sammenlignet med {year - 1} ({stats_prev["workdays"]} standardarbejdsdage) er det {diff_prev_txt} — '
+        f'og sammenlignet med {year + 1} ({stats_next["workdays"]}) er der {diff_next_txt}.</p>'
+        f'<p>Variationen fra år til år kommer primært fra to kilder. For det første <strong>hvordan påsken flytter sig</strong>: '
+        f'i {year} er påskedag {_fmt_dansk_dato(e_ctx["date"])} — {e_ctx["position"]} placeret. Det påvirker fordelingen '
+        f'af skærtorsdag, langfredag, 2. påskedag, Kristi himmelfartsdag og pinsen mellem hverdage og weekender. '
+        f'For det andet <strong>hvor mange helligdage der falder på en lørdag eller søndag</strong> — i {year} er det '
+        f'<strong>{weekend_hol}</strong> af de officielle helligdage, som "spildes" i den forstand, at de ikke giver ekstra fri.</p>'
+        f'<h3>Sammenligning: 5-års oversigt</h3>'
+        f'<div class="table-wrap"><table><thead><tr><th>År</th><th>Arbejdsdage (standard)</th><th>Kontor-variant</th></tr></thead><tbody>{comp_rows}</tbody></table></div>'
+        f'<p class="muted">Se også <a href="/bedste-feriedage-{year}.html">bedste feriedage {year}</a> for hvordan du '
+        f'får mest ud af de feriedage, du har til rådighed, samt <a href="/helligdage-{year}.html">helligdage {year}</a> '
+        f'for den fulde oversigt over de officielle helligdage.</p>'
+        f'</div></section>'
+    )
+
     body += ad_slot("footer")
     write_page(
         f"arbejdsdage-{year}.html",
@@ -1160,6 +1255,37 @@ def render_easter(year: int) -> None:
             "afhængigt af hvilken weekendsammenhæng man har.",
         ),
     ]
+    ctx = easter_year_context(year)
+    delta_prev = ctx["delta_prev_days"]
+    delta_next = ctx["delta_next_days"]
+    delta_prev_txt = ("samme dag som" if delta_prev == 0 else
+                      f"{abs(delta_prev)} dag{'e' if abs(delta_prev) != 1 else ''} {'senere' if delta_prev > 0 else 'tidligere'} end")
+    delta_next_txt = ("samme dag som" if delta_next == 0 else
+                      f"{abs(delta_next)} dag{'e' if abs(delta_next) != 1 else ''} {'senere' if delta_next < 0 else 'tidligere'} end")
+    fri_start = e - timedelta(days=3)  # skærtorsdag
+    fri_end = e + timedelta(days=1)    # 2. påskedag
+    length = (fri_end - fri_start).days + 1
+    extra = (
+        f'<section class="section"><div class="container narrow prose">'
+        f'<h2>Påsken i {year}: dato, ugedag og placering</h2>'
+        f'<p>Påskedag {year} er <strong>{_fmt_dansk_dato(e)}</strong>. Det er en '
+        f'{WEEKDAYS_LONG[e.weekday()].lower()}, og på den kristne kalender den vigtigste søndag i året. '
+        f'Datoen er dermed placeret <em>{ctx["position"]}</em> i det spænd påsken kan falde i — '
+        f'fra 22. marts (tidligst) til 25. april (senest).</p>'
+        f'<p>Sammenlignet med naboårene falder påsken '
+        f'{delta_prev_txt} {ctx["prev_year"]} ({_fmt_dansk_dato(ctx["prev_date"])}) og '
+        f'{delta_next_txt} {ctx["next_year"]} ({_fmt_dansk_dato(ctx["next_date"])}). '
+        f'Årsagen til, at datoen flytter sig så meget år for år, er, at kirkeåret følger månecyklussen: '
+        f'påskedag er den første søndag efter den første fuldmåne på eller efter forårsjævndøgn. '
+        f'Vi bruger Meeus/Jones/Butcher-algoritmen til at finde datoen.</p>'
+        f'<h3>Ferieplanlægning omkring påsken {year}</h3>'
+        f'<p>Skærtorsdag ({_fmt_dansk_dato(fri_start)}) og langfredag ({_fmt_dansk_dato(e - timedelta(days=2))}) er begge officielle helligdage. '
+        f'Sammen med den efterfølgende weekend og 2. påskedag ({_fmt_dansk_dato(fri_end)}) giver det en sammenhængende blok '
+        f'på <strong>{length} kalenderdage</strong> — fra skærtorsdag til 2. påskedag — hvor de fleste ansatte har fri uden at bruge feriedage. '
+        f'Overenskomstansatte i den offentlige sektor har normalt hele blokken fri, mens vilkårene kan variere for privatansatte. '
+        f'Tjek din overenskomst, hvis du er i tvivl.</p>'
+        f'</div></section>'
+    )
     render_event_page(
         year,
         "Påske",
@@ -1168,6 +1294,7 @@ def render_easter(year: int) -> None:
         "Påsken styrer også datoerne for Kristi himmelfartsdag og pinse.",
         panel_month=e.month,
         faq=faq,
+        extra_html=extra,
     )
 
 
@@ -1195,6 +1322,39 @@ def render_pentecost(year: int) -> None:
             "Begge er officielle helligdage med løn for mange ansatte.",
         ),
     ]
+    pinse2 = e + timedelta(days=50)
+    pinse_prev = easter_sunday(year - 1) + timedelta(days=49)
+    pinse_next = easter_sunday(year + 1) + timedelta(days=49)
+    ctx = easter_year_context(year)
+    weekend_holidays = _weekend_holidays_in_year(year)
+    # Pinse can fall between 10 May (Easter 22 Mar) and 13 June (Easter 25 Apr)
+    doy_pinse = pinse.timetuple().tm_yday
+    pinse_pos = ("tidligt" if doy_pinse <= (date(year, 5, 20) - date(year, 1, 1)).days + 1
+                 else "sent" if doy_pinse >= (date(year, 6, 3) - date(year, 1, 1)).days + 1
+                 else "midt")
+    extra = (
+        f'<section class="section"><div class="container narrow prose">'
+        f'<h2>Pinse i {year} — hvor tidligt eller sent?</h2>'
+        f'<p>Pinsedag {year} falder på <strong>{_fmt_dansk_dato(pinse)}</strong> og 2. pinsedag på '
+        f'{_fmt_dansk_dato(pinse2)}. Det placerer pinsen <em>{pinse_pos}</em> i sit muligheds­spænd. '
+        f'Da pinsen ligger præcis 49 dage efter påskedag, følger den påskens datospænd én-til-én: '
+        f'pinsen kan tidligst falde 10. maj (hvis påske er 22. marts) og senest 13. juni (hvis påske er 25. april). '
+        f'I {year} betyder påskens {ctx["position"]} placering, at også pinsen er {pinse_pos}.</p>'
+        f'<p>Til sammenligning: pinsedag {year - 1} var {_fmt_dansk_dato(pinse_prev)}, '
+        f'og pinsedag {year + 1} bliver {_fmt_dansk_dato(pinse_next)}. '
+        f'Den store år-til-år bevægelse skyldes, at pinsen hænger sammen med månecyklussen bag påsken — '
+        f'ikke med den borgerlige kalender.</p>'
+        f'<h3>Lang weekend med pinsen i {year}</h3>'
+        f'<p>Pinsedag falder altid på en søndag, og 2. pinsedag er den efterfølgende mandag. '
+        f'Sammen med den forudgående lørdag giver det <strong>tre sammenhængende fridage</strong> uden brug af feriedage. '
+        f'For {year} betyder det weekenden fra lørdag den {_fmt_dansk_dato(pinse - timedelta(days=1))} '
+        f'til mandag den {_fmt_dansk_dato(pinse2)}. '
+        f'Ved at tage én feriedag om fredagen den {_fmt_dansk_dato(pinse - timedelta(days=2))} strækker man weekenden til fire dage.</p>'
+        f'<p class="muted">Bemærk: I {year} falder i alt {weekend_holidays} af de officielle helligdage på en weekend, '
+        f'hvilket påvirker det samlede antal arbejdsdage i året. '
+        f'Se <a href="/arbejdsdage-{year}.html">arbejdsdage {year}</a> for hele opgørelsen.</p>'
+        f'</div></section>'
+    )
     render_event_page(
         year,
         "Pinse",
@@ -1203,6 +1363,7 @@ def render_pentecost(year: int) -> None:
         "Pinse falder 49 og 50 dage efter påskedag.",
         panel_month=pinse.month,
         faq=faq,
+        extra_html=extra,
     )
 
 
@@ -1229,6 +1390,30 @@ def render_ascension(year: int) -> None:
             "Kristi himmelfartsdag er 39 dage efter påskedag og dermed 10 dage før pinsedag.",
         ),
     ]
+    kristi_prev = easter_sunday(year - 1) + timedelta(days=39)
+    kristi_next = easter_sunday(year + 1) + timedelta(days=39)
+    fredag = e + timedelta(days=40)
+    ctx = easter_year_context(year)
+    long_weekend_end = e + timedelta(days=42)  # torsdag → søndag = 4 dage
+    extra = (
+        f'<section class="section"><div class="container narrow prose">'
+        f'<h2>Kristi himmelfartsdag {year}: torsdag med klemmedag</h2>'
+        f'<p>Kristi himmelfartsdag falder altid på en torsdag, præcis 39 dage efter påskedag. '
+        f'I {year} er datoen <strong>{_fmt_dansk_dato(kristi)}</strong>. Fredagen efter — '
+        f'{_fmt_dansk_dato(fredag)} — er ikke en officiel helligdag, men mange arbejdspladser og skoler '
+        f'holder den som klemmedag for at strække weekenden ud. Praksis varierer mellem brancher og overenskomster.</p>'
+        f'<p>Med fredagen som klemmedag får man i {year} <strong>fire sammenhængende fridage</strong>: '
+        f'fra torsdag den {_fmt_dansk_dato(kristi)} til søndag den {_fmt_dansk_dato(long_weekend_end)}. '
+        f'Sammenligner man med naboårene, var Kristi himmelfartsdag {ctx["prev_year"]} den {_fmt_dansk_dato(kristi_prev)} '
+        f'og bliver i {ctx["next_year"]} den {_fmt_dansk_dato(kristi_next)}. '
+        f'Rytmen følger påskedatoen — påsken flytter sig, og med den også Kristi himmelfartsdag.</p>'
+        f'<h3>Historik og betydning</h3>'
+        f'<p>Kristi himmelfartsdag mindes Jesu himmelfart fyrre dage efter opstandelsen. '
+        f'Kristendommen har markeret dagen siden det 4. århundrede, og den er en af Danmarks ni officielle helligdage. '
+        f'Bemærk: Store bededag, som ligger fire uger før Kristi himmelfartsdag, blev afskaffet som officiel helligdag '
+        f'fra og med 2024 ved lov L 3. Det ændrer ikke Kristi himmelfartsdags status.</p>'
+        f'</div></section>'
+    )
     render_event_page(
         year,
         "Kristi himmelfartsdag",
@@ -1237,6 +1422,7 @@ def render_ascension(year: int) -> None:
         "Kristi himmelfartsdag falder altid på en torsdag, 39 dage efter påskedag.",
         panel_month=kristi.month,
         faq=faq,
+        extra_html=extra,
     )
 
 
@@ -1248,6 +1434,7 @@ def render_event_page(
     note: str,
     panel_month: int = 1,
     faq: list[tuple[str, str]] | None = None,
+    extra_html: str = "",
 ) -> None:
     table = "".join(
         f"<tr><td>{label}</td><td>{fmt_date(d)}</td><td>{WEEKDAYS_LONG[d.weekday()]}</td></tr>"
@@ -1261,6 +1448,8 @@ def render_event_page(
     )
     body += ad_slot("header")
     body += f'<section class="section"><div class="container"><div class="table-wrap"><table><thead><tr><th>Dag</th><th>Dato</th><th>Ugedag</th></tr></thead><tbody>{table}</tbody></table></div></div></section>'
+    if extra_html:
+        body += extra_html
     body += ad_slot("mid")
     write_page(
         f"{slug}-{year}.html",
@@ -1279,9 +1468,10 @@ def render_event_page(
 
 
 def render_best_vacation(year: int) -> None:
+    windows = build_best_vacation_windows(year)
     rows = "".join(
         f"<tr><td>{fmt_date(item['start'])} - {fmt_date(item['end'])}</td><td>{item['days_off']}</td><td>{item['vacation_days']}</td><td>{item['holidays']}</td><td>{item['ratio']:.1f}x</td></tr>"
-        for item in build_best_vacation_windows(year)
+        for item in windows
     )
     body = hero(
         f"Bedste feriedage {year}",
@@ -1292,6 +1482,48 @@ def render_best_vacation(year: int) -> None:
     body += ad_slot("header")
     body += f'<section class="section"><div class="container"><div class="table-wrap"><table><thead><tr><th>Periode</th><th>Dage fri i alt</th><th>Feriedage brugt</th><th>Helligdage i perioden</th><th>Effekt</th></tr></thead><tbody>{rows}</tbody></table></div><p class="notice">Forslagene bruger kun officielle helligdage og weekender. Tjek altid din overenskomst, lokale fridage og arbejdsgiverens regler.</p></div></section>'
     body += ad_slot("mid")
+
+    # ---- Year-specific prose block ----
+    e_ctx = easter_year_context(year)
+    top = windows[0] if windows else None
+    # Group windows by broad calendar season
+    q1 = [w for w in windows if w["start"].month <= 3]
+    q2 = [w for w in windows if 4 <= w["start"].month <= 6]
+    q3 = [w for w in windows if 7 <= w["start"].month <= 9]
+    q4 = [w for w in windows if w["start"].month >= 10]
+    top_ratio = top["ratio"] if top else 0
+    top_desc = (
+        f"{fmt_date(top['start'])} til {fmt_date(top['end'])} — {top['days_off']} fridage for {top['vacation_days']} feriedag(e), {top['ratio']:.1f}x"
+        if top else "ingen kandidatvinduer fundet"
+    )
+    stats = year_stats(year)
+    weekend_hol = _weekend_holidays_in_year(year)
+    body += (
+        f'<section class="section"><div class="container narrow prose">'
+        f'<h2>Feriedags-strategi for {year}</h2>'
+        f'<p>Den bedste enkeltperiode i {year} er <strong>{top_desc}</strong>. Effekten på {top_ratio:.1f}x betyder, '
+        f'at du får {top_ratio:.1f} gange så mange sammenhængende fridage, som du bruger feriedage på.</p>'
+        f'<p>Fordelingen af de bedste vinduer i {year} følger påskens placering: '
+        f'påsken er {e_ctx["position"]} placeret ({_fmt_dansk_dato(e_ctx["date"])}), hvilket rykker skærtorsdag, '
+        f'langfredag, 2. påskedag, Kristi himmelfartsdag og pinsen ind i konkrete uger. '
+        f'Af de {len(windows)} kandidatvinduer, vi har fundet i {year}, ligger '
+        f'{len(q1)} i 1. kvartal, {len(q2)} i 2. kvartal, {len(q3)} i 3. kvartal og {len(q4)} i 4. kvartal. '
+        f'Året har i alt {stats["workdays"]} arbejdsdage efter standardtællingen, og {weekend_hol} af de officielle '
+        f'helligdage falder på en weekend — det påvirker naturligvis, hvor mange strategiske vinduer der overhovedet er.</p>'
+        f'<h3>Sådan læses tabellen</h3>'
+        f'<ul>'
+        f'<li><strong>Periode</strong> viser start- og slutdato for den sammenhængende blok fridage.</li>'
+        f'<li><strong>Dage fri i alt</strong> er summen af weekender, helligdage og feriedage i perioden.</li>'
+        f'<li><strong>Feriedage brugt</strong> er de dage, du selv trækker fra din feriekonto.</li>'
+        f'<li><strong>Helligdage i perioden</strong> er de officielle helligdage, du "får med".</li>'
+        f'<li><strong>Effekt</strong> er forholdet mellem samlede fridage og feriedage brugt. Højere er bedre.</li>'
+        f'</ul>'
+        f'<p class="muted">Se også <a href="/arbejdsdage-{year}.html">arbejdsdage {year}</a> for hele opgørelsen '
+        f'af arbejdsdage måned for måned, samt <a href="/helligdage-{year}.html">helligdage {year}</a> for '
+        f'placeringen af de officielle helligdage.</p>'
+        f'</div></section>'
+    )
+
     write_page(
         f"bedste-feriedage-{year}.html",
         f"Bedste feriedage {year} - få mere fri",
