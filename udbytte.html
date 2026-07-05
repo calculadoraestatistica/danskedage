@@ -115,6 +115,7 @@
       <h2 id="ud-month-label" aria-live="polite"></h2>
       <button type="button" class="btn btn--ghost" id="ud-next" aria-label="Næste måned">&rarr;</button>
     </div>
+    <div class="notice" id="ud-empty-note" hidden style="margin:.6rem 0 1rem"></div>
     <div class="ud-grid" id="ud-grid"></div>
     <div class="ud-agenda" id="ud-agenda"></div>
     <div class="ud-legend" aria-label="Forklaring af mærker">
@@ -288,6 +289,18 @@ før du træffer beslutninger.
       '</span>';
   }
 
+  function nearestMonthWithEvents(fromIdx){
+    var best=null,bestDist=Infinity;
+    for(var ds in state.byDay){
+      if(!state.byDay[ds].length) continue;
+      var idx=parseInt(ds.slice(0,4),10)*12+(parseInt(ds.slice(5,7),10)-1);
+      if(idx<state.minIdx||idx>state.maxIdx||idx===fromIdx) continue;
+      var dist=Math.abs(idx-fromIdx);
+      if(dist<bestDist){ bestDist=dist; best=idx; }
+    }
+    return best;
+  }
+
   function renderCal(){
     var y=Math.floor(state.curIdx/12), m=state.curIdx%12;
     var label=labelOf(state.curIdx);
@@ -319,10 +332,23 @@ før du træffer beslutninger.
     }
     var trail=(offset+daysInMonth)%7;
     if(trail!==0){ for(var k=trail;k<7;k++){ html+='<span class="ud-cell ud-cell--empty" aria-hidden="true"></span>'; } }
-    if(!hasEvents){
-      html+='<p class="muted ud-empty-month" style="grid-column:1/-1">Ingen udbytter i denne måned.</p>';
-    }
     document.getElementById('ud-grid').innerHTML=html;
+
+    /* fremhaevet tom-maaned-notits OVER gridden + hop til naermeste maaned */
+    var note=document.getElementById('ud-empty-note');
+    if(!hasEvents){
+      var near=nearestMonthWithEvents(state.curIdx);
+      var noteHtml='<strong>Ingen udbytter i '+label+'.</strong> Danske selskaber udbetaler typisk udbytte i marts-april efter generalforsamlingen.';
+      if(near!==null){
+        noteHtml+=' <button type="button" class="btn btn--primary" id="ud-jump" style="margin-left:.6rem">Gå til '+labelOf(near)+' →</button>';
+      }
+      note.innerHTML=noteHtml;
+      note.hidden=false;
+      var jb=document.getElementById('ud-jump');
+      if(jb){ jb.addEventListener('click',function(){ state.curIdx=near; renderCal(); }); }
+    } else {
+      note.hidden=true; note.innerHTML='';
+    }
 
     /* mobile agenda */
     var ag='';

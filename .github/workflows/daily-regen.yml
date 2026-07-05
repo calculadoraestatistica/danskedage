@@ -1,0 +1,51 @@
+name: Dagligt site-regen
+
+# Regenererer sitet dagligt saa mini-kalenderen og "denne maaned"-tekster
+# altid er aktuelle i det udgivne HTML. js/today.js daekker cached HTML
+# client-side; regen holder selve kilden frisk. Primaert trigger:
+# cron-job.org via workflow_dispatch; GitHub schedule som fallback.
+
+on:
+  schedule:
+    - cron: "30 23 * * *"   # 23:30 UTC = 00:30/01:30 dansk tid
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-regen
+  cancel-in-progress: false
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Regenerate site
+        run: python tools/generate_site.py
+
+      - name: Validate
+        run: python tools/validate_site.py
+
+      - name: Commit and push if pages changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          changed=$(git diff --cached --name-only | grep -v '^sitemap.xml$' || true)
+          if [ -z "$changed" ]; then
+            echo "Kun sitemap.xml (lastmod) aendret — intet at committe."
+            git reset --hard
+          else
+            git commit -m "regen: opdaterer site til $(date -u +'%Y-%m-%d')"
+            git push origin HEAD:main
+          fi
