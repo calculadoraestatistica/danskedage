@@ -51,6 +51,7 @@ STATIC_HTML = {
     "dato-plus-dage.html",
     "traek-arbejdsdage-fra.html",
     "dato-fra-uge.html",
+    "udbytte.html",
 }
 # Articles in /artikler/ are static editorial content, not formula-generated;
 # the validator only checks they exist (kept here for clarity).

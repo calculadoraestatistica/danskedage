@@ -1,0 +1,52 @@
+name: Scrape udbytte DK
+
+# Opdaterer data/udbytte/ dagligt med udbytter fra Nasdaq Copenhagen
+# (kilde: Yahoo Finance chart + calendarEvents). GitHubs schedule er
+# upaalidelig, saa det primaere trigger kommer fra cron-job.org via
+# workflow_dispatch (samme moenster som landbrugstal).
+
+on:
+  schedule:
+    - cron: "35 17 * * 1-5"   # 17:35 UTC = 18:35/19:35 dansk tid, hverdage
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrape-udbytte
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Scrape udbytte (inkrementelt)
+        run: |
+          python tools/scrape_dividends_dk.py
+
+      - name: Show result
+        run: |
+          ls -la data/udbytte/
+          head -c 800 data/udbytte/meta.json || true
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/udbytte/
+          if git diff --cached --quiet; then
+            echo "Ingen aendringer."
+          else
+            git commit -m "udbytte: opdaterer DK udbyttedata ($(date -u +'%Y-%m-%dT%H:%MZ'))"
+            git push origin HEAD:main
+          fi

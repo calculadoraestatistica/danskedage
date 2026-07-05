@@ -666,6 +666,7 @@ def layout(
         ("Ugenummer", "ugenummer.html", "ugenummer"),
         ("Skoleferier", "skoleferier.html", "skoleferier"),
         ("Ferieplan", f"bedste-feriedage-{nav_year}.html", "ferieplan"),
+        ("Udbytte", "udbytte.html", "udbytte"),
     ]
     nav_html_parts = []
     for label, href, key in nav:
@@ -1871,6 +1872,7 @@ def write_sitemap(start: int, end: int) -> None:
         "dato-plus-dage.html",
         "traek-arbejdsdage-fra.html",
         "dato-fra-uge.html",
+        "udbytte.html",
     ]
     school_file = DATA_DIR / "school-holidays.json"
     if school_file.exists():
