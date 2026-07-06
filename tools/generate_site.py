@@ -775,6 +775,62 @@ def _og_bitmap_font() -> dict[str, list[list[int]]]:
     return out
 
 
+HREFLANG_MAP = {
+    "index.html": "index.html",
+    "udbytte.html": "dividendos.html",
+    "ugenummer.html": "numero-da-semana.html",
+    "aldersberegner.html": "calculadora-idade.html",
+    "dato-difference.html": "diferenca-entre-datas.html",
+    "nedtaelling.html": "countdown.html",
+    "naeste-helligdag.html": "proximo-feriado.html",
+    "ugedag.html": "dia-da-semana.html",
+    "dato-plus-dage.html": "data-mais-dias.html",
+    "beregn-arbejdsdage.html": "calcular-dias-uteis.html",
+    "laeg-arbejdsdage-til.html": "adicionar-dias-uteis.html",
+    "traek-arbejdsdage-fra.html": "subtrair-dias-uteis.html",
+    "dato-fra-uge.html": "data-da-semana.html",
+    "kalender-2026.html": "calendario-2026.html",
+    "helligdage-2026.html": "feriados-2026.html",
+    "arbejdsdage-2026.html": "dias-uteis-2026.html",
+    "bedste-feriedage-2026.html": "melhores-dias-para-folga-2026.html",
+    "paaske-2026.html": "pascoa-2026.html",
+    "kalender-2027.html": "calendario-2027.html",
+    "helligdage-2027.html": "feriados-2027.html",
+    "arbejdsdage-2027.html": "dias-uteis-2027.html",
+    "bedste-feriedage-2027.html": "melhores-dias-para-folga-2027.html",
+    "paaske-2027.html": "pascoa-2027.html",
+    "kalender-2028.html": "calendario-2028.html",
+    "helligdage-2028.html": "feriados-2028.html",
+    "arbejdsdage-2028.html": "dias-uteis-2028.html",
+    "bedste-feriedage-2028.html": "melhores-dias-para-folga-2028.html",
+    "paaske-2028.html": "pascoa-2028.html",
+    "kalender-2029.html": "calendario-2029.html",
+    "helligdage-2029.html": "feriados-2029.html",
+    "arbejdsdage-2029.html": "dias-uteis-2029.html",
+    "bedste-feriedage-2029.html": "melhores-dias-para-folga-2029.html",
+    "paaske-2029.html": "pascoa-2029.html",
+    "kalender-2030.html": "calendario-2030.html",
+    "helligdage-2030.html": "feriados-2030.html",
+    "arbejdsdage-2030.html": "dias-uteis-2030.html",
+    "bedste-feriedage-2030.html": "melhores-dias-para-folga-2030.html",
+    "paaske-2030.html": "pascoa-2030.html",
+}
+
+BR_DOMAIN = "https://calendariobrasileiro.com.br"
+
+
+def hreflang_links(path: str, canonical: str) -> str:
+    br = HREFLANG_MAP.get(path)
+    if not br:
+        return ""
+    br_url = BR_DOMAIN + ("/" if br == "index.html" else f"/{br}")
+    return (
+        f'<link rel="alternate" hreflang="da-DK" href="{canonical}">\n'
+        f'<link rel="alternate" hreflang="pt-BR" href="{br_url}">\n'
+        f'<link rel="alternate" hreflang="x-default" href="{canonical}">\n'
+    )
+
+
 def layout(
     title: str,
     description: str,
@@ -785,6 +841,7 @@ def layout(
     faq: list[tuple[str, str]] | None = None,
 ) -> str:
     canonical = DOMAIN + ("/" if path == "index.html" else f"/{path}")
+    hreflang = hreflang_links(path, canonical)
     og_image = DOMAIN + "/img/og-default.png"
     nav_year = ACTIVE_YEAR
     nav = [
@@ -830,13 +887,14 @@ def layout(
     schema_html = "\n".join(schema_blocks)
 
     return f"""<!DOCTYPE html>
-<html lang="da">
+<html lang="da-DK">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(description)}">
 <link rel="canonical" href="{canonical}">
+{hreflang}
 <meta name="theme-color" content="#0f766e">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="da_DK">
