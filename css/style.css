@@ -8,4 +8,13 @@
 .add-cell{font-size:.84rem;white-space:nowrap}.add-cell a{color:#0f766e;text-decoration:none;font-weight:700}.add-cell a:hover{text-decoration:underline}.export-bar{margin:0 0 1rem;display:flex;align-items:center;gap:.65rem;flex-wrap:wrap}.export-bar .btn{padding:.45rem .9rem;font-size:.92rem}
 .field input:focus-visible,.field select:focus-visible,.btn:focus-visible,.main-nav a:focus-visible,a.card:focus-visible,.breadcrumbs a:focus-visible,.faq__item summary:focus-visible{outline:3px solid #fbbf24;outline-offset:2px;border-radius:6px}
 .field input,.field select{border-color:#94a3a0}
+.hero h1{text-wrap:balance;letter-spacing:-.015em}
+.btn{cursor:pointer;font:inherit;transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease}.btn:hover{box-shadow:0 4px 10px rgba(15,23,42,.1)}.btn--ghost:hover{background:#f2f6f3;border-color:#c8d2c9}
+.card{transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}a.card:hover{border-color:#5eead4;transform:translateY(-2px)}
+.quick-panel{border-top:3px solid var(--brand)}.mini-calendar .head{font-size:.74rem;text-transform:uppercase;letter-spacing:.05em}
+.calendar-grid span,.mini-calendar span{transition:background-color .15s ease,box-shadow .15s ease}.calendar-grid span[title],.mini-calendar span[title]{cursor:help}.calendar-grid span[title]:hover,.mini-calendar span[title]:hover{box-shadow:inset 0 0 0 2px rgba(15,118,110,.35)}
+.calendar-grid .weekend,.mini-calendar .weekend{color:#475569}
+.calendar-grid .today,.mini-calendar .today{outline-offset:-2px;font-weight:800}
+.calendar-legend{background:#fbfcf9}.calendar-legend__swatch{box-shadow:inset 0 0 0 1px rgba(15,23,42,.05)}
+tbody tr:nth-child(even) td{background:#fafbf8}tbody tr:hover td{background:#f0f6f4}
 @media print{.site-header,.main-nav,.footer,.ad-slot,.no-print,.hero-actions,.faq,.export-bar,.add-cell,.skip-link,.breadcrumbs{display:none!important}body{background:#fff;color:#000;font-size:11pt}.section{padding:.4rem 0}.container{width:100%}.hero{padding:0;background:#fff}.hero h1{font-size:1.4rem}.lead{font-size:1rem;color:#222}.table-wrap{border:0;overflow:visible}table{min-width:0;font-size:10pt}th{background:#eee;color:#000}th:last-child,td:last-child{display:none}.card{break-inside:avoid;box-shadow:none;border-color:#aaa}.notice{background:#fff;border-color:#bbb;color:#000}a{color:#000;text-decoration:none}a[href]:after{content:""}.month-grid{grid-template-columns:repeat(3,1fr);gap:.5rem;page-break-inside:auto}.month{break-inside:avoid;padding:.4rem}}

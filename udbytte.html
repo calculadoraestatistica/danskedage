@@ -46,11 +46,12 @@
 .ud-monthnav .btn:disabled{opacity:.4;cursor:not-allowed}
 .ud-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .ud-grid .head{display:flex;align-items:center;justify-content:center;background:#e7ece7;color:#4b554d;font-weight:800;font-size:.82rem;border-radius:5px;min-height:28px}
-.ud-cell{background:#fff;border:1px solid var(--line);border-radius:6px;min-height:92px;padding:.3rem;font:inherit;text-align:left;display:flex;flex-direction:column;gap:2px;cursor:pointer;color:inherit}
-.ud-cell:hover{border-color:#86efac}
+.ud-cell{background:#fff;border:1px solid var(--line);border-radius:6px;min-height:92px;padding:.3rem;font:inherit;text-align:left;display:flex;flex-direction:column;gap:2px;cursor:pointer;color:inherit;transition:border-color .15s ease,box-shadow .15s ease}
+.ud-cell:not(.ud-cell--empty):hover{border-color:#5eead4;box-shadow:0 2px 8px rgba(15,23,42,.08)}
+.ud-cell:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
 .ud-cell--empty{background:transparent;border:0;cursor:default;min-height:0}
 .ud-cell--weekend{background:#f1f5f9}
-.ud-cell--today{outline:2px solid var(--brand);background:#ecfdf5}
+.ud-cell--today{outline:2px solid var(--brand);outline-offset:-2px;background:#ecfdf5}
 .ud-cell__num{font-size:.8rem;font-weight:700;color:#4b554d}
 .ud-cell--today .ud-cell__num{color:#0f5f59}
 .ud-chip{display:flex;align-items:center;gap:3px;font-size:.68rem;font-weight:700;line-height:1.15;overflow:hidden;white-space:nowrap}
@@ -58,7 +59,7 @@
 .ud-b{flex:0 0 auto;font-size:.56rem;font-weight:800;border-radius:4px;padding:0 .22rem;line-height:1.5;letter-spacing:.03em}
 .ud-b--ex{color:#0f766e;border:1px solid #0f766e;background:#fff}
 .ud-b--udb{background:#0f766e;color:#fff;border:1px solid #0f766e}
-.ud-b--kom{background:#f59e0b;color:#78350f;border:1px solid #f59e0b}
+.ud-b--kom{background:#fef3c7;color:#92400e;border:1px solid #f59e0b}
 .ud-more{font-size:.66rem;color:var(--muted);font-weight:700}
 .ud-empty-month{margin-top:.8rem}
 .ud-legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:.7rem 0 0;color:#475047;font-size:.85rem;font-weight:700;align-items:center}
