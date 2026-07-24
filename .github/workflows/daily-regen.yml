@@ -47,5 +47,12 @@ jobs:
             git reset --hard
           else
             git commit -m "regen: opdaterer site til $(date -u +'%Y-%m-%d')"
-            git push origin HEAD:main
+            n=0
+            until git push origin HEAD:main; do
+              n=$((n+1))
+              if [ "$n" -ge 3 ]; then echo "push fejlede efter 3 forsoeg"; exit 1; fi
+              echo "push fejlede (forsoeg $n/3) — rebase og retry om 20s"
+              sleep 20
+              git pull --rebase origin main || true
+            done
           fi
