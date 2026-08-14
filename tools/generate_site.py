@@ -1252,6 +1252,29 @@ def year_overview(year: int) -> str:
     ) + "</div>"
 
 
+def tools_related_grid(exclude: str = "") -> str:
+    """Small internal-link grid used between ad slots on the builtin tool pages."""
+    links = [
+        ("beregn-arbejdsdage.html", "Beregn arbejdsdage", "Antal arbejdsdage mellem to datoer."),
+        ("laeg-arbejdsdage-til.html", "Læg arbejdsdage til", "Find datoen efter X arbejdsdage."),
+        ("traek-arbejdsdage-fra.html", "Træk arbejdsdage fra", "Gå X arbejdsdage tilbage fra en dato."),
+        ("ugenummer.html", "Ugenummer", "Find ISO-ugenummer for en dato."),
+        ("dato-fra-uge.html", "Dato fra ugenummer", "Find datoen ud fra år, uge og ugedag."),
+        ("vaerktoejer.html", "Alle værktøjer", "Se alle kalender- og dato-beregnere."),
+    ]
+    cards = "".join(
+        f'<a class="card" href="{href}"><h3>{label}</h3><p class="muted">{desc}</p></a>'
+        for href, label, desc in links
+        if href != exclude
+    )
+    return (
+        '<section class="section"><div class="container">'
+        '<div class="section-title"><div><h2>Andre værktøjer</h2>'
+        '<p>Flere danske kalender- og dato-beregnere.</p></div></div>'
+        f'<div class="grid">{cards}</div></div></section>'
+    )
+
+
 def write_page(
     path: str,
     title: str,
@@ -1837,8 +1860,9 @@ def render_best_vacation(year: int) -> None:
 def render_tools() -> None:
     today = date.today().isoformat()
     body = hero("Beregn arbejdsdage mellem to datoer", "Vælg start- og slutdato og se antal arbejdsdage i perioden. Du kan vælge standard eller en kontor-variant med almindelige fridage.", date.today().year)
-    body += ad_slot("header")
     body += f"""<section class="section"><div class="container"><div class="tool"><div class="tool-grid"><div class="field"><label for="bd-start">Startdato</label><input id="bd-start" type="date" value="{today}"></div><div class="field"><label for="bd-end">Slutdato</label><input id="bd-end" type="date" value="{today}"></div><div class="field"><label for="bd-mode">Regel</label><select id="bd-mode"><option value="official">Kun officielle helligdage</option><option value="office">Kontor-variant</option></select></div></div><div id="bd-result" class="result-box"></div></div></div></section>"""
+    body += ad_slot("header")
+    body += tools_related_grid("beregn-arbejdsdage.html")
     body += ad_slot("mid")
     write_page(
         "beregn-arbejdsdage.html",
@@ -1850,8 +1874,9 @@ def render_tools() -> None:
     )
 
     body = hero("Læg arbejdsdage til en dato", "Find datoen efter et bestemt antal arbejdsdage. Beregneren springer weekender og danske helligdage over.", date.today().year)
-    body += ad_slot("header")
     body += f"""<section class="section"><div class="container"><div class="tool"><div class="tool-grid"><div class="field"><label for="add-start">Startdato</label><input id="add-start" type="date" value="{today}"></div><div class="field"><label for="add-amount">Antal arbejdsdage</label><input id="add-amount" type="number" min="0" value="10"></div><div class="field"><label for="add-mode">Regel</label><select id="add-mode"><option value="official">Kun officielle helligdage</option><option value="office">Kontor-variant</option></select></div></div><div id="add-result" class="result-box"></div></div></div></section>"""
+    body += ad_slot("header")
+    body += tools_related_grid("laeg-arbejdsdage-til.html")
     body += ad_slot("mid")
     write_page(
         "laeg-arbejdsdage-til.html",
@@ -1863,8 +1888,9 @@ def render_tools() -> None:
     )
 
     body = hero("Ugenummer", "Find ISO-ugenummer for en dato i Danmark. Danske kalendere bruger normalt ISO-uger, hvor ugen starter mandag.", date.today().year)
-    body += ad_slot("header")
     body += f"""<section class="section"><div class="container"><div class="tool"><div class="tool-grid"><div class="field"><label for="week-date">Dato</label><input id="week-date" type="date" value="{today}"></div></div><div id="week-result" class="result-box"></div></div></div></section>"""
+    body += ad_slot("header")
+    body += tools_related_grid("ugenummer.html")
     body += ad_slot("mid")
     write_page(
         "ugenummer.html",

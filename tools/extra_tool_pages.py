@@ -272,10 +272,10 @@ nogen steder — data forlader ikke enheden. Se
         "levede dage, uger, timer og hvor mange dage der er til næste fødselsdag.",
         date.today().year,
     )
-    body += g.ad_slot("header")
     body += tool
-    body += g.ad_slot("mid")
+    body += g.ad_slot("header")
     body += prose
+    body += g.ad_slot("mid")
     body += _related_tools("aldersberegner.html")
     body += g.ad_slot("footer")
 
@@ -417,10 +417,10 @@ indstillingen efter behov.</p>
         "og minutter. Nyttigt til graviditet, kontrakter og projekter.",
         date.today().year,
     )
-    body += g.ad_slot("header")
     body += tool
-    body += g.ad_slot("mid")
+    body += g.ad_slot("header")
     body += prose
+    body += g.ad_slot("mid")
     body += _related_tools("dato-difference.html")
     body += g.ad_slot("footer")
 
@@ -565,10 +565,10 @@ nedtælling, når de åbner siden.</p>
         "og giver dig en delbar permalink.",
         date.today().year,
     )
-    body += g.ad_slot("header")
     body += tool
-    body += g.ad_slot("mid")
+    body += g.ad_slot("header")
     body += prose
+    body += g.ad_slot("mid")
     body += _related_tools("nedtaelling.html")
     body += g.ad_slot("footer")
 
@@ -691,7 +691,6 @@ efterfølgende. Du behøver ikke indtaste noget – datoerne opdateres når
         "de næste 5 helligdage og markerer mulige klemmedage.",
         date.today().year,
     )
-    body += g.ad_slot("header")
     body += (
         '<section class="section"><div class="container">'
         '<div class="section-title"><div><h2>Næste officielle helligdag</h2>'
@@ -699,8 +698,9 @@ efterfølgende. Du behøver ikke indtaste noget – datoerne opdateres når
         f'{next_card}</div></section>'
     )
     body += table
-    body += g.ad_slot("mid")
+    body += g.ad_slot("header")
     body += prose
+    body += g.ad_slot("mid")
     body += _related_tools("naeste-helligdag.html")
     body += g.ad_slot("footer")
 
@@ -827,10 +827,10 @@ forretningsplanlægning og rapportering.</p>
         "og historiske datoer. Se også samme dato i 5 nærliggende år.",
         date.today().year,
     )
-    body += g.ad_slot("header")
     body += tool
-    body += g.ad_slot("mid")
+    body += g.ad_slot("header")
     body += prose
+    body += g.ad_slot("mid")
     body += _related_tools("ugedag.html")
     body += g.ad_slot("footer")
 
@@ -945,10 +945,10 @@ eller <a href="traek-arbejdsdage-fra.html">Træk arbejdsdage fra</a>.</p>
         "forfald, graviditet og kontrakter.",
         date.today().year,
     )
-    body += g.ad_slot("header")
     body += tool
-    body += g.ad_slot("mid")
+    body += g.ad_slot("header")
     body += prose
+    body += g.ad_slot("mid")
     body += _related_tools("dato-plus-dage.html")
     body += g.ad_slot("footer")
 
@@ -1090,10 +1090,10 @@ de to værktøjer de fleste frister i kontrakter og forvaltning.</p>
         "Tager hensyn til weekender og danske helligdage.",
         date.today().year,
     )
-    body += g.ad_slot("header")
     body += tool
-    body += g.ad_slot("mid")
+    body += g.ad_slot("header")
     body += prose
+    body += g.ad_slot("mid")
     body += _related_tools("traek-arbejdsdage-fra.html")
     body += g.ad_slot("footer")
 
@@ -1222,10 +1222,10 @@ værktøj omsætter den slags planer til en konkret kalenderdato.</p>
         "virksomhedsplanlægning – f.eks. \"uge 27 i 2027, torsdag\".",
         date.today().year,
     )
-    body += g.ad_slot("header")
     body += tool
-    body += g.ad_slot("mid")
+    body += g.ad_slot("header")
     body += prose
+    body += g.ad_slot("mid")
     body += _related_tools("dato-fra-uge.html")
     body += g.ad_slot("footer")
 
