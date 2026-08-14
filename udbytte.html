@@ -43,7 +43,7 @@
 .ud-updated{color:var(--muted);font-size:.86rem}
 .ud-monthnav{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem}
 .ud-monthnav h2{margin:0;font-size:1.25rem;min-width:11ch;text-align:center;text-transform:capitalize}
-.ud-monthnav .btn{padding:.35rem .7rem;cursor:pointer}
+.ud-monthnav .btn{padding:.65rem 1rem;min-height:44px;cursor:pointer}
 .ud-monthnav .btn:disabled{opacity:.4;cursor:not-allowed}
 .ud-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .ud-grid .head{display:flex;align-items:center;justify-content:center;background:#e7ece7;color:#4b554d;font-weight:800;font-size:.82rem;border-radius:5px;min-height:28px}
@@ -79,6 +79,7 @@
 .ud-agenda .ud-chip{font-size:.85rem;margin:.2rem 0;white-space:normal}
 .ud-agenda .ud-av{width:22px;height:22px;font-size:.6rem}
 .ud-listbar{display:grid;grid-template-columns:2fr 1fr;gap:.8rem;margin-bottom:.9rem}
+#ud-search{padding:.8rem .85rem;min-height:48px;font-size:1rem}
 .ud-list-table .ud-av{width:26px;height:26px;font-size:.66rem;border-radius:5px;margin-right:.45rem;vertical-align:middle}
 .ud-list-table td{white-space:nowrap}
 .ud-list-table td:first-child{white-space:normal}
@@ -88,6 +89,10 @@
   .ud-grid{display:none}
   .ud-agenda{display:block}
   .ud-listbar{grid-template-columns:1fr}
+  .ud-list-table{min-width:0}
+  .ud-list-table th,.ud-list-table td{padding:.45rem .35rem;font-size:.8rem;white-space:normal}
+  .ud-list-table .ud-av{width:20px;height:20px;font-size:.5rem;margin-right:.25rem}
+  .ud-detail__name{min-width:0}
 }
 </style>
 </head>
