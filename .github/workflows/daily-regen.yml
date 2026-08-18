@@ -47,12 +47,27 @@ jobs:
             git reset --hard
           else
             git commit -m "regen: opdaterer site til $(date -u +'%Y-%m-%d')"
+            # Retry robusto: em falha de push (500 do GitHub ou corrida com
+            # outro job) realinhamos com origin/main e RE-EXECUTAMOS o produtor
+            # sobre o estado remoto. Rebase nao serve: conflita nos arquivos
+            # gerados e deixa o repo em detached HEAD (falha de 2026-08-17).
             n=0
             until git push origin HEAD:main; do
               n=$((n+1))
-              if [ "$n" -ge 3 ]; then echo "push fejlede efter 3 forsoeg"; exit 1; fi
-              echo "push fejlede (forsoeg $n/3) — rebase og retry om 20s"
-              sleep 20
-              git pull --rebase origin main || true
+              if [ "$n" -ge 3 ]; then echo "push falhou apos 3 tentativas"; exit 1; fi
+              echo "push falhou (tentativa $n/3) - realinhando com origin/main"
+              sleep 15
+              git rebase --abort 2>/dev/null || true
+              git merge --abort 2>/dev/null || true
+              git checkout -B main 2>/dev/null || true
+              git fetch origin main
+              git reset --hard origin/main
+              python tools/generate_site.py
+              git add -A
+              if git diff --cached --quiet; then
+                echo "Nada a enviar apos realinhar - remoto ja atualizado."
+                exit 0
+              fi
+              git commit -m "regen: opdaterer site til $(date -u +'%Y-%m-%d')"
             done
           fi
