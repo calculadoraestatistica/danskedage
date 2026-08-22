@@ -945,11 +945,21 @@ def layout(
     current: str = "",
     breadcrumbs: list[tuple[str, str]] | None = None,
     faq: list[tuple[str, str]] | None = None,
+    ads: bool = True,
 ) -> str:
+    # ads=False nas paginas de servico (404, kontakt, vilkaar, privatliv,
+    # stoet) e nas editoriais: sao paginas sem conteudo proprio para o
+    # leitor, e o AdSense classifica anuncio nelas como "conteudo de lav
+    # vaerdi". Foi um dos motivos da afvisning de 2026-08-21.
     canonical = DOMAIN + ("/" if path == "index.html" else f"/{path}")
     hreflang = hreflang_links(path, canonical)
     og_image = DOMAIN + "/img/og-default.png"
     nav_year = ACTIVE_YEAR
+    _ads_tags = [
+        '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADS_CLIENT + '" crossorigin="anonymous"></script>',
+        '<meta name="google-adsense-account" content="' + ADS_CLIENT + '">',
+    ]
+    ads_head = (chr(10).join(_ads_tags) + chr(10)) if ads else ""
     nav = [
         ("Kalender", f"kalender-{nav_year}.html", "kalender"),
         ("Helligdage", f"helligdage-{nav_year}.html", "helligdage"),
@@ -1015,9 +1025,7 @@ def layout(
 <meta name="twitter:title" content="{html.escape(title)}">
 <meta name="twitter:description" content="{html.escape(description)}">
 <meta name="twitter:image" content="{og_image}">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADS_CLIENT}" crossorigin="anonymous"></script>
-<meta name="google-adsense-account" content="{ADS_CLIENT}">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+{ads_head}<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
@@ -1041,7 +1049,7 @@ def layout(
 <div><h2>{SITE_NAME}</h2><p>Danske kalender- og hverdagsberegnere. Gratis, opdateret og uden login.</p></div>
 <div><h3>Kalender</h3><ul><li><a href="kalender-{nav_year}.html">Kalender {nav_year}</a></li><li><a href="helligdage-{nav_year}.html">Helligdage {nav_year}</a></li><li><a href="arbejdsdage-{nav_year}.html">Arbejdsdage {nav_year}</a></li></ul></div>
 <div><h3>Værktøjer</h3><ul><li><a href="vaerktoejer.html">Alle værktøjer</a></li><li><a href="beregn-arbejdsdage.html">Beregn arbejdsdage</a></li><li><a href="laeg-arbejdsdage-til.html">Læg arbejdsdage til</a></li><li><a href="traek-arbejdsdage-fra.html">Træk arbejdsdage fra</a></li><li><a href="ugenummer.html">Ugenummer</a></li><li><a href="dato-fra-uge.html">Dato fra ugenummer</a></li><li><a href="aldersberegner.html">Aldersberegner</a></li><li><a href="dato-difference.html">Datoforskel</a></li><li><a href="nedtaelling.html">Nedtælling</a></li><li><a href="naeste-helligdag.html">Næste helligdag</a></li><li><a href="ugedag.html">Ugedag</a></li><li><a href="dato-plus-dage.html">Dato ± N dage</a></li></ul></div>
-<div><h3>Site</h3><ul><li><a href="om.html">Om og kilder</a></li><li><a href="kontakt.html">Kontakt</a></li><li><a href="privatlivspolitik.html">Privatlivspolitik</a></li><li><a href="vilkar.html">Vilkår</a></li><li><a href="stot.html">Støt projektet</a></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>
+<div><h3>Site</h3><ul><li><a href="om.html">Om sitet</a></li><li><a href="metode.html">Metode</a></li><li><a href="kilder.html">Kilder</a></li><li><a href="redaktionel-politik.html">Redaktionel politik</a></li><li><a href="kontakt.html">Kontakt</a></li><li><a href="privatlivspolitik.html">Privatlivspolitik</a></li><li><a href="vilkar.html">Vilkår</a></li><li><a href="stot.html">Støt projektet</a></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>
 </div></footer>
 <script src="js/calendar-tools.js"></script>
 <script src="js/today.js"></script>
@@ -1283,10 +1291,344 @@ def write_page(
     current: str = "",
     breadcrumbs: list[tuple[str, str]] | None = None,
     faq: list[tuple[str, str]] | None = None,
+    ads: bool = True,
 ) -> None:
     (ROOT / path).write_text(
-        layout(title, description, path, body, current, breadcrumbs, faq),
+        layout(title, description, path, body, current, breadcrumbs, faq, ads),
         encoding="utf-8",
+    )
+
+
+# ─── Årsspecifik analyse ────────────────────────────────────────────────────
+# Sidefamilierne (helligdage-, arbejdsdage-, paaske- …) fandtes i fem årgange
+# med identisk brødtekst, hvor kun datoerne var skiftet ud. Google læser den
+# slags som skabelonsider uden selvstændig værdi — det var hovedårsagen til
+# AdSense-afvisningen "indhold af lav værdi" den 21. august 2026.
+#
+# Funktionerne herunder regner de forhold ud, der FAKTISK varierer fra år til
+# år, og skriver forskellig tekst afhængigt af resultatet: hvilke helligdage
+# der går tabt i weekenden, hvilke klemmedage året giver, og hvordan antallet
+# af arbejdsdage ligger i forhold til naboårene.
+
+YEAR_SPAN = (2026, 2030)
+
+
+def year_profile(year: int) -> dict:
+    marks = all_marks(year)
+    official = [m for m in marks if m.official]
+    lost = [m for m in official if m.date.weekday() >= 5]
+    bridges = []
+    for m in official:
+        wd = m.date.weekday()
+        if wd == 1:
+            bridges.append({"mark": m, "day": m.date - timedelta(days=1), "ugedag": "mandagen"})
+        elif wd == 3:
+            bridges.append({"mark": m, "day": m.date + timedelta(days=1), "ugedag": "fredagen"})
+    return {
+        "official": official,
+        "lost": lost,
+        "bridges": bridges,
+        "stats": year_stats(year),
+        "easter": easter_sunday(year),
+        "leap": (year % 4 == 0 and year % 100 != 0) or year % 400 == 0,
+    }
+
+
+def _liste(dele: list[str]) -> str:
+    """Dansk opremsning: «a, b og c»."""
+    if not dele:
+        return ""
+    if len(dele) == 1:
+        return dele[0]
+    return ", ".join(dele[:-1]) + " og " + dele[-1]
+
+
+def helligdage_analyse(year: int) -> str:
+    p = year_profile(year)
+    lost, bridges = p["lost"], p["bridges"]
+    paa_hverdag = len(p["official"]) - len(lost)
+
+    if not lost:
+        vurdering = (
+            f"<p>{year} er et af de gode helligdagsår: <strong>ingen</strong> af årets "
+            f"{len(p['official'])} officielle helligdage falder i en weekend. Alle giver "
+            f"altså en fridag, der ellers ville have været en arbejdsdag.</p>"
+        )
+    else:
+        tabt = _liste([
+            f"{m.name} ({WEEKDAYS_LONG[m.date.weekday()]} den {_fmt_dansk_dato(m.date)})"
+            for m in lost
+        ])
+        if len(lost) >= 3:
+            tone = (f"Det gør {year} til et dårligt helligdagsår — tre eller flere fridage "
+                    f"forsvinder i weekenden")
+        elif len(lost) == 2:
+            tone = f"To fridage går dermed tabt i {year}"
+        else:
+            tone = f"En enkelt fridag går tabt i {year}"
+        vurdering = (
+            f"<p>{tone}: {tabt}. Tilbage står <strong>{paa_hverdag} helligdage på hverdage</strong> "
+            f"ud af årets {len(p['official'])}. Dansk lovgivning giver ikke erstatningsfridage for "
+            f"helligdage, der falder i en weekend — de er ganske enkelt væk det år.</p>"
+        )
+
+    if bridges:
+        kl = _liste([
+            f"{b['ugedag']} den {_fmt_dansk_dato(b['day'])} (omkring {b['mark'].name})"
+            for b in bridges
+        ])
+        klemme = (
+            f"<p>Til gengæld giver {year} <strong>{len(bridges)} oplagte klemmedage</strong>: {kl}. "
+            f"En enkelt feriedag hver af de dage forlænger fridagen til en lang weekend. "
+            f"Klemmedage er ikke fridage efter loven — de aftales lokalt eller trækkes på ferien.</p>"
+        )
+    else:
+        klemme = (
+            f"<p>{year} giver ingen klassiske klemmedage: ingen helligdag falder på en tirsdag "
+            f"eller torsdag, hvor en enkelt feriedag ville bygge bro til weekenden.</p>"
+        )
+    return vurdering + klemme
+
+
+def arbejdsdage_analyse(year: int) -> str:
+    lo, hi = YEAR_SPAN
+    span = {y: year_stats(y)["workdays"] for y in range(lo, hi + 1)}
+    n = span[year]
+    hoejest, lavest = max(span.values()), min(span.values())
+    p = year_profile(year)
+
+    if n == hoejest and list(span.values()).count(n) == 1:
+        plads = f"det <strong>højeste</strong> antal i perioden {lo}–{hi}"
+    elif n == lavest and list(span.values()).count(n) == 1:
+        plads = f"det <strong>laveste</strong> antal i perioden {lo}–{hi}"
+    else:
+        plads = f"midt i feltet for perioden {lo}–{hi}, hvor spændet er {lavest}–{hoejest} dage"
+
+    nabo = []
+    for andet in (year - 1, year + 1):
+        if andet in span:
+            d = n - span[andet]
+            if d == 0:
+                nabo.append(f"det samme som i {andet}")
+            else:
+                nabo.append(f"{abs(d)} {'flere' if d > 0 else 'færre'} end i {andet}")
+
+    skudt = ""
+    if p["leap"]:
+        ekstra = date(year, 2, 29)
+        skudt = (f" {year} er skudår, så februar har 29 dage; den ekstra dag falder på en "
+                 f"{WEEKDAYS_LONG[ekstra.weekday()]}.")
+
+    return (
+        f"<p>{year} har <strong>{n} arbejdsdage</strong>, når weekender og officielle "
+        f"helligdage er trukket fra. Det er {plads}, og {_liste(nabo)}.{skudt}</p>"
+        f"<p>Forskellen mellem årene skyldes næsten udelukkende, hvor helligdagene lander. "
+        f"I {year} falder {len(p['lost'])} af dem i en weekend, hvor de ikke koster en "
+        f"arbejdsdag. Regner man juleaftensdag, nytårsaftensdag, grundlovsdag og 1. maj med "
+        f"som hele eller halve fridage — som mange overenskomster gør — ender man på "
+        f"<strong>{p['stats']['office_workdays']} arbejdsdage</strong> i praksis.</p>"
+    )
+
+
+def paaske_analyse(year: int) -> str:
+    p = year_profile(year)
+    e = p["easter"]
+    lo, hi = YEAR_SPAN
+    span = {y: easter_sunday(y) for y in range(lo, hi + 1)}
+    tidligst = min(span.items(), key=lambda kv: (kv[1].month, kv[1].day))
+    senest = max(span.items(), key=lambda kv: (kv[1].month, kv[1].day))
+
+    if year == tidligst[0]:
+        placering = f"Det er den <strong>tidligste</strong> påske i perioden {lo}–{hi}"
+    elif year == senest[0]:
+        placering = f"Det er den <strong>seneste</strong> påske i perioden {lo}–{hi}"
+    else:
+        placering = (f"Til sammenligning falder påskedag tidligst den "
+                     f"{_fmt_dansk_dato(tidligst[1])} i {tidligst[0]} og senest den "
+                     f"{_fmt_dansk_dato(senest[1])} i {senest[0]}")
+
+    return (
+        f"<p>Påskedag {year} er {_fmt_dansk_dato(e)}, altså en "
+        f"{_classify_easter_position(e)} påske. {placering}. Fordi både Kristi "
+        f"himmelfartsdag og pinse regnes fra påskedagen, flytter hele forårets "
+        f"fridagsmønster sig med den: i {year} ligger Kristi himmelfartsdag den "
+        f"{_fmt_dansk_dato(e + timedelta(days=39))} og pinsedag den "
+        f"{_fmt_dansk_dato(e + timedelta(days=49))}.</p>"
+        f"<p>Påskedag er den første søndag efter den første fuldmåne på eller efter "
+        f"forårsjævndøgn — beregnet efter kirkens tabeller, ikke efter den faktiske "
+        f"astronomiske fuldmåne. Derfor kan datoen svinge mellem 22. marts og 25. april. "
+        f"I {year - 1} var påskedag den {_fmt_dansk_dato(easter_sunday(year - 1))}, og i "
+        f"{year + 1} bliver den den {_fmt_dansk_dato(easter_sunday(year + 1))}.</p>"
+    )
+
+
+def kalender_analyse(year: int) -> str:
+    """Hvad der er særligt ved netop dette års kalender."""
+    p = year_profile(year)
+    s = p["stats"]
+    nytaar = date(year, 1, 1)
+    nytaar_uge = nytaar.isocalendar()
+    lange_aar = s["weeks"] == 53
+    saerligt = []
+    if p["leap"]:
+        saerligt.append("det er skudår, så året har 366 dage")
+    if lange_aar:
+        saerligt.append("året har <strong>53 uger</strong>, hvilket kun sker cirka hvert femte til sjette år")
+    if nytaar_uge.week != 1:
+        saerligt.append(
+            f"1. januar ligger i uge {nytaar_uge.week} af {nytaar_uge.year} og ikke i uge 1 — "
+            f"efter ISO 8601 hører de første dage af januar til det foregående års sidste uge, "
+            f"når årets første torsdag falder senere"
+        )
+    if not saerligt:
+        saerligt.append(
+            f"kalenderen følger det almindelige mønster: {s['days']} dage fordelt på "
+            f"{s['weeks']} uger, med 1. januar i uge 1"
+        )
+
+    return (
+        f"<p>Året begynder på en <strong>{WEEKDAYS_LONG[nytaar.weekday()]}</strong> og slutter på "
+        f"en <strong>{WEEKDAYS_LONG[date(year, 12, 31).weekday()]}</strong>. Ugedagen for 1. januar "
+        f"afgør hele årets rytme: den bestemmer, hvilke ugedage de faste helligdage lander på, og "
+        f"dermed hvor mange af dem der reelt giver fri. I {year} er {_liste(saerligt)}.</p>"
+        f"<p>Samlet rummer {year} <strong>{s['workdays']} arbejdsdage</strong>, "
+        f"{s['weekend_days']} weekenddage og {len(p['official'])} officielle helligdage, hvoraf "
+        f"{len(p['lost'])} falder i en weekend. Påsken — som flytter både Kristi himmelfartsdag og "
+        f"pinse med sig — ligger i {year} omkring {_fmt_dansk_dato(p['easter'])}.</p>"
+    )
+
+
+def pinse_analyse(year: int) -> str:
+    """Pinsens placering og den lange weekend, den giver netop i år."""
+    e = year_profile(year)["easter"]
+    pinsedag = e + timedelta(days=49)
+    anden = e + timedelta(days=50)
+    kristi = e + timedelta(days=39)
+    lo, hi = YEAR_SPAN
+    span = {y: easter_sunday(y) + timedelta(days=49) for y in range(lo, hi + 1)}
+    i_maj = pinsedag.month == 5
+    maj_aar = sorted(y for y, d in span.items() if d.month == 5)
+    juni_aar = sorted(y for y, d in span.items() if d.month == 6)
+
+    if i_maj:
+        maaned = (
+            f"<p>Pinsen ligger i {year} i <strong>maj</strong>. Det er den tidlige variant, hvor "
+            f"pinsen falder sammen med forsommeren og ofte inden skolernes eksamensperiode. "
+        )
+        if juni_aar:
+            maaned += (
+                f"I perioden {lo}–{hi} rykker den ind i juni i "
+                f"{_liste([str(y) for y in juni_aar])}.</p>"
+            )
+        else:
+            maaned += f"I hele perioden {lo}–{hi} bliver pinsen i maj.</p>"
+    else:
+        maaned = (
+            f"<p>Pinsen ligger i {year} i <strong>juni</strong> — den sene variant. Så tæt på "
+            f"sommerferien mærkes den ekstra mandag mindre i ferieplanlægningen, fordi mange "
+            f"alligevel er på vej mod sommerferie. "
+        )
+        if maj_aar:
+            maaned += (
+                f"I {_liste([str(y) for y in maj_aar])} falder pinsen derimod i maj.</p>"
+            )
+        else:
+            maaned += f"I hele perioden {lo}–{hi} ligger pinsen i juni.</p>"
+
+    afstand = (pinsedag - kristi).days
+    bro = (
+        f"<p>Der er {afstand} dage fra Kristi himmelfartsdag den {_fmt_dansk_dato(kristi)} til "
+        f"pinsedag. De to helligdage ligger altid ti dage fra hinanden, så maj og juni rummer "
+        f"i {year} to lange weekender med kun to ugers mellemrum — det er den tætteste klynge "
+        f"af fridage på hele året.</p>"
+    )
+
+    return (
+        f"<p>Pinsedag {year} falder {_fmt_dansk_dato(pinsedag)}, og 2. pinsedag dagen efter, "
+        f"{_fmt_dansk_dato(anden)}. Fordi 2. pinsedag altid er en mandag, giver pinsen hvert år "
+        f"en <strong>tre dages weekend</strong> uden at bruge en eneste feriedag — den eneste "
+        f"danske helligdag, der automatisk lægger sig op ad en weekend.</p>"
+        + maaned
+        + bro
+        + f"<p>Pinsedag ligger 49 dage — syv uger — efter påskedag og følger derfor påskens "
+        f"bevægelse. I {year - 1} var pinsedag den "
+        f"{_fmt_dansk_dato(easter_sunday(year - 1) + timedelta(days=49))}, og i {year + 1} "
+        f"bliver den den {_fmt_dansk_dato(easter_sunday(year + 1) + timedelta(days=49))}.</p>"
+    )
+
+
+def himmelfart_analyse(year: int) -> str:
+    """Klemmedagen og den fire dage lange weekend, som varierer i praksis."""
+    e = year_profile(year)["easter"]
+    kristi = e + timedelta(days=39)
+    fredag = kristi + timedelta(days=1)
+    soendag = kristi + timedelta(days=3)
+    pinsedag = e + timedelta(days=49)
+    lo, hi = YEAR_SPAN
+    span = {y: easter_sunday(y) + timedelta(days=39) for y in range(lo, hi + 1)}
+    tidligst = min(span.items(), key=lambda kv: (kv[1].month, kv[1].day))
+    senest = max(span.items(), key=lambda kv: (kv[1].month, kv[1].day))
+
+    if year == tidligst[0]:
+        placering = (
+            f"<p>Det er den <strong>tidligste</strong> Kristi himmelfartsdag i perioden "
+            f"{lo}–{hi}; senest ligger den den {_fmt_dansk_dato(senest[1])} i {senest[0]}. "
+            f"En tidlig himmelfartsdag betyder, at forårets fridage samler sig i april og "
+            f"begyndelsen af maj.</p>"
+        )
+    elif year == senest[0]:
+        placering = (
+            f"<p>Det er den <strong>seneste</strong> Kristi himmelfartsdag i perioden "
+            f"{lo}–{hi}; tidligst ligger den den {_fmt_dansk_dato(tidligst[1])} i "
+            f"{tidligst[0]}. Ligger dagen så sent, skubbes pinsen helt hen i juni.</p>"
+        )
+    else:
+        placering = (
+            f"<p>I perioden {lo}–{hi} svinger Kristi himmelfartsdag mellem den "
+            f"{_fmt_dansk_dato(tidligst[1])} ({tidligst[0]}) og den "
+            f"{_fmt_dansk_dato(senest[1])} ({senest[0]}). {year} ligger derimellem.</p>"
+        )
+
+    maanedsskift = ""
+    if fredag.month != kristi.month:
+        maanedsskift = (
+            f"<p>Bemærk, at klemmefredagen i {year} falder i den følgende måned: "
+            f"helligdagen er den {_fmt_dansk_dato(kristi)}, mens fredagen er den "
+            f"{_fmt_dansk_dato(fredag)}. Det har betydning, hvis fridage registreres "
+            f"pr. kalendermåned i lønsystemet.</p>"
+        )
+
+    return (
+        f"<p>Kristi himmelfartsdag {year} er torsdag den {_fmt_dansk_dato(kristi)}. Dagen falder "
+        f"altid på en torsdag, 39 dage efter påskedag, og det gør den til årets tydeligste "
+        f"klemmedag: tager du fri fredag den {_fmt_dansk_dato(fredag)}, får du "
+        f"<strong>fire sammenhængende fridage</strong> frem til søndag den "
+        f"{_fmt_dansk_dato(soendag)} — for én enkelt feriedag.</p>"
+        + placering
+        + maanedsskift
+        + f"<p>Fredagen efter er <em>ikke</em> en officiel helligdag. Mange arbejdspladser holder "
+        f"lukket alligevel, og en del skoler lægger fridag samme dag, men det afhænger af "
+        f"overenskomst og lokal kutyme — det er ikke en ret efter loven. Ti dage senere følger "
+        f"pinsen, som i {year} falder den {_fmt_dansk_dato(pinsedag)}.</p>"
+    )
+
+
+def aarsanalyse_sektion(year: int, scope: str) -> str:
+    """Indsættes på årssiderne, så hver årgang bærer sin egen analyse."""
+    bygger = {
+        "helligdage": (f"Hvor mange fridage giver {year} reelt?", helligdage_analyse),
+        "arbejdsdage": (f"Ligger {year} højt eller lavt på arbejdsdage?", arbejdsdage_analyse),
+        "paaske": (f"Hvor ligger påsken i {year} — og hvorfor flytter den sig?", paaske_analyse),
+        "kalender": (f"Hvad er særligt ved kalenderen i {year}?", kalender_analyse),
+        "pinse": (f"Hvornår er pinsen i {year} — og hvor lang bliver weekenden?", pinse_analyse),
+        "himmelfart": (f"Klemmedagen omkring Kristi himmelfart {year}", himmelfart_analyse),
+    }
+    if scope not in bygger:
+        return ""
+    overskrift, fn = bygger[scope]
+    return (
+        f'<section class="section"><div class="container narrow prose">'
+        f"<h2>{overskrift}</h2>{fn(year)}</div></section>"
     )
 
 
@@ -1350,6 +1692,7 @@ def render_year_pages(year: int) -> None:
     body += ad_slot("mid")
     body += year_calendar_section(year)
     body += ad_slot("footer")
+    body += aarsanalyse_sektion(year, "kalender")
     write_page(
         f"kalender-{year}.html",
         f"Kalender {year} - dansk kalender med helligdage",
@@ -1462,6 +1805,7 @@ def render_holidays(year: int) -> None:
             "På siden er den markeret historisk, men den tæller ikke som helligdag.",
         ),
     ]
+    body += aarsanalyse_sektion(year, "helligdage")
     write_page(
         f"helligdage-{year}.html",
         f"Helligdage {year} i Danmark",
@@ -1533,6 +1877,7 @@ def render_workdays(year: int) -> None:
     )
 
     body += ad_slot("footer")
+    body += aarsanalyse_sektion(year, "arbejdsdage")
     write_page(
         f"arbejdsdage-{year}.html",
         f"Arbejdsdage {year} - antal arbejdsdage pr. måned",
@@ -1605,6 +1950,7 @@ def render_easter(year: int) -> None:
         f'Tjek din overenskomst, hvis du er i tvivl.</p>'
         f'</div></section>'
     )
+    extra += aarsanalyse_sektion(year, "paaske")
     render_event_page(
         year,
         "Påske",
@@ -1674,6 +2020,7 @@ def render_pentecost(year: int) -> None:
         f'Se <a href="/arbejdsdage-{year}.html">arbejdsdage {year}</a> for hele opgørelsen.</p>'
         f'</div></section>'
     )
+    extra += aarsanalyse_sektion(year, "pinse")
     render_event_page(
         year,
         "Pinse",
@@ -1733,6 +2080,7 @@ def render_ascension(year: int) -> None:
         f'fra og med 2024 ved lov L 3. Det ændrer ikke Kristi himmelfartsdags status.</p>'
         f'</div></section>'
     )
+    extra += aarsanalyse_sektion(year, "himmelfart")
     render_event_page(
         year,
         "Kristi himmelfartsdag",
@@ -1862,6 +2210,12 @@ def render_tools() -> None:
     body = hero("Beregn arbejdsdage mellem to datoer", "Vælg start- og slutdato og se antal arbejdsdage i perioden. Du kan vælge standard eller en kontor-variant med almindelige fridage.", date.today().year)
     body += f"""<section class="section"><div class="container"><div class="tool"><div class="tool-grid"><div class="field"><label for="bd-start">Startdato</label><input id="bd-start" type="date" value="{today}"></div><div class="field"><label for="bd-end">Slutdato</label><input id="bd-end" type="date" value="{today}"></div><div class="field"><label for="bd-mode">Regel</label><select id="bd-mode"><option value="official">Kun officielle helligdage</option><option value="office">Kontor-variant</option></select></div></div><div id="bd-result" class="result-box"></div></div></div></section>"""
     body += ad_slot("header")
+    body += '<section class="section"><div class="container narrow prose">'
+    body += (
+        '<h2>Sådan tælles arbejdsdagene</h2><p>Beregneren tæller de hverdage, der ligger i perioden, og trækker weekender og officielle danske helligdage fra. Både start- og slutdato regnes med, hvis de er arbejdsdage — vælger du samme dag i begge felter, og det er en tirsdag, får du altså 1 og ikke 0.</p><h3>De to regelsæt</h3><p><strong>Kun officielle helligdage</strong> følger loven: nytårsdag, skærtorsdag, langfredag, påskedag, 2. påskedag, Kristi himmelfartsdag, pinsedag, 2. pinsedag, juledag og 2. juledag. <strong>Kontor-varianten</strong> trækker desuden 1. maj, grundlovsdag, juleaftensdag og nytårsaftensdag fra. De fire dage er ikke helligdage efter loven, men holdes fri på mange arbejdspladser efter overenskomst eller kutyme. Er du i tvivl om, hvad der gælder hos jer, giver det laveste af de to tal det forsigtige skøn.</p><h3>Hvad beregningen ikke ved</h3><p>Ferie, sygdom, barsel, afspadsering og lokale lukkedage indgår ikke — det er tal for kalenderen, ikke for en konkret ansættelse. Store bededag blev afskaffet som helligdag i 2024 og tælles derfor som en almindelig arbejdsdag. Beregningen gælder Danmark; Færøerne og Grønland har egne helligdage.</p><h3>Typiske anvendelser</h3><p>Antal arbejdsdage bruges blandt andet til at anslå leveringstid i hverdage, til at beregne opsigelsesvarsler i arbejdsdage, til at fordele et budget eller en timenormering over et kvartal, og til at kontrollere en faktura for konsulenttimer. Skal du den anden vej — fra et antal arbejdsdage til en dato — så brug <a href="laeg-arbejdsdage-til.html">Læg arbejdsdage til</a>.</p>'
+    )
+    body += "</div></section>"
+
     body += tools_related_grid("beregn-arbejdsdage.html")
     body += ad_slot("mid")
     write_page(
@@ -1876,6 +2230,12 @@ def render_tools() -> None:
     body = hero("Læg arbejdsdage til en dato", "Find datoen efter et bestemt antal arbejdsdage. Beregneren springer weekender og danske helligdage over.", date.today().year)
     body += f"""<section class="section"><div class="container"><div class="tool"><div class="tool-grid"><div class="field"><label for="add-start">Startdato</label><input id="add-start" type="date" value="{today}"></div><div class="field"><label for="add-amount">Antal arbejdsdage</label><input id="add-amount" type="number" min="0" value="10"></div><div class="field"><label for="add-mode">Regel</label><select id="add-mode"><option value="official">Kun officielle helligdage</option><option value="office">Kontor-variant</option></select></div></div><div id="add-result" class="result-box"></div></div></div></section>"""
     body += ad_slot("header")
+    body += '<section class="section"><div class="container narrow prose">'
+    body += (
+        '<h2>Sådan regnes datoen ud</h2><p>Beregneren starter dagen <em>efter</em> din startdato og tæller frem, indtil den har passeret det antal arbejdsdage, du har angivet. Weekender og helligdage springes over undervejs — de tæller ikke med, men de skubber slutdatoen længere frem i kalenderen. Startdatoen tælles aldrig med som en af arbejdsdagene, hvilket er den sædvanlige fortolkning af formuleringer som «senest 10 arbejdsdage efter».</p><h3>Et regnet eksempel</h3><p>Starter du en fredag og beder om 3 arbejdsdage, lander du onsdag: lørdag og søndag springes over, og mandag, tirsdag og onsdag er de tre arbejdsdage. Falder der en helligdag ind i ugen, rykker resultatet en dag længere frem. Omkring påsken kan tre arbejdsdage derfor sagtens strække sig over halvanden uge i kalenderen.</p><h3>Frister og varsler</h3><p>Fristerne i dansk lovgivning og i standardkontrakter er ofte formuleret i arbejdsdage netop for at undgå, at en weekend eller en helligdag afkorter den reelle svartid. Bemærk dog, at ikke alle frister regnes ens: nogle løber i kalenderdage, andre i hverdage, og nogle udskydes til førstkommende hverdag, hvis de ender i en weekend. Tjek den præcise ordlyd i aftalen, før du regner en frist for endelig.</p><p>Skal du modsat vide, hvor mange arbejdsdage der ligger mellem to kendte datoer, så brug <a href="beregn-arbejdsdage.html">Beregn arbejdsdage</a>. Skal du gå baglæns fra en deadline, findes <a href="traek-arbejdsdage-fra.html">Træk arbejdsdage fra</a>.</p>'
+    )
+    body += "</div></section>"
+
     body += tools_related_grid("laeg-arbejdsdage-til.html")
     body += ad_slot("mid")
     write_page(
@@ -1890,6 +2250,12 @@ def render_tools() -> None:
     body = hero("Ugenummer", "Find ISO-ugenummer for en dato i Danmark. Danske kalendere bruger normalt ISO-uger, hvor ugen starter mandag.", date.today().year)
     body += f"""<section class="section"><div class="container"><div class="tool"><div class="tool-grid"><div class="field"><label for="week-date">Dato</label><input id="week-date" type="date" value="{today}"></div></div><div id="week-result" class="result-box"></div></div></div></section>"""
     body += ad_slot("header")
+    body += '<section class="section"><div class="container narrow prose">'
+    body += (
+        '<h2>Sådan fungerer ISO-ugenumre</h2><p>Danmark bruger ISO 8601 til ugenumre, og standarden har to regler, der forklarer næsten al forvirring om emnet: <strong>ugen begynder mandag</strong>, og <strong>uge 1 er den uge, der indeholder årets første torsdag</strong>. Reglen om torsdagen svarer til at sige, at uge 1 er den første uge, hvor mindst fire dage ligger i det nye år.</p><h3>Derfor kan 1. januar ligge i uge 52</h3><p>Falder nytårsdag på en fredag, lørdag eller søndag, hører de første dage af januar til det gamle års sidste uge — og omvendt kan de sidste dage af december tilhøre uge 1 i det nye år. Det er ikke en fejl i kalenderen, men en konsekvens af, at en uge ikke må deles mellem to årstal. Derfor angiver ISO-formatet også året sammen med ugen, for eksempel 2027-W01.</p><h3>År med 53 uger</h3><p>De fleste år har 52 uger, men cirka hvert femte til sjette år rummer 53. Det sker, når året begynder på en torsdag, eller når et skudår begynder på en onsdag. For lønsystemer og vagtplaner, der regner i uger, er de år værd at holde øje med.</p><h3>Ikke det samme som amerikanske uger</h3><p>I USA og en række andre lande begynder ugen søndag, og uge 1 er ganske enkelt den uge, 1. januar falder i. Det giver ofte et ugenummer, der ligger én foran det danske. Arbejder du i regneark eller systemer med engelske standardindstillinger, er det værd at kontrollere, hvilken definition der er slået til — i regneark findes typisk begge varianter som forskellige funktioner.</p><p>Skal du den anden vej, fra ugenummer til dato, så brug <a href="dato-fra-uge.html">Dato fra ugenummer</a>.</p>'
+    )
+    body += "</div></section>"
+
     body += tools_related_grid("ugenummer.html")
     body += ad_slot("mid")
     write_page(
@@ -1927,10 +2293,113 @@ def render_school_holidays() -> None:
         breadcrumbs=[("Forside", "index.html"), ("Skoleferier", "")],
     )
     for municipality_data in data["municipalities"]:
-        render_school_municipality(municipality_data, data.get("updated", ""))
+        render_school_municipality(municipality_data, data.get("updated", ""), data["municipalities"])
 
 
-def render_school_municipality(m: dict, updated: str) -> None:
+def _skole_dage(h: dict) -> int:
+    """Antal kalenderdage i en ferieperiode, begge dage inklusive."""
+    a = date.fromisoformat(h["start"])
+    b = date.fromisoformat(h["end"])
+    return (b - a).days + 1
+
+
+def _vinterferie_uge(m: dict) -> int | None:
+    """Skoleugen for vinterferien — ikke ISO-ugen for startdatoen.
+
+    Kommunerne angiver ferien fra loerdagen for, saa startdatoens ISO-uge
+    ligger en uge for tidligt: Aarhus' "13. februar 2027" er loerdag i uge 6,
+    men skoleugen er uge 7. Derfor regnes ugen fra den forste hverdag.
+    """
+    for h in m["holidays"]:
+        if h["name"].lower().startswith("vinterferie"):
+            d = date.fromisoformat(h["start"])
+            while d.weekday() >= 5:
+                d += timedelta(days=1)
+            return d.isocalendar().week
+    return None
+
+
+def skoleferie_analyse(m: dict, alle: list[dict]) -> str:
+    """Beregnet, kommunespecifik gennemgang — ikke den samme tekst pr. by.
+
+    Uden det her var de ti kommunesider naesten identiske: samme tabel,
+    samme standardtekst. Her regnes tal ud af kommunens egen ferieplan og
+    holdes op mod de ovrige kommuner paa sitet.
+    """
+    if not m["holidays"]:
+        return ""
+
+    dage = sum(_skole_dage(h) for h in m["holidays"])
+    laengste = max(m["holidays"], key=_skole_dage)
+    sommer = next((h for h in m["holidays"] if h["name"].lower().startswith("sommerferie")), None)
+    uge = _vinterferie_uge(m)
+
+    # Vinterferien er det klassiske skel mellem kommunerne: uge 7 eller uge 8.
+    uger = {}
+    for anden in alle:
+        u = _vinterferie_uge(anden)
+        if u:
+            uger.setdefault(u, []).append(anden["name"])
+    sammenligning = ""
+    if uge and uger:
+        andre_samme = [n for n in uger.get(uge, []) if n != m["name"]]
+        andre_uger = sorted(u for u in uger if u != uge)
+        if andre_uger:
+            fordeling = " og ".join(
+                f"uge {u} i {_liste(sorted(uger[u]))}" for u in andre_uger
+            )
+            sammenligning = (
+                f"<p>Vinterferien er det punkt, hvor kommunerne oftest er uenige. "
+                f"{m['name']} holder <strong>vinterferie i uge {uge}</strong>"
+                + (f", ligesom {_liste(sorted(andre_samme))}" if andre_samme else "")
+                + f". Til sammenligning ligger den i {fordeling}. "
+                f"Har du børn i skole i to kommuner — eller familie på tværs af landet — "
+                f"er det her, planerne typisk kolliderer.</p>"
+            )
+        else:
+            sammenligning = (
+                f"<p>{m['name']} holder vinterferie i uge {uge}, hvilket er samme uge som de "
+                f"øvrige kommuner på sitet.</p>"
+            )
+
+    sommer_tekst = ""
+    if sommer:
+        s_start = date.fromisoformat(sommer["start"])
+        s_dage = _skole_dage(sommer)
+        sommer_tekst = (
+            f"<p>Sommerferien begynder <strong>{WEEKDAYS_LONG[s_start.weekday()]} den "
+            f"{_fmt_dansk_dato(s_start)}</strong> og varer {s_dage} dage. Starten er ikke "
+            f"kommunens frie valg: efter folkeskoleloven begynder sommerferien den sidste "
+            f"lørdag i juni, og skoleåret skal rumme mindst 200 skoledage. Det er "
+            f"placeringen af de <em>øvrige</em> ferier, kommunalbestyrelsen bestemmer.</p>"
+        )
+
+    return (
+        '<section class="section"><div class="container narrow prose">'
+        f"<h2>Sådan ligger ferieplanen i {m['name']}</h2>"
+        f"<p>Ferieplanen for {m['name']} rummer <strong>{len(m['holidays'])} ferieperioder</strong> "
+        f"med i alt <strong>{dage} fridage</strong> talt i kalenderdage, weekender inklusive. "
+        f"Den længste sammenhængende periode er {laengste['name'].lower()} med "
+        f"{_skole_dage(laengste)} dage.</p>"
+        + sommer_tekst
+        + sammenligning
+        + "<h3>Hvem bestemmer datoerne</h3>"
+        "<p>Skoleferier fastsættes <strong>lokalt af kommunalbestyrelsen</strong> og kan variere "
+        "fra skole til skole inden for samme kommune — enkelte skoler lægger egne lukkedage eller "
+        "flytter en fridag efter aftale i skolebestyrelsen. Planerne vedtages typisk et til to år "
+        "frem og kan blive ændret undervejs. Derfor gælder tabellen ovenfor som overblik, ikke som "
+        "en garanti: før du booker en rejse, så tjek datoen på kommunens egen side, som der linkes "
+        "til øverst.</p>"
+        "<h3>SFO og pasning</h3>"
+        "<p>At skolen holder ferie betyder ikke nødvendigvis, at SFO'en gør det. De fleste "
+        "kommuner holder feriepasning åben i skoleferierne, ofte med tilmelding i god tid og "
+        "eventuelt på en anden matrikel end til daglig. Mellem jul og nytår og på enkelte "
+        "klemmedage er der derimod ofte lukket. Reglerne står på kommunens side.</p>"
+        "</div></section>"
+    )
+
+
+def render_school_municipality(m: dict, updated: str, alle: list[dict] | None = None) -> None:
     rows = "".join(
         f'<tr><td>{h["school_year"]}</td><td>{h["name"]}</td><td>{h["start"]}</td><td>{h["end"]}</td></tr>'
         for h in m["holidays"]
@@ -1938,6 +2407,7 @@ def render_school_municipality(m: dict, updated: str) -> None:
     body = hero(f"Skoleferier i {m['name']}", f"Ferieplan og fridage for skoler i {m['name']}. Datoerne er samlet som et hurtigt overblik med kilde til kommunens egen side.", date.today().year)
     body += ad_slot("header")
     body += f'<section class="section"><div class="container"><div class="grid"><article class="card"><h3>Senest gennemgået</h3><p class="stat">{updated}</p><p class="muted">Tjek altid kommunens egen kalender ved planlægning.</p></article><article class="card"><h3>Officiel kilde</h3><p><a class="text-link" href="{m["source"]}" rel="nofollow noopener" target="_blank">Åbn kommunens side</a></p></article></div><div class="table-wrap"><table><thead><tr><th>Skoleår</th><th>Ferie/fridag</th><th>Fra</th><th>Til</th></tr></thead><tbody>{rows}</tbody></table></div><p class="notice">Nogle skoler kan have lokale afvigelser, særlige lukkedage eller behovsåbent i SFO. Brug derfor siden som hurtigt overblik og verificer altid hos kommunen eller skolen.</p></div></section>'
+    body += skoleferie_analyse(m, alle or [m])
     body += ad_slot("mid")
     write_page(
         f"skoleferier-{m['slug']}.html",
@@ -1949,11 +2419,214 @@ def render_school_municipality(m: dict, updated: str) -> None:
     )
 
 
+def render_methodology() -> None:
+    """Metode: hvordan datoerne beregnes. Vigtigt E-E-A-T-signal for AdSense."""
+    lo, hi = YEAR_SPAN
+    body = hero(
+        "Metode",
+        "Hvordan datoerne på DanskeDage beregnes, hvad der er lovbestemt, "
+        "og hvor grænserne for beregningerne går.",
+    )
+    body += (
+        '<section class="section"><div class="container narrow prose">'
+        "<h2>Hvad sitet regner ud — og hvordan</h2>"
+        "<p>Alle datoer på DanskeDage er <strong>beregnet, ikke indtastet</strong>. "
+        "Kalenderen, helligdagene og arbejdsdagene bliver genereret af et program, der kører "
+        "hver nat, så siderne altid viser det indeværende år korrekt. Det betyder også, at der "
+        "ikke ligger en manuelt vedligeholdt liste, som kan blive glemt et år.</p>"
+
+        "<h3>De bevægelige helligdage</h3>"
+        "<p>Påskedag er omdrejningspunktet for hele forårets fridage. Den beregnes med "
+        "<em>Meeus/Jones/Butcher-algoritmen</em> for den gregorianske kalender: påskedag er den "
+        "første søndag efter den første kirkelige fuldmåne på eller efter forårsjævndøgn. "
+        "Bemærk ordet <em>kirkelige</em> — kirken regner efter faste tabeller, ikke efter den "
+        "astronomiske fuldmåne, så de to kan afvige med en dag. Resten følger mekanisk af "
+        "påskedagen: skærtorsdag ligger 3 dage før, langfredag 2 dage før, 2. påskedag dagen "
+        "efter, Kristi himmelfartsdag 39 dage efter og pinsedag 49 dage efter.</p>"
+
+        "<h3>De faste dage</h3>"
+        "<p>Nytårsdag (1. januar), juledag (25. december) og 2. juledag (26. december) ligger "
+        "fast. Det samme gør de dage, der <em>ikke</em> er officielle helligdage, men hvor mange "
+        "alligevel har fri: 1. maj, grundlovsdag (5. juni), juleaftensdag og nytårsaftensdag. "
+        "Sitet markerer dem som mærkedage, ikke som helligdage, fordi retten til fri afhænger af "
+        "overenskomst eller lokal kutyme — ikke af loven.</p>"
+
+        "<h3>Store bededag</h3>"
+        "<p>Store bededag blev afskaffet som officiel helligdag fra og med 2024 ved lov nr. 214 af "
+        "6. marts 2023. Dagen vises derfor som historisk mærkedag, og den tæller ikke med i "
+        "arbejdsdage eller helligdage for årene på sitet.</p>"
+
+        "<h3>Arbejdsdage</h3>"
+        "<p>En arbejdsdag tælles som en hverdag (mandag til fredag), der ikke er en officiel "
+        "helligdag. Sitet viser desuden et andet tal, hvor 1. maj, grundlovsdag, juleaftensdag og "
+        "nytårsaftensdag er trukket fra — det svarer bedre til virkeligheden på mange "
+        "arbejdspladser. Ferie, sygdom, barsel og lokale fridage indgår ikke; det er tal for "
+        "kalenderen, ikke for den enkelte ansættelse.</p>"
+
+        "<h3>Ugenumre</h3>"
+        "<p>Ugenumre følger ISO 8601, som er den danske standard: ugen begynder mandag, og uge 1 "
+        "er den uge, der indeholder årets første torsdag. Derfor kan 1. januar ligge i uge 52 "
+        "eller 53 af det foregående år, og nogle år har 53 uger.</p>"
+
+        "<h2>Hvad sitet ikke kan</h2>"
+        "<p>Beregningerne siger noget om kalenderen — ikke om din kontrakt. Konkret:</p>"
+        "<ul>"
+        "<li><strong>Løn og tillæg:</strong> om en helligdag udløser tillæg, og hvor meget, står i "
+        "din overenskomst eller ansættelseskontrakt.</li>"
+        "<li><strong>Klemmedage:</strong> sitet peger på de dage, hvor en enkelt feriedag giver en "
+        "lang weekend. Om du <em>kan</em> holde fri den dag, er en aftale med din arbejdsgiver.</li>"
+        "<li><strong>Skoleferier:</strong> de fastsættes kommunalt og kan ændre sig. Datoerne på "
+        "sitet er hentet fra kommunernes egne sider, og hver side linker til kilden, så du kan "
+        "kontrollere den, før du booker noget.</li>"
+        "<li><strong>Andre lande:</strong> alt på sitet gælder Danmark. Færøerne og Grønland har "
+        "egne helligdage, som ikke er dækket.</li>"
+        "</ul>"
+
+        "<h2>Kontrol af tallene</h2>"
+        f"<p>Helligdagsdatoerne for {lo}–{hi} er sammenholdt med de officielle oversigter fra "
+        "Folkekirken og Kirkeministeriet, og ugenumrene er kontrolleret mod ISO 8601. Finder du "
+        "en fejl, er en mail den hurtigste vej til at få den rettet — se "
+        '<a href="kontakt.html">kontakt</a>.</p>'
+        '<p class="muted">Senest gennemgået: 22. august 2026.</p>'
+        "</div></section>"
+    )
+    write_page(
+        "metode.html",
+        "Metode — sådan beregnes datoerne",
+        "Sådan beregner DanskeDage helligdage, arbejdsdage og ugenumre: algoritmer, "
+        "lovgrundlag og hvad beregningerne ikke dækker.",
+        body,
+        breadcrumbs=[("Forside", "index.html"), ("Metode", "")],
+        ads=False,
+    )
+
+
+def render_sources() -> None:
+    """Kilder: hvor oplysningerne stammer fra."""
+    body = hero(
+        "Kilder",
+        "De officielle kilder bag helligdage, ugenumre og skoleferier på DanskeDage.",
+    )
+    kilder = [
+        ("Folkekirken — helligdage og kirkeåret",
+         "https://www.folkekirken.dk/",
+         "Grundlag for de bevægelige helligdage og deres placering i kirkeåret."),
+        ("Lov nr. 214 af 6. marts 2023 om konsekvenser ved afskaffelsen af store bededag",
+         "https://www.retsinformation.dk/eli/lta/2023/214",
+         "Retsgrundlaget for, at store bededag ikke længere er en officiel helligdag."),
+        ("Retsinformation — Lov om Danmarks Riges Grundlov",
+         "https://www.retsinformation.dk/eli/lta/1953/169",
+         "Grundlovsdag den 5. juni. Dagen er ikke en almindelig officiel helligdag, "
+         "men fridag mange steder efter overenskomst."),
+        ("ISO 8601 — dato- og tidsformat",
+         "https://www.iso.org/iso-8601-date-and-time-format.html",
+         "Standarden bag ugenumre: ugen starter mandag, og uge 1 indeholder årets "
+         "første torsdag."),
+        ("Danmarks Statistik",
+         "https://www.dst.dk/",
+         "Baggrundstal om arbejdsdage og beskæftigelse, brugt til at efterprøve "
+         "rimeligheden af sitets egne optællinger."),
+        ("Kommunernes egne sider om skoleferier",
+         "https://www.kl.dk/",
+         "Skoleferier fastsættes lokalt. Hver kommuneside på DanskeDage linker "
+         "direkte til den kommunes egen offentliggørelse."),
+    ]
+    raekker = "".join(
+        f"<li><p><strong>{navn}</strong><br>"
+        f'<a href="{url}" rel="nofollow noopener" target="_blank">{url}</a><br>'
+        f"<span class=\"muted\">{hvad}</span></p></li>"
+        for navn, url, hvad in kilder
+    )
+    body += (
+        '<section class="section"><div class="container narrow prose">'
+        "<h2>Primære kilder</h2>"
+        "<p>Datoerne på sitet er beregnede, men de regler, beregningerne bygger på, kommer fra "
+        "de kilder, der står herunder. Astronomiske og kirkelige regler ændrer sig ikke, mens "
+        "lovgivning og kommunale skoleferier gør — derfor gennemgås de sidste to hvert år.</p>"
+        f"<ol>{raekker}</ol>"
+        "<h2>Om links til kilderne</h2>"
+        "<p>Links åbner i et nyt vindue og er mærket <code>nofollow</code>. DanskeDage har intet "
+        "samarbejde med og modtager ingen betaling fra nogen af de nævnte myndigheder eller "
+        "organisationer.</p>"
+        '<p class="muted">Senest gennemgået: 22. august 2026.</p>'
+        "</div></section>"
+    )
+    write_page(
+        "kilder.html",
+        "Kilder",
+        "Officielle kilder bag DanskeDages helligdage, ugenumre og skoleferier.",
+        body,
+        breadcrumbs=[("Forside", "index.html"), ("Kilder", "")],
+        ads=False,
+    )
+
+
+def render_editorial_policy() -> None:
+    """Redaktionel politik: hvem står bag, og hvordan rettes fejl."""
+    body = hero(
+        "Redaktionel politik",
+        "Hvem der står bag DanskeDage, hvordan indholdet bliver til, "
+        "og hvordan fejl rettes.",
+    )
+    body += (
+        '<section class="section"><div class="container narrow prose">'
+        "<h2>Hvem står bag</h2>"
+        "<p>DanskeDage drives og vedligeholdes af <strong>én uafhængig udvikler</strong> med "
+        "baggrund i ingeniørvidenskab. For at være helt tydelig om, hvad det betyder: sitet har "
+        "<strong>ingen redaktion, intet fagligt panel og ingen juridiske eksperter</strong> "
+        "tilknyttet. Der er ikke opfundet «anmeldere» eller «eksperter» bag indholdet — alt, hvad "
+        "du læser her, er skrevet og vedligeholdt af én person på grundlag af offentligt "
+        'tilgængelige kilder, som er listet på <a href="kilder.html">kildesiden</a>.</p>'
+
+        "<h2>Hvordan indholdet bliver til</h2>"
+        "<p>Datoerne er beregnede, ikke indtastede — se "
+        '<a href="metode.html">metodesiden</a> for algoritmerne og deres grænser. Den forklarende '
+        "tekst er skrevet manuelt. Årssiderne indeholder en analyse, der genberegnes for hvert år, "
+        "fordi det, der er værd at vide, faktisk skifter: nogle år mister man tre fridage i "
+        "weekenden, andre år ingen.</p>"
+
+        "<h2>Rettelser</h2>"
+        "<p>Fejl bliver rettet, så snart de er bekræftet mod kilden, og rettelsen slår igennem på "
+        "sitet ved næste natlige kørsel. Er du stødt på en dato, der ikke passer, så skriv til "
+        'adressen på <a href="kontakt.html">kontaktsiden</a> — helst med et link til den kilde, du '
+        "sammenligner med. Væsentlige rettelser noteres på metodesiden med dato.</p>"
+
+        "<h2>Annoncer</h2>"
+        "<p>Sitet er gratis og finansieres af annoncer fra Google AdSense. <strong>Annoncerne har "
+        "ingen indflydelse på indholdet.</strong> Der er hverken betalte omtaler, sponsorerede "
+        "artikler eller affiliate-links på sitet, og ingen annoncør har set eller godkendt en "
+        "tekst før udgivelse. Sider uden selvstændigt indhold — kontakt, vilkår, privatlivspolitik "
+        "og fejlsiden — viser ingen annoncer.</p>"
+
+        "<h2>Data om dig</h2>"
+        "<p>Beregningerne kører i din browser; de datoer, du indtaster, sendes ikke til nogen "
+        'server. Hvad der ellers gemmes, står i <a href="privatlivspolitik.html">'
+        "privatlivspolitikken</a>.</p>"
+
+        "<h2>Ansvar</h2>"
+        "<p>Indholdet er til almindelig orientering. Sitet er ikke juridisk rådgivning, og "
+        "spørgsmål om løn, tillæg og ret til fridage afgøres af din overenskomst eller "
+        "ansættelseskontrakt — ikke af en kalender.</p>"
+        '<p class="muted">Senest gennemgået: 22. august 2026.</p>'
+        "</div></section>"
+    )
+    write_page(
+        "redaktionel-politik.html",
+        "Redaktionel politik",
+        "Hvem står bag DanskeDage, hvordan indholdet bliver til, hvordan fejl "
+        "rettes, og hvilken rolle annoncer spiller.",
+        body,
+        breadcrumbs=[("Forside", "index.html"), ("Redaktionel politik", "")],
+        ads=False,
+    )
+
+
 def render_about(start: int, end: int) -> None:
     body = hero("Om kalenderen og kilder", "Nationale helligdage beregnes med kendte kalenderregler, mens skoleferier opdateres efter kommunale kilder.", date.today().year)
     body += ad_slot("header")
     body += f"""<section class="section"><div class="container"><div class="grid"><article class="card"><h3>Periode</h3><p class="stat">{start}-{end}</p><p class="muted">Kalender-, helligdag- og arbejdsdagssider for hele perioden.</p></article><article class="card"><h3>Store bededag</h3><p class="stat">Ikke helligdag</p><p class="muted">Markeret historisk, men ikke talt som officiel helligdag efter 2024.</p></article></div><div class="card"><h2>Metode</h2><p>Påske beregnes med den gregorianske algoritme. Skærtorsdag, langfredag, Kristi himmelfartsdag og pinse beregnes relativt til påskedag. Arbejdsdage tæller mandag-fredag minus officielle helligdage.</p><p>Skoleferier ligger i <code>data/school-holidays.json</code> og skal revideres årligt mod de kommunale kilder.</p></div><div class="card"><h2>Kilder</h2><ul><li><a href="https://regeringen.dk/nyheder/2023/lovforslag-om-afskaffelse-store-bededag-er-vedtaget-i-folketinget/" rel="nofollow noopener" target="_blank">Regeringen: afskaffelse af store bededag</a></li><li><a href="https://natmus.dk/historisk-viden/temaer/fester-og-traditioner/store-bededag/" rel="nofollow noopener" target="_blank">Nationalmuseet: store bededag fra 2024</a></li><li><a href="https://www.oresunddirekt.dk/dk/jeg-arbejder-i-sverige/helligdag-og-ferie/helligdage-2026-i-danmark-og-sverige/" rel="nofollow noopener" target="_blank">Øresunddirekt: helligdage i Danmark</a></li><li><a href="skoleferier.html">Kommunale kilder til skoleferier</a></li></ul></div></div></section>"""
     body += ad_slot("mid")
+    body += '<section class="section"><div class="container narrow prose"><h2>Hvad DanskeDage er</h2><p>DanskeDage er en samling danske kalenderberegnere: helligdage, arbejdsdage, ugenumre, datoforskelle og skoleferier. Alt er gratis, der er ingen login, og beregningerne kører i din browser — de datoer, du taster ind, forlader ikke din computer.</p><p>Ideen opstod ud af en helt konkret irritation: at slå op, hvor mange arbejdsdage der er i et kvartal, eller hvilken uge vinterferien ligger i, burde tage fem sekunder. I praksis endte man ofte på sider fyldt med pop-ups eller på et regneark, man selv skulle bygge. Sitet gør én ting og forsøger at gøre den ordentligt.</p><h2>Hvem står bag</h2><p>Sitet drives af <strong>én uafhængig udvikler</strong> med baggrund i ingeniørvidenskab. Der er ingen redaktion og intet fagligt panel — og der er ikke opfundet nogen. Hvad det betyder i praksis, og hvordan fejl bliver rettet, står på <a href="redaktionel-politik.html">den redaktionelle politik</a>.</p><h2>Hvordan tallene bliver til</h2><p>Datoerne er <strong>beregnede, ikke indtastede</strong>. Påskedag findes med den gregorianske algoritme, og skærtorsdag, langfredag, Kristi himmelfartsdag og pinse følger mekanisk af den. Arbejdsdage er hverdage minus officielle helligdage. Ugenumre følger ISO 8601. Store bededag har ikke været officiel helligdag siden 2024 og tælles derfor ikke med. Den fulde gennemgang — inklusive hvad beregningerne <em>ikke</em> dækker — står på <a href="metode.html">metodesiden</a>, og kilderne er samlet på <a href="kilder.html">kildesiden</a>.</p><h2>Årssiderne</h2><p>Hvert år får sine egne sider, fordi det, der er værd at vide, faktisk skifter fra år til år. Nogle år ryger tre helligdage i weekenden og er tabt; andre år ingen. Nogle år giver flere klemmedage, hvor en enkelt feriedag bygger bro til weekenden; andre år ingen. Analysen på hver årsside genberegnes, så den beskriver netop det år — ikke et gennemsnit.</p><h2>Skoleferier</h2><p>Skoleferier fastsættes kommunalt og er den del af sitet, der ændrer sig mest. Datoerne stammer fra kommunernes egne offentliggørelser, og hver kommuneside linker direkte til kilden, så du kan kontrollere den. Tjek altid kommunens side, før du booker en rejse.</p><h2>Fejl og forslag</h2><p>Finder du en dato, der ikke passer, er en mail den hurtigste vej til at få den rettet — gerne med et link til den kilde, du sammenligner med. Forslag til beregnere, der mangler, er også velkomne. Skriv via <a href="kontakt.html">kontaktsiden</a>.</p></div></section>'
     write_page(
         "om.html",
         "Om DanskeDage kalender - metode og kilder",
@@ -1976,6 +2649,7 @@ def render_contact() -> None:
         f"Kontakt {SITE_NAME}: rapportér fejl i kalender, helligdage, arbejdsdage eller skoleferier.",
         body,
         breadcrumbs=[("Forside", "index.html"), ("Kontakt", "")],
+        ads=False,
     )
 
 
@@ -1990,6 +2664,7 @@ def render_privacy_policy() -> None:
         f"Privatlivspolitik for {SITE_NAME}: data, cookies, annoncer og kontakt.",
         body,
         breadcrumbs=[("Forside", "index.html"), ("Privatlivspolitik", "")],
+        ads=False,
     )
 
 
@@ -2004,6 +2679,7 @@ def render_terms() -> None:
         f"Vilkår for brug af {SITE_NAME}, kalenderdata og beregnere.",
         body,
         breadcrumbs=[("Forside", "index.html"), ("Vilkår", "")],
+        ads=False,
     )
 
 
@@ -2061,8 +2737,6 @@ def render_404() -> None:
 <meta property="og:site_name" content="{SITE_NAME}">
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(description)}">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADS_CLIENT}" crossorigin="anonymous"></script>
-<meta name="google-adsense-account" content="{ADS_CLIENT}">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -2108,6 +2782,7 @@ def render_support() -> None:
         f"Støt {SITE_NAME} via Buy Me a Coffee og hjælp med at holde siden gratis.",
         body,
         breadcrumbs=[("Forside", "index.html"), ("Støt projektet", "")],
+        ads=False,
     )
 
 
@@ -2132,6 +2807,9 @@ def generate(start: int, end: int) -> None:
     render_tools()
     render_school_holidays()
     render_about(start, end)
+    render_methodology()
+    render_sources()
+    render_editorial_policy()
     render_contact()
     render_privacy_policy()
     render_terms()
@@ -2186,6 +2864,9 @@ def write_sitemap(start: int, end: int) -> None:
         "ugenummer.html",
         "skoleferier.html",
         "om.html",
+        "metode.html",
+        "kilder.html",
+        "redaktionel-politik.html",
         "kontakt.html",
         "privatlivspolitik.html",
         "vilkar.html",
