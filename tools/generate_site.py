@@ -1632,6 +1632,151 @@ def aarsanalyse_sektion(year: int, scope: str) -> str:
     )
 
 
+
+# ─── Dagslys, sommertid og flagdage ─────────────────────────────────────────
+import math as _math
+
+KBH_LAT, KBH_LON = 55.6761, 12.5683  # Koebenhavn; Vestjylland ligger ca. 15 min senere
+
+
+def _sidste_soendag(year: int, month: int) -> date:
+    d = date(year, month, calendar.monthrange(year, month)[1])
+    return d - timedelta(days=(d.weekday() + 1) % 7)
+
+
+def sommertid(year: int) -> tuple[date, date]:
+    """(start, slut) for dansk sommertid: sidste soendag i marts / oktober."""
+    return _sidste_soendag(year, 3), _sidste_soendag(year, 10)
+
+
+def _er_sommertid(d: date) -> bool:
+    a, b = sommertid(d.year)
+    return a <= d < b
+
+
+def _sol_utc(d: date, rise: bool) -> float | None:
+    """Solopgang/-nedgang i UTC-timer (NOAA/Wikipedia 'sunrise equation')."""
+    n = d.toordinal() - 730120  # dage siden J2000 (2000-01-01)
+    js = n - KBH_LON / 360.0
+    M = (357.5291 + 0.98560028 * js) % 360.0
+    Mr = _math.radians(M)
+    C = 1.9148 * _math.sin(Mr) + 0.02 * _math.sin(2 * Mr) + 0.0003 * _math.sin(3 * Mr)
+    lam = _math.radians((M + C + 180.0 + 102.9372) % 360.0)
+    jt = 2451545.0 + js + 0.0053 * _math.sin(Mr) - 0.0069 * _math.sin(2 * lam)
+    decl = _math.asin(_math.sin(lam) * _math.sin(_math.radians(23.4397)))
+    lat = _math.radians(KBH_LAT)
+    cosw = (_math.sin(_math.radians(-0.833)) - _math.sin(lat) * _math.sin(decl)) / (_math.cos(lat) * _math.cos(decl))
+    if cosw < -1 or cosw > 1:
+        return None
+    w = _math.degrees(_math.acos(cosw)) / 360.0
+    j = jt - w if rise else jt + w
+    return ((j + 0.5) % 1.0) * 24.0
+
+
+def _fmt_klok(h: float | None) -> str:
+    if h is None:
+        return "—"
+    hh = int(h) % 24
+    mm = int(round((h - int(h)) * 60))
+    if mm == 60:
+        hh, mm = (hh + 1) % 24, 0
+    return f"{hh:02d}.{mm:02d}"
+
+
+def soltider(d: date) -> tuple[str, str, int | None]:
+    """(solopgang, solnedgang, daglaengde i minutter) i dansk lokaltid."""
+    off = 2 if _er_sommertid(d) else 1
+    r, s = _sol_utc(d, True), _sol_utc(d, False)
+    if r is None or s is None:
+        return "—", "—", None
+    return _fmt_klok((r + off) % 24), _fmt_klok((s + off) % 24), int(round(((s - r) % 24) * 60))
+
+
+def _tm(minutter: int | None) -> str:
+    if minutter is None:
+        return "—"
+    return f"{minutter // 60} t {minutter % 60:02d} min"
+
+
+def dagslys_sektion(year: int) -> str:
+    start, slut = sommertid(year)
+    rows, forrige = [], None
+    for m in range(1, 13):
+        d = date(year, m, 1)
+        op, ned, laengde = soltider(d)
+        if forrige is None or laengde is None:
+            delta = "—"
+        else:
+            diff = laengde - forrige
+            delta = f"{'+' if diff >= 0 else '−'}{abs(diff) // 60} t {abs(diff) % 60:02d} min"
+        forrige = laengde
+        rows.append(f"<tr><td>1. {MONTHS[m - 1]}</td><td>{op}</td><td>{ned}</td><td>{_tm(laengde)}</td><td>{delta}</td></tr>")
+    _, _, kort = soltider(date(year, 12, 21))
+    _, _, lang = soltider(date(year, 6, 21))
+    return (
+        '<section class="section"><div class="container">'
+        '<div class="section-title"><div><h2>Dagslys måned for måned</h2>'
+        f"<p>Solopgang, solnedgang og dagens længde den 1. i hver måned, beregnet for København. "
+        f"I Vestjylland står solen op og går ned cirka et kvarter senere.</p></div></div>"
+        '<div class="table-wrap"><table><thead><tr><th>Dato</th><th>Solopgang</th><th>Solnedgang</th>'
+        f"<th>Dagens længde</th><th>Ændring fra måneden før</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>"
+        f"<p>Årets korteste dag er omkring den 21. december med {_tm(kort)} dagslys, og den længste omkring "
+        f"den 21. juni med {_tm(lang)}. <strong>Sommertid</strong> begynder natten til søndag den "
+        f"{_fmt_dansk_dato(start)} (uret stilles frem fra 02.00 til 03.00) og slutter natten til søndag den "
+        f"{_fmt_dansk_dato(slut)} (uret stilles tilbage fra 03.00 til 02.00). Tiderne i tabellen er allerede "
+        f"omregnet til den tid, der gælder på dagen.</p>"
+        "</div></section>"
+    )
+
+
+# Justitsministeriets officielle flagdage (faste datoer). De bevaegelige
+# (langfredag, paaskedag, Kristi himmelfartsdag, pinsedag) tilfoejes pr. aar.
+FLAGDAGE_FASTE = [
+    (1, 1, "Nytårsdag", ""),
+    (2, 5, "H.M. Dronning Marys fødselsdag", ""),
+    (4, 9, "Danmarks besættelse 1940", "På halv stang indtil kl. 12, derefter på hel"),
+    (4, 16, "H.M. Dronning Margrethes fødselsdag", ""),
+    (5, 5, "Danmarks befrielse 1945", ""),
+    (5, 26, "H.M. Kong Frederik 10.s fødselsdag", ""),
+    (6, 5, "Grundlovsdag", ""),
+    (6, 15, "Valdemarsdag og Genforeningsdag", "Dannebrogs dag (1219) og genforeningen 1920"),
+    (9, 5, "Danmarks udsendte", "Flagdag for Danmarks udsendte siden 2009"),
+    (10, 15, "H.K.H. Kronprins Christians fødselsdag", ""),
+    (12, 25, "Juledag", ""),
+]
+
+
+def flagdage_sektion(year: int) -> str:
+    e = easter_sunday(year)
+    dage = [(date(year, m, d), navn, note) for m, d, navn, note in FLAGDAGE_FASTE]
+    dage += [
+        (e - timedelta(days=2), "Langfredag", "På halv stang hele dagen"),
+        (e, "Påskedag", ""),
+        (e + timedelta(days=39), "Kristi himmelfartsdag", ""),
+        (e + timedelta(days=49), "Pinsedag", ""),
+    ]
+    dage.sort(key=lambda x: x[0])
+    rows = "".join(
+        f"<tr><td>{_fmt_dansk_dato(d)}</td><td>{WEEKDAYS_LONG[d.weekday()]}</td><td>{navn}</td><td>{note}</td></tr>"
+        for d, navn, note in dage
+    )
+    weekend = sum(1 for d, _, _ in dage if d.weekday() >= 5)
+    return (
+        '<section class="section"><div class="container">'
+        '<div class="section-title"><div><h2>Officielle flagdage ' + str(year) + "</h2>"
+        "<p>Dage, hvor staten flager fra offentlige bygninger. Helligdage og flagdage er ikke det samme: "
+        "kun fire af flagdagene er også fridage, og flere fridage (fx 2. påskedag) er ikke flagdage.</p></div></div>"
+        '<div class="table-wrap"><table><thead><tr><th>Dato</th><th>Ugedag</th><th>Flagdag</th><th>Bemærkning</th></tr></thead>'
+        f"<tbody>{rows}</tbody></table></div>"
+        f"<p>I {year} falder {weekend} af de {len(dage)} flagdage i en weekend. Private må flage alle dage, "
+        f"men reglen om, at Dannebrog ikke må være hejst efter solnedgang uden belysning, gælder året rundt — "
+        f"solnedgangstiderne står på <a href='kalender-{year}.html'>kalendersiden</a>. Listen følger "
+        '<a href="https://www.justitsministeriet.dk/" rel="nofollow noopener" target="_blank">Justitsministeriets</a> '
+        "officielle flagdage; kongehusets fødselsdage ændres, når tronfølgen gør det.</p>"
+        "</div></section>"
+    )
+
+
 def render_index(year: int) -> None:
     body = hero(
         f"Kalender {year}",
@@ -1691,6 +1836,7 @@ def render_year_pages(year: int) -> None:
     body += '</div></section>' + link_grid(year)
     body += ad_slot("mid")
     body += year_calendar_section(year)
+    body += dagslys_sektion(year)
     body += ad_slot("footer")
     body += aarsanalyse_sektion(year, "kalender")
     write_page(
@@ -1806,6 +1952,7 @@ def render_holidays(year: int) -> None:
         ),
     ]
     body += aarsanalyse_sektion(year, "helligdage")
+    body += flagdage_sektion(year)
     write_page(
         f"helligdage-{year}.html",
         f"Helligdage {year} i Danmark",
