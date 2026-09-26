@@ -1833,6 +1833,11 @@ def render_index(year: int) -> None:
         f"Se dansk kalender for {year} med helligdage, arbejdsdage, ugenumre, påske, pinse og forslag til gode feriedage.",
         year,
     )
+    body += (
+        '<div class="container media-hero">'
+        '<img src="img/hero-calendario.jpg" width="1200" height="675" alt="Kalenderfelter i perspektiv med en sol i horisonten"'
+        ' loading="lazy" decoding="async"></div>'
+    )
     body += ad_slot("header")
     body += '<section class="section"><div class="container"><div class="section-title"><div><h2>Overblik for året</h2><p>Nøgletal for kalenderåret, beregnet lokalt.</p></div></div>'
     body += year_overview(year)
