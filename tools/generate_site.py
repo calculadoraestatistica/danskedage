@@ -2804,12 +2804,11 @@ def render_editorial_policy() -> None:
         'adressen på <a href="kontakt.html">kontaktsiden</a>: helst med et link til den kilde, du '
         "sammenligner med. Væsentlige rettelser noteres på metodesiden med dato.</p>"
 
-        "<h2>Annoncer</h2>"
-        "<p>Sitet er gratis og finansieres af annoncer fra Google AdSense. <strong>Annoncerne har "
-        "ingen indflydelse på indholdet.</strong> Der er hverken betalte omtaler, sponsorerede "
-        "artikler eller affiliate-links på sitet, og ingen annoncør har set eller godkendt en "
-        "tekst før udgivelse. Sider uden selvstændigt indhold (kontakt, vilkår, privatlivspolitik "
-        "og fejlsiden) viser ingen annoncer.</p>"
+        "<h2>Annoncer og finansiering</h2>"
+        "<p>Sitet er gratis og viser ingen annoncer. Der er hverken betalte omtaler, "
+        "sponsorerede artikler eller affiliate-links, og ingen tredjepart har set eller "
+        "godkendt en tekst før udgivelse. Frivillige bidrag kan gives via "
+        '<a href="stot.html">støttesiden</a>, og de har ingen indflydelse på indholdet.</p>'
 
         "<h2>Data om dig</h2>"
         "<p>Beregningerne kører i din browser; de datoer, du indtaster, sendes ikke til nogen "
@@ -2827,7 +2826,7 @@ def render_editorial_policy() -> None:
         "redaktionel-politik.html",
         "Redaktionel politik",
         "Hvem står bag DanskeDage, hvordan indholdet bliver til, hvordan fejl "
-        "rettes, og hvilken rolle annoncer spiller.",
+        "rettes, og hvordan sitet finansieres.",
         body,
         breadcrumbs=[("Forside", "index.html"), ("Redaktionel politik", "")],
         ads=False,
@@ -2867,14 +2866,14 @@ def render_contact() -> None:
 
 
 def render_privacy_policy() -> None:
-    body = hero("Privatlivspolitik", "Sådan håndterer DanskeDage.dk data, cookies, annoncer og eksterne links.", date.today().year)
+    body = hero("Privatlivspolitik", "Sådan håndterer DanskeDage.dk data, cookies og eksterne links.", date.today().year)
     body += ad_slot("header")
-    body += f"""<section class="section"><div class="container--narrow"><article class="card prose"><p class="muted">Sidst opdateret: {date.today().strftime('%Y-%m-%d')}.</p><h2>Kort fortalt</h2><p>{SITE_NAME} respekterer dit privatliv. De interaktive beregnere for arbejdsdage og ugenumre kører direkte i din browser. De datoer, du indtaster, bliver ikke sendt til vores server og bliver ikke gemt af os.</p><h2>Data i beregnerne</h2><p>Startdatoer, slutdatoer og antal arbejdsdage behandles lokalt med JavaScript på din enhed. Når du lukker eller genindlæser siden, forsvinder disse oplysninger fra beregneren.</p><h2>Serverlogfiler</h2><p>Som på andre hjemmesider kan hostingudbyderen registrere tekniske oplysninger såsom IP-adresse, browsertype, tidspunkt for besøg og forespurgte sider. Disse oplysninger bruges til drift, sikkerhed og fejlfinding.</p><h2>Cookies og annoncer</h2><p>Siden kan vise annoncer via Google AdSense for at finansiere drift og vedligeholdelse. Google og dets partnere kan bruge cookies til at vise og måle annoncer. Du kan læse mere om Googles brug af data på <a href="https://policies.google.com/technologies/partner-sites" rel="nofollow noopener" target="_blank">Googles side om partnerwebsteder</a> og ændre annonceindstillinger på <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Googles annonceindstillinger</a>.</p><p>Vi bruger ikke login, betalingsmur eller egne analytics-cookies i kalenderberegnerne.</p><h2>Eksterne links</h2><p>Siden linker til officielle kilder og kommunale ferieplaner. Vi kontrollerer ikke disse eksterne sider og er ikke ansvarlige for deres indhold eller privatlivspraksis.</p><h2>Dine rettigheder</h2><p>Hvis du har spørgsmål om privatliv eller ønsker indsigt, rettelse eller sletning af oplysninger, du selv har sendt til os via e-mail, kan du kontakte os på <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>. Du kan også kontakte <a href="https://www.datatilsynet.dk/" rel="nofollow noopener" target="_blank">Datatilsynet</a>.</p><h2>Kontakt</h2><p>Spørgsmål om denne privatlivspolitik kan sendes til <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>.</p></article></div></section>"""
+    body += f"""<section class="section"><div class="container--narrow"><article class="card prose"><p class="muted">Sidst opdateret: {date.today().strftime('%Y-%m-%d')}.</p><h2>Kort fortalt</h2><p>{SITE_NAME} respekterer dit privatliv. De interaktive beregnere for arbejdsdage og ugenumre kører direkte i din browser. De datoer, du indtaster, bliver ikke sendt til vores server og bliver ikke gemt af os.</p><h2>Data i beregnerne</h2><p>Startdatoer, slutdatoer og antal arbejdsdage behandles lokalt med JavaScript på din enhed. Når du lukker eller genindlæser siden, forsvinder disse oplysninger fra beregneren.</p><h2>Serverlogfiler</h2><p>Som på andre hjemmesider kan hostingudbyderen registrere tekniske oplysninger såsom IP-adresse, browsertype, tidspunkt for besøg og forespurgte sider. Disse oplysninger bruges til drift, sikkerhed og fejlfinding.</p><h2>Cookies og annoncer</h2><p>Sitet sætter ingen cookies, og der vises ingen annoncer. Google AdSense og andre annoncenetværk er ikke indlæst på nogen side, og der er hverken analyseværktøjer, login eller betalingsmur. Derfor er der heller ingen samtykkeboks ved første besøg.</p><p>Beregnerne bruger hverken localStorage eller sessionStorage, så der gemmes ingen indstillinger eller indtastninger mellem besøg. Stilark, scripts, ikoner, billeder og videoklip hentes fra sitets eget domæne, så en sidevisning sender ingen forespørgsler til andre domæner.</p><h2>Eksterne links</h2><p>Siden linker til officielle kilder og kommunale ferieplaner. Vi kontrollerer ikke disse eksterne sider og er ikke ansvarlige for deres indhold eller privatlivspraksis.</p><h2>Dine rettigheder</h2><p>Hvis du har spørgsmål om privatliv eller ønsker indsigt, rettelse eller sletning af oplysninger, du selv har sendt til os via e-mail, kan du kontakte os på <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>. Du kan også kontakte <a href="https://www.datatilsynet.dk/" rel="nofollow noopener" target="_blank">Datatilsynet</a>.</p><h2>Kontakt</h2><p>Spørgsmål om denne privatlivspolitik kan sendes til <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>.</p></article></div></section>"""
     body += ad_slot("mid")
     write_page(
         "privatlivspolitik.html",
         f"Privatlivspolitik - {SITE_NAME}",
-        f"Privatlivspolitik for {SITE_NAME}: data, cookies, annoncer og kontakt.",
+        f"Privatlivspolitik for {SITE_NAME}: data, cookies og kontakt.",
         body,
         breadcrumbs=[("Forside", "index.html"), ("Privatlivspolitik", "")],
         ads=False,
@@ -2884,7 +2883,7 @@ def render_privacy_policy() -> None:
 def render_terms() -> None:
     body = hero("Vilkår", "Betingelser for brug af DanskeDage.dk og kalenderberegnerne.", date.today().year)
     body += ad_slot("header")
-    body += f"""<section class="section"><div class="container--narrow"><article class="card prose"><p class="muted">Sidst opdateret: {date.today().strftime('%Y-%m-%d')}.</p><h2>1. Accept af vilkårene</h2><p>Når du bruger {SITE_NAME}, accepterer du disse vilkår. Hvis du ikke er enig, bør du lade være med at bruge siden.</p><h2>2. Informativt formål</h2><p>Siden tilbyder kalenderoplysninger, helligdage, arbejdsdage, ugenumre, skoleferier og relaterede beregnere med et udelukkende informativt formål. Oplysningerne erstatter ikke officiel rådgivning, kommunale afgørelser eller juridisk vurdering.</p><h2>3. Kilder og nøjagtighed</h2><p>Vi gør os umage for at beregne nationale helligdage korrekt og linke til relevante officielle og kommunale kilder. Skoleferier fastsættes lokalt og kan ændres, og enkelte skoler kan have afvigelser. Tjek derfor altid den officielle kilde, før du planlægger rejser, fravær eller arbejde.</p><h2>4. Ansvarsbegrænsning</h2><p>{SITE_NAME} stilles til rådighed som den er. Vi er ikke ansvarlige for tab, forsinkelser, fejlagtig planlægning eller andre konsekvenser, der måtte opstå ved brug af siden.</p><h2>5. Eksterne links og annoncer</h2><p>Siden kan indeholde links til tredjepartssider og vise annoncer via Google AdSense. Tredjepartssider har deres egne vilkår og privatlivspolitikker.</p><h2>6. Ændringer</h2><p>Vilkårene kan opdateres, når siden ændres, eller når regler og datakilder ændrer sig. Datoen øverst viser den aktuelle version.</p><h2>7. Kontakt</h2><p>Spørgsmål om vilkårene kan sendes til <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>.</p></article></div></section>"""
+    body += f"""<section class="section"><div class="container--narrow"><article class="card prose"><p class="muted">Sidst opdateret: {date.today().strftime('%Y-%m-%d')}.</p><h2>1. Accept af vilkårene</h2><p>Når du bruger {SITE_NAME}, accepterer du disse vilkår. Hvis du ikke er enig, bør du lade være med at bruge siden.</p><h2>2. Informativt formål</h2><p>Siden tilbyder kalenderoplysninger, helligdage, arbejdsdage, ugenumre, skoleferier og relaterede beregnere med et udelukkende informativt formål. Oplysningerne erstatter ikke officiel rådgivning, kommunale afgørelser eller juridisk vurdering.</p><h2>3. Kilder og nøjagtighed</h2><p>Vi gør os umage for at beregne nationale helligdage korrekt og linke til relevante officielle og kommunale kilder. Skoleferier fastsættes lokalt og kan ændres, og enkelte skoler kan have afvigelser. Tjek derfor altid den officielle kilde, før du planlægger rejser, fravær eller arbejde.</p><h2>4. Ansvarsbegrænsning</h2><p>{SITE_NAME} stilles til rådighed som den er. Vi er ikke ansvarlige for tab, forsinkelser, fejlagtig planlægning eller andre konsekvenser, der måtte opstå ved brug af siden.</p><h2>5. Eksterne links</h2><p>Siden linker til officielle kilder, kommunale ferieplaner og andre tredjepartssider, som har deres egne vilkår og privatlivspolitikker. Der vises ingen annoncer på siden.</p><h2>6. Ændringer</h2><p>Vilkårene kan opdateres, når siden ændres, eller når regler og datakilder ændrer sig. Datoen øverst viser den aktuelle version.</p><h2>7. Kontakt</h2><p>Spørgsmål om vilkårene kan sendes til <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>.</p></article></div></section>"""
     body += ad_slot("mid")
     write_page(
         "vilkar.html",
