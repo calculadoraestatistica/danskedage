@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-29T21:57:18Z",
+  "updated_at": "2026-10-30T17:40:36Z",
   "source": "Yahoo Finance (Nasdaq Copenhagen)",
   "tickers": 41,
   "years": [
@@ -20,7 +20,7 @@
     2025,
     2026
   ],
-  "total_events": 530,
-  "recent_events": 7,
+  "total_events": 532,
+  "recent_events": 9,
   "upcoming": 0
 }
