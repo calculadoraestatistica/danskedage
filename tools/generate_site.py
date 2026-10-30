@@ -389,7 +389,6 @@ def ensure_base_files() -> None:
     (ROOT / "css" / "style.css").write_text(css_text(), encoding="utf-8")
     (ROOT / "js" / "calendar-tools.js").write_text(js_text(), encoding="utf-8")
     (ROOT / "js" / "today.js").write_text(today_js_text(), encoding="utf-8")
-    (ROOT / "js" / "cookie-consent.js").write_text(cookie_consent_js_text(), encoding="utf-8")
     # media-loop.js é versionado à mão (não gerado); só garante que existe.
     assert (ROOT / "js" / "media-loop.js").exists(), "js/media-loop.js faltando"
     (ROOT / "favicon.svg").write_text(favicon_svg(), encoding="utf-8")
@@ -534,11 +533,11 @@ def css_text() -> str:
 .ad-note{min-height:90px;border:1px dashed var(--line);border-radius:0;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--paper)}
 .tag{display:inline-flex;padding:.16rem .45rem;border-radius:0;background:var(--soft);color:var(--brand-dark);font-size:.76rem;font-weight:800;letter-spacing:.02em}
 .nav-toggle{display:none;background:transparent;border:1px solid var(--ink);border-radius:0;padding:.45rem .6rem;cursor:pointer;color:var(--ink);font:inherit}.nav-toggle__bars{display:inline-flex;flex-direction:column;gap:4px;width:20px;vertical-align:middle}.nav-toggle__bars span{display:block;height:2px;background:currentColor;border-radius:0}
-@media(max-width:780px){.hero-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.section-title{display:block}.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}table{min-width:520px}.main-nav a{font-size:.86rem;padding:.45rem}.nav-toggle{display:inline-flex;align-items:center;gap:.4rem;font-weight:700}.main-nav{display:none;flex-basis:100%;order:3}.main-nav.is-open{display:block}.main-nav ul{flex-direction:column;gap:0;padding:.4rem 0}.main-nav a{display:block;width:100%;font-size:.95rem;padding:.6rem .3rem;border-bottom:1px solid var(--line)}.main-nav a[aria-current=page]{border-bottom:1px solid var(--line);background:var(--soft);color:var(--ink)}.site-header__inner{flex-wrap:wrap}.hero{padding:1.6rem 0 1.2rem}.hero h1{font-size:clamp(1.7rem,7vw,2.4rem)}.hero+.ad-slot--header{display:none}.hero+.ad-slot--header+.section{padding-top:1rem}.calendar-grid span{min-height:44px;font-size:1rem}.month--large .calendar-grid span{min-height:46px;font-size:1.05rem}.mini-calendar span{min-height:40px}.calendar-legend{padding:.6rem .7rem;gap:.45rem .7rem}.calendar-legend__item{font-size:.84rem}}
+@media(max-width:780px){.hero-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.section-title{display:block}.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}table{min-width:520px}.main-nav a{font-size:.86rem;padding:.45rem}.nav-toggle{display:inline-flex;align-items:center;gap:.4rem;font-weight:700}.main-nav{display:none;flex-basis:100%;order:3}.main-nav.is-open{display:block}.main-nav ul{flex-direction:column;gap:0;padding:.4rem 0}.main-nav a{display:block;width:100%;font-size:.95rem;padding:.6rem .3rem;border-bottom:1px solid var(--line)}.main-nav a[aria-current=page]{border-bottom:1px solid var(--line);background:var(--soft);color:var(--ink)}.site-header__inner{flex-wrap:wrap}.hero{padding:1.6rem 0 1.2rem}.hero h1{font-size:clamp(1.7rem,7vw,2.4rem)}.calendar-grid span{min-height:44px;font-size:1rem}.month--large .calendar-grid span{min-height:46px;font-size:1.05rem}.mini-calendar span{min-height:40px}.calendar-legend{padding:.6rem .7rem;gap:.45rem .7rem}.calendar-legend__item{font-size:.84rem}}
 .calendar-grid .today{background:var(--ink);color:var(--bg);font-weight:800;outline:none}.calendar-legend{display:flex;flex-wrap:wrap;gap:.55rem .85rem;align-items:center;margin:0 0 1rem;padding:.7rem .85rem;background:var(--paper);border:1px solid var(--line);border-radius:0}.month--large .calendar-legend{margin-top:.35rem}.calendar-legend__item{display:inline-flex;align-items:center;gap:.4rem;color:#47463f;font-size:.88rem;font-weight:600}.calendar-legend__swatch{width:16px;height:16px;border-radius:0;border:1px solid var(--line);display:inline-block}.calendar-legend__swatch--holiday{background:var(--hol-bg);border-color:var(--hol)}.calendar-legend__swatch--special{background:var(--sp-bg);border-color:#c78a3b}.calendar-legend__swatch--weekend{background:var(--wk-bg);border-color:#c3cad4}.calendar-legend__swatch--today{background:var(--ink);border-color:var(--ink)}
 .quick-panel .calendar-legend{margin:.75rem 0 0;padding:.55rem 0;gap:.4rem .65rem;border:0;background:transparent}.quick-panel .calendar-legend__item{font-size:.76rem}.quick-panel .calendar-legend__swatch{width:12px;height:12px;border-radius:0}
 .breadcrumbs{background:var(--paper);border-bottom:1px solid var(--line);padding:.65rem 0;font-size:.88rem;color:var(--muted);margin:0}.breadcrumbs a{color:var(--brand-dark);text-decoration:none;font-weight:700}.breadcrumbs a:hover{text-decoration:underline}.breadcrumbs [aria-current=page]{color:var(--ink);font-weight:700}
-.ad-slot{padding:.9rem 0;background:transparent}.ad-slot ins{min-height:90px;display:block;border:1px dashed var(--line);border-radius:0;background:var(--paper);color:var(--muted)}.ad-slot ins:empty::before{content:"Annonceområde";display:flex;align-items:center;justify-content:center;height:90px;color:var(--muted);font-size:.85rem;letter-spacing:.04em}.ad-slot--header ins{min-height:100px}.ad-slot--mid ins{min-height:250px}.ad-slot--footer ins{min-height:100px}
+
 .faq{display:flex;flex-direction:column;gap:.6rem}.faq__item{background:var(--paper);border:1px solid var(--line);border-radius:0;padding:.75rem 1rem}.faq__item summary{cursor:pointer;font-weight:700;color:var(--brand-dark);outline:none}.faq__item[open] summary{margin-bottom:.5rem}.faq__item p{margin:.25rem 0 0;color:#3c3b35}
 .add-cell{font-size:.84rem;white-space:nowrap}.add-cell a{color:var(--brand-dark);text-decoration:none;font-weight:700}.add-cell a:hover{text-decoration:underline}.export-bar{margin:0 0 1rem;display:flex;align-items:center;gap:.65rem;flex-wrap:wrap}.export-bar .btn{padding:.45rem .9rem;font-size:.92rem}
 .field input:focus-visible,.field select:focus-visible,.btn:focus-visible,.main-nav a:focus-visible,a.card:focus-visible,.breadcrumbs a:focus-visible,.faq__item summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:0}
@@ -548,7 +547,7 @@ def css_text() -> str:
 .calendar-grid span,.mini-calendar span{transition:background-color .12s ease,box-shadow .12s ease}.calendar-grid span[title],.mini-calendar span[title]{cursor:help}.calendar-grid span[title]:hover,.mini-calendar span[title]:hover{box-shadow:inset 0 0 0 2px rgba(28,25,23,.45)}
 .calendar-grid .today,.mini-calendar .today{background:var(--ink);color:var(--bg);font-weight:800;outline:none}
 tbody tr:nth-child(even) td{background:#f2f2ec}tbody tr:hover td{background:#ecece4}
-@media print{.site-header,.main-nav,.footer,.ad-slot,.no-print,.hero-actions,.faq,.export-bar,.add-cell,.skip-link,.breadcrumbs{display:none!important}body{background:#fff;color:#000;font-size:11pt}.section{padding:.4rem 0}.container{width:100%}.hero{padding:0;background:#fff;border:0}.hero h1{font-size:1.4rem}.lead{font-size:1rem;color:#222}.table-wrap{border:0;overflow:visible}table{min-width:0;font-size:10pt}th{background:#eee;color:#000}th:last-child,td:last-child{display:none}.card{break-inside:avoid;box-shadow:none;border-color:#aaa}.notice{background:#fff;border-color:#bbb;color:#000}a{color:#000;text-decoration:none}a[href]:after{content:""}.month-grid{grid-template-columns:repeat(3,1fr);gap:.5rem;page-break-inside:auto}.month{break-inside:avoid;padding:.4rem}}
+@media print{.site-header,.main-nav,.footer,.no-print,.hero-actions,.faq,.export-bar,.add-cell,.skip-link,.breadcrumbs{display:none!important}body{background:#fff;color:#000;font-size:11pt}.section{padding:.4rem 0}.container{width:100%}.hero{padding:0;background:#fff;border:0}.hero h1{font-size:1.4rem}.lead{font-size:1rem;color:#222}.table-wrap{border:0;overflow:visible}table{min-width:0;font-size:10pt}th{background:#eee;color:#000}th:last-child,td:last-child{display:none}.card{break-inside:avoid;box-shadow:none;border-color:#aaa}.notice{background:#fff;border-color:#bbb;color:#000}a{color:#000;text-decoration:none}a[href]:after{content:""}.month-grid{grid-template-columns:repeat(3,1fr);gap:.5rem;page-break-inside:auto}.month{break-inside:avoid;padding:.4rem}}
 
 /* Mídia explicativa (clipes e ilustrações) */
 .media-figure{margin:2.25rem 0;}
@@ -1006,8 +1005,9 @@ def layout(
     hreflang = hreflang_links(path, canonical)
     og_image = DOMAIN + "/img/og-default.png"
     nav_year = ACTIVE_YEAR
+    # O script do AdSense saiu em 29/10/2026. Fica so a meta de
+    # propriedade, que nao faz requisicao.
     _ads_tags = [
-        '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADS_CLIENT + '" crossorigin="anonymous"></script>',
         '<meta name="google-adsense-account" content="' + ADS_CLIENT + '">',
     ]
     ads_head = (chr(10).join(_ads_tags) + chr(10)) if ads else ""
@@ -1085,7 +1085,6 @@ def layout(
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="css/style.css">
-<script src="js/cookie-consent.js" defer></script>
 <script src="js/media-loop.js" defer></script>
 {schema_html}
 </head>
@@ -2960,7 +2959,6 @@ def render_404() -> None:
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/css/style.css">
-<script src="/js/cookie-consent.js" defer></script>
 <script src="/js/media-loop.js" defer></script>
 </head>
 <body>
